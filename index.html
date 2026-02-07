@@ -146,21 +146,21 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">v31: убрана буква у ответов • ползунки для настроек картинки ответа • опциональная подложка текста • размер игрока + тень по контуру • без обводки игрока.</div>
+        <div class="sub">v32: предпросмотр всегда открывает текущий файл • iframe генерируется по baseUrl • управление сенсором • наклон и парение игрока • ответы без подложки (картинка) • ползунки и предпросмотр ответа.</div>
       </div>
-      <div class="badge">v31 • one-file</div>
+      <div class="badge">v32 • one-file</div>
     </div>
 
     <div class="content">
       <div class="section">
-        <h3>Ссылка проекта (для iframe)</h3>
-        <label>Ссылка на страницу игры (GitHub Pages)</label>
+        <h3>Ссылка проекта (только для iframe)</h3>
+        <label>Base URL (GitHub Pages / путь к .html)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/файл.html" />
-        <div class="hint">Если файл не index.html — укажи полный путь до .html.</div>
+        <div class="hint">Предпросмотр справа всегда показывает этот текущий файл. Base URL нужен только для iframe в Genially.</div>
       </div>
 
       <div class="section">
-        <h3>Цвета и тема</h3>
+        <h3>Цвета</h3>
         <div class="grid">
           <div>
             <label>Вопрос: цвет текста</label>
@@ -241,11 +241,11 @@
         <h3>Фразы обратной связи</h3>
         <div class="grid">
           <div>
-            <label>Фраза за правильный ответ</label>
+            <label>За правильный</label>
             <input id="feedbackCorrect" type="text" value="Верно!" />
           </div>
           <div>
-            <label>Фраза за неправильный ответ</label>
+            <label>За неправильный</label>
             <input id="feedbackWrong" type="text" value="Неверно!" />
           </div>
         </div>
@@ -315,7 +315,7 @@
             <input id="playerImgFile" type="file" accept="image/*" />
           </div>
           <div>
-            <label>Картинка ответа (фон карточки) — URL</label>
+            <label>Картинка ответа (фон) — URL</label>
             <input id="answerCardImgUrl" type="text" placeholder="https://..." />
             <div class="hint">или загрузить:</div>
             <input id="answerCardImgFile" type="file" accept="image/*" />
@@ -330,31 +330,27 @@
           <div>
             <label>Прозрачный фон (для Genially)</label>
             <select id="transparentBg">
-              <option value="1" selected>Да (прозрачный)</option>
-              <option value="0">Нет (использовать фон)</option>
+              <option value="1" selected>Да</option>
+              <option value="0">Нет</option>
             </select>
           </div>
         </div>
       </div>
 
       <div class="section">
-        <h3>Игрок: размер и эффект</h3>
-
+        <h3>Игрок: размер и тень</h3>
         <label>Размер игрока (px)</label>
         <div class="rangeRow">
           <input id="playerSizeR" type="range" min="56" max="180" step="1" value="86" />
           <input id="playerSize" type="number" min="56" max="180" step="1" value="86" />
         </div>
-
         <div class="checkGrid" style="margin-top:10px;">
           <div class="checkItem"><input id="playerShadow" type="checkbox" /> <span>Тень по контуру игрока</span></div>
         </div>
-
-        <div class="hint">Обводка у игрока убрана. Можно включить мягкую тень по контуру.</div>
       </div>
 
       <div class="section">
-        <h3>Ответы: оформление (ползунки)</h3>
+        <h3>Ответы: ползунки</h3>
 
         <label>Размер ответа (px)</label>
         <div class="rangeRow">
@@ -362,7 +358,7 @@
           <input id="answerSize" type="number" min="56" max="220" step="1" value="86" />
         </div>
 
-        <label style="margin-top:10px;">Масштаб текста/контента ответа</label>
+        <label style="margin-top:10px;">Масштаб контента</label>
         <div class="rangeRow">
           <input id="answerContentScaleR" type="range" min="0.6" max="1.6" step="0.05" value="1" />
           <input id="answerContentScale" type="number" min="0.6" max="1.6" step="0.05" value="1" />
@@ -370,13 +366,13 @@
 
         <div class="hr"></div>
 
-        <label>Положение текста: X (%)</label>
+        <label>Положение текста X (%)</label>
         <div class="rangeRow">
           <input id="answerTextXR" type="range" min="0" max="100" step="1" value="50" />
           <input id="answerTextX" type="number" min="0" max="100" step="1" value="50" />
         </div>
 
-        <label style="margin-top:10px;">Положение текста: Y (%)</label>
+        <label style="margin-top:10px;">Положение текста Y (%)</label>
         <div class="rangeRow">
           <input id="answerTextYR" type="range" min="0" max="100" step="1" value="64" />
           <input id="answerTextY" type="number" min="0" max="100" step="1" value="64" />
@@ -388,36 +384,36 @@
 
         <div class="hr"></div>
 
-        <label>Заполнение картинки ответа</label>
+        <label>Картинка ответа: режим</label>
         <select id="answerCardFit">
           <option value="contain" selected>Вписать (contain)</option>
           <option value="cover">Заполнить (cover)</option>
         </select>
 
-        <label style="margin-top:10px;">Масштаб картинки ответа</label>
+        <label style="margin-top:10px;">Картинка ответа: масштаб</label>
         <div class="rangeRow">
           <input id="answerCardScaleR" type="range" min="0.6" max="2" step="0.05" value="1" />
           <input id="answerCardScale" type="number" min="0.6" max="2" step="0.05" value="1" />
         </div>
 
-        <label style="margin-top:10px;">Картинка ответа: X (%)</label>
+        <label style="margin-top:10px;">Картинка ответа X (%)</label>
         <div class="rangeRow">
           <input id="answerCardPosXR" type="range" min="0" max="100" step="1" value="50" />
           <input id="answerCardPosX" type="number" min="0" max="100" step="1" value="50" />
         </div>
 
-        <label style="margin-top:10px;">Картинка ответа: Y (%)</label>
+        <label style="margin-top:10px;">Картинка ответа Y (%)</label>
         <div class="rangeRow">
           <input id="answerCardPosYR" type="range" min="0" max="100" step="1" value="50" />
           <input id="answerCardPosY" type="number" min="0" max="100" step="1" value="50" />
         </div>
 
-        <div class="hint">У вариантов ответа буква убрана. Подложку текста можно включать/выключать.</div>
+        <div class="hint">Буква у вариантов в игре убрана. Ответы рисуются только через твою картинку + текст.</div>
       </div>
 
       <div class="section">
         <h3>Предпросмотр карточки ответа</h3>
-        <div class="hint">Один ответ: твоя картинка + текст + текущие ползунки.</div>
+        <div class="hint">Один ответ: картинка + текст + ползунки (чтобы красиво оформить).</div>
 
         <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px;">
           <div id="answerPreviewBox" style="
@@ -454,10 +450,10 @@
                   color:#fff;
                   max-width: 220px;
                   text-align:center;
-                  padding:0;
+                  padding:4px 8px;
                   border-radius:10px;
-                  background: transparent;
-                  border: none;
+                  background: rgba(0,0,0,.18);
+                  border: 1px solid rgba(255,255,255,.10);
                   text-shadow:0 10px 22px rgba(0,0,0,.55);
                 ">Текст варианта</div>
               </div>
@@ -465,14 +461,13 @@
           </div>
 
           <div style="flex:1;min-width:220px;">
-            <label>Текст для предпросмотра (для оформления)</label>
+            <label>Текст для предпросмотра</label>
             <input id="answerPreviewTextInput" type="text" value="Текст варианта" />
             <div class="hint">Это только для предпросмотра (на вопросы не влияет).</div>
 
             <div class="hr"></div>
-
             <div class="hint">
-              Для “фона без шва” используй бесшовную картинку (tile/seamless). Код двигает фон repeat-x бесконечно.
+              Для бесшовного фона используй бесшовную картинку (seamless/tile). Фон движется repeat-x.
             </div>
           </div>
         </div>
@@ -498,7 +493,6 @@
             <input id="playerSpeed" type="number" min="3" max="18" value="7" />
           </div>
         </div>
-        <div class="hint">Планшет: управление сенсором (перетаскивание). ПК: ↑/↓.</div>
       </div>
 
       <div class="section">
@@ -518,7 +512,7 @@
           <button class="btn primary" id="genIframeBtn">Создать iframe</button>
           <button class="btn" id="copyIframeBtn">Скопировать</button>
         </div>
-        <div class="hint">Фикс предпросмотра: iframe принудительно перезагружается (about:blank → игра).</div>
+        <div class="hint">Предпросмотр справа использует текущий файл. iframe — baseUrl (GitHub Pages).</div>
         <textarea id="codeBox" readonly placeholder="Тут появится iframe..."></textarea>
       </div>
     </div>
@@ -528,7 +522,7 @@
     <div class="head">
       <div>
         <h1>Предпросмотр игры</h1>
-        <div class="sub">Так будет выглядеть игра внутри iframe.</div>
+        <div class="sub">Справа — всегда текущий файл (без кеша).</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -697,7 +691,6 @@ function buildFxCss(cfg){
     shadowParts.push(`0 0 ${b2}px ${hexToRgba(c,0.65)}`);
     shadowParts.push(`0 0 ${b3}px ${hexToRgba(c,0.45)}`);
   }
-
   const textShadow = shadowParts.length ? `text-shadow:${shadowParts.join(",")};` : "";
 
   let stroke = "";
@@ -709,7 +702,6 @@ function buildFxCss(cfg){
     const w = clampNum(cfg.strokeWidth, 0, 3, 0.8);
     stroke += `-webkit-text-stroke:${w}px ${c};`;
   }
-
   return `${textShadow}${stroke}`;
 }
 
@@ -812,6 +804,7 @@ function startEditorMode(){
     answerPreviewTextInput: document.getElementById("answerPreviewTextInput"),
   };
 
+  // baseUrl по умолчанию (на всякий случай)
   els.baseUrl.value = location.origin + location.pathname;
 
   let cfgDraft = deepClone(DEFAULT_CFG);
@@ -1086,7 +1079,15 @@ function startEditorMode(){
     return b64urlEncode(JSON.stringify(c));
   }
 
-  function buildPlayUrl(fromCfg){
+  // ПРЕДПРОСМОТР: всегда текущий файл, чтобы изменения кода были видны сразу
+  function buildPlayUrlForPreview(fromCfg){
+    const base = location.origin + location.pathname;
+    const enc = buildCfgParam(fromCfg);
+    els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
+    return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
+  }
+  // IFRAME: берём baseUrl (GitHub Pages)
+  function buildPlayUrlForIframe(fromCfg){
     const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
     const enc = buildCfgParam(fromCfg);
     els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
@@ -1094,8 +1095,6 @@ function startEditorMode(){
   }
 
   function updateAnswerPreview(){
-    if(!els.answerPreviewOrb) return;
-
     const size = Number(cfgDraft.answerSize || 86);
     els.answerPreviewOrb.style.width = size + "px";
     els.answerPreviewOrb.style.height = size + "px";
@@ -1114,10 +1113,7 @@ function startEditorMode(){
     const t = (els.answerPreviewTextInput?.value || "Текст варианта");
     els.answerPreviewText.textContent = t;
 
-    const fx = buildFxCss(cfgDraft);
-    const fxAns = (cfgDraft.fxToAnswers !== false) ? fx : "";
-
-    // подложка текста (в предпросмотре)
+    // подложка текста
     if(cfgDraft.answerTextBgOn){
       els.answerPreviewText.style.padding = "4px 8px";
       els.answerPreviewText.style.background = "rgba(0,0,0,.18)";
@@ -1128,9 +1124,21 @@ function startEditorMode(){
       els.answerPreviewText.style.border = "none";
     }
 
-    // применим эффекты (без накопления)
-    const clean = (s)=>s.replace(/text-shadow:[^;]*;?/g,"").replace(/-webkit-text-stroke:[^;]*;?/g,"");
-    els.answerPreviewText.style.cssText = clean(els.answerPreviewText.style.cssText) + fxAns;
+    // эффекты текста на ответы
+    const fx = buildFxCss(cfgDraft);
+    const fxAns = (cfgDraft.fxToAnswers !== false) ? fx : "";
+    // сбросим только то, что мы контролируем (просто перезапишем стили добавкой)
+    // (не делаем сложный парсинг)
+    els.answerPreviewText.style.webkitTextStroke = "";
+    els.answerPreviewText.style.textShadow = "";
+    if(fxAns.includes("text-shadow:")){
+      const m = fxAns.match(/text-shadow:([^;]+);/);
+      if(m) els.answerPreviewText.style.textShadow = m[1].trim();
+    }
+    if(fxAns.includes("-webkit-text-stroke:")){
+      const m2 = fxAns.match(/-webkit-text-stroke:([^;]+);/);
+      if(m2) els.answerPreviewText.style.webkitTextStroke = m2[1].trim();
+    }
   }
 
   function updateSilent(){
@@ -1141,12 +1149,14 @@ function startEditorMode(){
   function applyPreview(){
     readUIIntoDraft();
     cfgApplied = deepClone(cfgDraft);
-    const url = buildPlayUrl(cfgApplied);
+    const url = buildPlayUrlForPreview(cfgApplied);
+
+    // жёсткий сброс iframe (анти-кэш/анти-залипание)
     els.previewFrame.src = "about:blank";
     requestAnimationFrame(()=>{ els.previewFrame.src = url; });
   }
 
-  // bindings (обычные)
+  // bindings
   const bindInputs = [
     els.baseUrl,
     els.fontFamily, els.fontWeight, els.questionSize,
@@ -1170,7 +1180,6 @@ function startEditorMode(){
     el.addEventListener("change", updateSilent);
   });
 
-  // пары range/number
   pairBind(els.playerSizeR, els.playerSize, updateSilent);
   pairBind(els.answerSizeR, els.answerSize, updateSilent);
   pairBind(els.answerContentScaleR, els.answerContentScale, updateSilent);
@@ -1189,14 +1198,12 @@ function startEditorMode(){
     els.playerImgUrl.value = "";
     updateSilent();
   });
-
   els.answerCardImgFile.addEventListener("change", async ()=>{
     const f = els.answerCardImgFile.files?.[0]; if(!f) return;
     cfgDraft.answerCardImg = await fileToDataUrl(f);
     els.answerCardImgUrl.value = "";
     updateSilent();
   });
-
   els.bgImgFile.addEventListener("change", async ()=>{
     const f = els.bgImgFile.files?.[0]; if(!f) return;
     cfgDraft.bgImg = await fileToDataUrl(f);
@@ -1223,9 +1230,7 @@ function startEditorMode(){
   els.genIframeBtn.onclick = ()=>{
     readUIIntoDraft();
     cfgApplied = deepClone(cfgDraft);
-    const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
-    const enc = buildCfgParam(cfgApplied);
-    const src = `${base}?mode=play&cfg=${enc}`;
+    const src = buildPlayUrlForIframe(cfgApplied);
     els.codeBox.value =
 `<iframe src="${src}"
         style="width:100%;height:650px;border:0;background:transparent"
@@ -1312,11 +1317,13 @@ function startGameMode(){
   const root = document.getElementById("gameRoot");
 
   let cfg = deepClone(DEFAULT_CFG);
+  const params = new URLSearchParams(location.search);
   const cfgParam = params.get("cfg");
   if(cfgParam){
     try{ cfg = Object.assign(cfg, JSON.parse(b64urlDecode(cfgParam))); }catch(e){}
   }
   const CFG = normalizeCfg(cfg);
+
   const fxCSS = buildFxCss(CFG);
   const fxQ = CFG.fxToQuestion ? fxCSS : "";
   const fxHud = CFG.fxToHud ? fxCSS : "";
@@ -1349,6 +1356,20 @@ function startGameMode(){
         position:absolute; inset:0;
         z-index: 260;
         pointer-events:none;
+      }
+
+      #cfgDebug{
+        position:absolute; right:12px; bottom:12px;
+        z-index:700;
+        font-size:12px;
+        padding:8px 10px;
+        border-radius:999px;
+        background: rgba(0,0,0,.35);
+        border:1px solid rgba(255,255,255,.18);
+        color: rgba(255,255,255,.9);
+        pointer-events:none;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
       }
 
       #game{position:absolute; inset:0; z-index:1; font-family:${escapeCss(CFG.fontFamily)};}
@@ -1466,7 +1487,6 @@ function startGameMode(){
         pointer-events:none;
       }
 
-      /* буква убрана — остаётся только текст */
       .answer .txt{
         position:absolute;
         left:${CFG.answerTextX}%;
@@ -1630,6 +1650,8 @@ function startGameMode(){
       <div id="loseTint"></div>
       <canvas id="fxCanvas"></canvas>
 
+      <div id="cfgDebug"></div>
+
       <div id="game">
         <div id="topbar">
           <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
@@ -1719,6 +1741,11 @@ function startGameMode(){
   const fxCanvas = root.querySelector("#fxCanvas");
   const fxCtx = fxCanvas ? fxCanvas.getContext("2d") : null;
 
+  const dbg = root.querySelector("#cfgDebug");
+  if(dbg){
+    dbg.textContent = `CFG: playerSize=${CFG.playerSize} • answerSize=${CFG.answerSize} • textBg=${CFG.answerTextBgOn?"on":"off"} • img=${CFG.answerCardImg? "yes":"no"}`;
+  }
+
   if(CFG.playerImg) playerImg.style.backgroundImage = `url('${cssUrl(CFG.playerImg)}')`;
 
   /* ===== confetti ===== */
@@ -1793,7 +1820,6 @@ function startGameMode(){
   scene.addEventListener("pointerup", endTouch);
   scene.addEventListener("pointercancel", endTouch);
   scene.addEventListener("pointerleave", endTouch);
-
   window.addEventListener("touchmove", (e)=>{ e.preventDefault(); }, {passive:false});
 
   /* ===== audio ===== */
@@ -1971,7 +1997,10 @@ function startGameMode(){
       setTimeout(()=>loseTint.classList.remove("on"), 700);
     }
 
-    finalTitle.childNodes[finalTitle.childNodes.length-1].textContent = win ? " Победа!" : " Конец игры";
+    // заголовок
+    const textNode = finalTitle.childNodes[finalTitle.childNodes.length-1];
+    if(textNode) textNode.textContent = win ? " Победа!" : " Конец игры";
+
     finalText.textContent = win ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
                                 : `Жизни закончились. Очки: ${state.score}.`;
     showOverlay(finalOverlay, true);
