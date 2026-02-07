@@ -146,9 +146,9 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">v24: галочки (тень/неон/обводка) + регуляторы картинки ответа (позиция/размер).</div>
+        <div class="sub">v25: кнопка «Применить к предпросмотру» + iframe по применённым настройкам.</div>
       </div>
-      <div class="badge">v24 • one-file</div>
+      <div class="badge">v25 • one-file</div>
     </div>
 
     <div class="content">
@@ -220,8 +220,8 @@
 
         <div class="checkGrid" style="margin-bottom:10px;">
           <div class="checkItem"><input id="fxShadow" type="checkbox" /> <span>Тень</span></div>
-          <div class="checkItem"><input id="fxNeon" type="checkbox" /> <span>Неоновая подсветка</span></div>
-          <div class="checkItem"><input id="fxStroke" type="checkbox" /> <span>Обводка (контур)</span></div>
+          <div class="checkItem"><input id="fxNeon" type="checkbox" checked /> <span>Неоновая подсветка</span></div>
+          <div class="checkItem"><input id="fxStroke" type="checkbox" checked /> <span>Обводка (контур)</span></div>
           <div class="checkItem"><input id="fxStrokeNeon" type="checkbox" /> <span>Неоновая обводка</span></div>
         </div>
 
@@ -354,7 +354,7 @@
           </div>
         </div>
 
-        <div class="hint">Это именно те регуляторы, которые двигают и масштабируют картинку на ответах.</div>
+        <div class="hint">Регуляторы двигают и масштабируют картинку на ответах.</div>
       </div>
 
       <div class="section">
@@ -390,12 +390,13 @@
       </div>
 
       <div class="section">
-        <h3>Iframe</h3>
+        <h3>Предпросмотр и iframe</h3>
         <div class="row">
+          <button class="btn" id="applyPreviewBtn">Применить к предпросмотру</button>
           <button class="btn primary" id="genIframeBtn">Создать iframe</button>
           <button class="btn" id="copyIframeBtn">Скопировать</button>
         </div>
-        <div class="hint">После “Создать iframe” вставь код ниже в Genially.</div>
+        <div class="hint">Сначала нажми «Применить», проверь игру, потом создай iframe.</div>
         <textarea id="codeBox" readonly placeholder="Тут появится iframe..."></textarea>
       </div>
     </div>
@@ -450,7 +451,6 @@ const DEFAULT_CFG = {
   scoreSize: 24,
   livesSize: 24,
 
-  // NEW: checkbox-based text effects
   fxShadow: false,
   fxNeon: true,
   fxStroke: true,
@@ -474,7 +474,6 @@ const DEFAULT_CFG = {
   bgImg: "",
   transparentBg: true,
 
-  // answer image controls
   answerImgFit: "cover",
   answerImgOpacity: 0.55,
   answerImgScale: 1,
@@ -523,45 +522,37 @@ if(mode === "play"){
   startEditorMode();
 }
 
-/* ===== Text FX builders (checkbox based) ===== */
+/* ===== text fx (checkbox based) ===== */
 function buildFxCss(cfg){
   const s = clampInt(cfg.fxStrength, 1, 12, 7);
   const c = cfg.fxColor || "#ffd84a";
 
-  let shadowCss = "";
+  const shadowParts = [];
   if(cfg.fxShadow){
     const blur = 6 + s*2;
     const y = 2 + Math.floor(s/3);
-    shadowCss += `0 ${y}px ${blur}px ${hexToRgba("#000000",0.55)}`;
+    shadowParts.push(`0 ${y}px ${blur}px ${hexToRgba("#000000",0.55)}`);
   }
-
-  let neonCss = "";
   if(cfg.fxNeon){
     const b1=4+s*1.2, b2=10+s*2.2, b3=18+s*3.2;
-    neonCss += `0 0 ${b1}px ${hexToRgba(c,0.85)}, 0 0 ${b2}px ${hexToRgba(c,0.65)}, 0 0 ${b3}px ${hexToRgba(c,0.45)}`;
+    shadowParts.push(`0 0 ${b1}px ${hexToRgba(c,0.85)}`);
+    shadowParts.push(`0 0 ${b2}px ${hexToRgba(c,0.65)}`);
+    shadowParts.push(`0 0 ${b3}px ${hexToRgba(c,0.45)}`);
   }
 
-  const pieces = [];
-  if(shadowCss) pieces.push(shadowCss);
-  if(neonCss) pieces.push(neonCss);
-
-  const textShadow = pieces.length ? `text-shadow:${pieces.join(",")};` : "";
+  const textShadow = shadowParts.length ? `text-shadow:${shadowParts.join(",")};` : "";
 
   let stroke = "";
   if(cfg.fxStroke){
     const w = clampNum(cfg.strokeWidth, 0, 3, 0.6);
-    const sc = cfg.strokeColor || "#000000";
-    stroke += `-webkit-text-stroke:${w}px ${sc};`;
+    stroke += `-webkit-text-stroke:${w}px ${cfg.strokeColor || "#000000"};`;
   }
-
-  let strokeNeon = "";
   if(cfg.fxStrokeNeon){
-    // emulate neon outline by adding extra glow + ensure stroke exists
     const w = clampNum(cfg.strokeWidth, 0, 3, 0.8);
-    strokeNeon += `-webkit-text-stroke:${w}px ${c};`;
+    stroke += `-webkit-text-stroke:${w}px ${c};`;
   }
 
-  return `${textShadow}${stroke}${strokeNeon}`;
+  return `${textShadow}${stroke}`;
 }
 
 /* ================= EDITOR ================= */
@@ -578,17 +569,14 @@ function startEditorMode(){
     scoreSize: document.getElementById("scoreSize"),
     livesSize: document.getElementById("livesSize"),
 
-    // FX checkboxes
     fxShadow: document.getElementById("fxShadow"),
     fxNeon: document.getElementById("fxNeon"),
     fxStroke: document.getElementById("fxStroke"),
     fxStrokeNeon: document.getElementById("fxStrokeNeon"),
-
     fxToQuestion: document.getElementById("fxToQuestion"),
     fxToHud: document.getElementById("fxToHud"),
     fxToAnswers: document.getElementById("fxToAnswers"),
     fxToPoints: document.getElementById("fxToPoints"),
-
     fxColor: document.getElementById("fxColor"),
     fxStrength: document.getElementById("fxStrength"),
     strokeWidth: document.getElementById("strokeWidth"),
@@ -605,7 +593,6 @@ function startEditorMode(){
     bgImgFile: document.getElementById("bgImgFile"),
     transparentBg: document.getElementById("transparentBg"),
 
-    // answer image controls (range + number)
     answerImgFit: document.getElementById("answerImgFit"),
     answerImgOpacityR: document.getElementById("answerImgOpacityR"),
     answerImgOpacity: document.getElementById("answerImgOpacity"),
@@ -627,6 +614,7 @@ function startEditorMode(){
     addQuestionBtn: document.getElementById("addQuestionBtn"),
     resetQuestionsBtn: document.getElementById("resetQuestionsBtn"),
 
+    applyPreviewBtn: document.getElementById("applyPreviewBtn"),
     genIframeBtn: document.getElementById("genIframeBtn"),
     copyIframeBtn: document.getElementById("copyIframeBtn"),
     codeBox: document.getElementById("codeBox"),
@@ -637,55 +625,8 @@ function startEditorMode(){
 
   els.baseUrl.value = location.origin + location.pathname;
 
-  let cfg = deepClone(DEFAULT_CFG);
-
-  function cfgToUI(){
-    els.fontFamily.value = cfg.fontFamily;
-    els.fontWeight.value = String(cfg.fontWeight);
-    els.questionSize.value = cfg.questionSize;
-    els.questionColor.value = cfg.questionColor;
-
-    els.hudTextColor.value = cfg.hudTextColor;
-    els.hudPanelColor.value = cfg.hudPanelColor;
-    els.scoreSize.value = cfg.scoreSize;
-    els.livesSize.value = cfg.livesSize;
-
-    // FX
-    els.fxShadow.checked = !!cfg.fxShadow;
-    els.fxNeon.checked = !!cfg.fxNeon;
-    els.fxStroke.checked = !!cfg.fxStroke;
-    els.fxStrokeNeon.checked = !!cfg.fxStrokeNeon;
-
-    els.fxToQuestion.checked = cfg.fxToQuestion !== false;
-    els.fxToHud.checked = cfg.fxToHud !== false;
-    els.fxToAnswers.checked = cfg.fxToAnswers !== false;
-    els.fxToPoints.checked = cfg.fxToPoints !== false;
-
-    els.fxColor.value = cfg.fxColor || "#ffd84a";
-    els.fxStrength.value = cfg.fxStrength ?? 7;
-    els.strokeWidth.value = cfg.strokeWidth ?? 0.6;
-    els.strokeColor.value = cfg.strokeColor || "#000000";
-
-    els.progressHeight.value = cfg.progressHeight;
-    els.progressColor.value = cfg.progressColor;
-
-    els.playerImgUrl.value = cfg.playerImg && cfg.playerImg.startsWith("http") ? cfg.playerImg : "";
-    els.answerImgUrl.value = cfg.answerImg && cfg.answerImg.startsWith("http") ? cfg.answerImg : "";
-    els.bgImgUrl.value = cfg.bgImg && cfg.bgImg.startsWith("http") ? cfg.bgImg : "";
-    els.transparentBg.value = cfg.transparentBg ? "1" : "0";
-
-    els.answerImgFit.value = cfg.answerImgFit || "cover";
-    syncPair(els.answerImgOpacityR, els.answerImgOpacity, cfg.answerImgOpacity ?? 0.55);
-    syncPair(els.answerImgScaleR, els.answerImgScale, cfg.answerImgScale ?? 1);
-    syncPair(els.answerImgBlurR, els.answerImgBlur, cfg.answerImgBlur ?? 0);
-    syncPair(els.answerImgPosXR, els.answerImgPosX, cfg.answerImgPosX ?? 50);
-    syncPair(els.answerImgPosYR, els.answerImgPosY, cfg.answerImgPosY ?? 50);
-
-    els.livesCount.value = cfg.livesCount;
-    els.pointsPerCorrect.value = cfg.pointsPerCorrect;
-    els.cooldownTurns.value = cfg.cooldownTurns;
-    els.playerSpeed.value = cfg.playerSpeed;
-  }
+  let cfgDraft = deepClone(DEFAULT_CFG);     // текущие изменения в форме
+  let cfgApplied = deepClone(DEFAULT_CFG);   // последняя применённая конфигурация (для предпросмотра/iframe)
 
   function syncPair(rangeEl, numberEl, v){
     rangeEl.value = String(v);
@@ -696,6 +637,51 @@ function startEditorMode(){
     numberEl.addEventListener("input", ()=>{ rangeEl.value = numberEl.value; onChange(); });
     rangeEl.addEventListener("change", ()=>{ numberEl.value = rangeEl.value; onChange(); });
     numberEl.addEventListener("change", ()=>{ rangeEl.value = numberEl.value; onChange(); });
+  }
+
+  function cfgToUI(){
+    els.fontFamily.value = cfgDraft.fontFamily;
+    els.fontWeight.value = String(cfgDraft.fontWeight);
+    els.questionSize.value = cfgDraft.questionSize;
+    els.questionColor.value = cfgDraft.questionColor;
+    els.hudTextColor.value = cfgDraft.hudTextColor;
+    els.hudPanelColor.value = cfgDraft.hudPanelColor;
+    els.scoreSize.value = cfgDraft.scoreSize;
+    els.livesSize.value = cfgDraft.livesSize;
+
+    els.fxShadow.checked = !!cfgDraft.fxShadow;
+    els.fxNeon.checked = !!cfgDraft.fxNeon;
+    els.fxStroke.checked = !!cfgDraft.fxStroke;
+    els.fxStrokeNeon.checked = !!cfgDraft.fxStrokeNeon;
+    els.fxToQuestion.checked = cfgDraft.fxToQuestion !== false;
+    els.fxToHud.checked = cfgDraft.fxToHud !== false;
+    els.fxToAnswers.checked = cfgDraft.fxToAnswers !== false;
+    els.fxToPoints.checked = cfgDraft.fxToPoints !== false;
+
+    els.fxColor.value = cfgDraft.fxColor || "#ffd84a";
+    els.fxStrength.value = cfgDraft.fxStrength ?? 7;
+    els.strokeWidth.value = cfgDraft.strokeWidth ?? 0.6;
+    els.strokeColor.value = cfgDraft.strokeColor || "#000000";
+
+    els.progressHeight.value = cfgDraft.progressHeight;
+    els.progressColor.value = cfgDraft.progressColor;
+
+    els.playerImgUrl.value = cfgDraft.playerImg && cfgDraft.playerImg.startsWith("http") ? cfgDraft.playerImg : "";
+    els.answerImgUrl.value = cfgDraft.answerImg && cfgDraft.answerImg.startsWith("http") ? cfgDraft.answerImg : "";
+    els.bgImgUrl.value = cfgDraft.bgImg && cfgDraft.bgImg.startsWith("http") ? cfgDraft.bgImg : "";
+    els.transparentBg.value = cfgDraft.transparentBg ? "1" : "0";
+
+    els.answerImgFit.value = cfgDraft.answerImgFit || "cover";
+    syncPair(els.answerImgOpacityR, els.answerImgOpacity, cfgDraft.answerImgOpacity ?? 0.55);
+    syncPair(els.answerImgScaleR, els.answerImgScale, cfgDraft.answerImgScale ?? 1);
+    syncPair(els.answerImgBlurR, els.answerImgBlur, cfgDraft.answerImgBlur ?? 0);
+    syncPair(els.answerImgPosXR, els.answerImgPosX, cfgDraft.answerImgPosX ?? 50);
+    syncPair(els.answerImgPosYR, els.answerImgPosY, cfgDraft.answerImgPosY ?? 50);
+
+    els.livesCount.value = cfgDraft.livesCount;
+    els.pointsPerCorrect.value = cfgDraft.pointsPerCorrect;
+    els.cooldownTurns.value = cfgDraft.cooldownTurns;
+    els.playerSpeed.value = cfgDraft.playerSpeed;
   }
 
   function nextLabel(arr){
@@ -714,7 +700,7 @@ function startEditorMode(){
 
   function renderQuestions(){
     els.questionsList.innerHTML = "";
-    cfg.questions.forEach((q, qi)=>{
+    cfgDraft.questions.forEach((q, qi)=>{
       const wrap = document.createElement("div");
       wrap.className = "qitem";
 
@@ -728,9 +714,9 @@ function startEditorMode(){
       delQ.className = "btn miniBtn danger";
       delQ.textContent = "Удалить";
       delQ.onclick = ()=>{
-        cfg.questions.splice(qi,1);
-        if(cfg.questions.length === 0) cfg.questions.push(makeEmptyQuestion());
-        renderQuestions(); updateAll();
+        cfgDraft.questions.splice(qi,1);
+        if(cfgDraft.questions.length === 0) cfgDraft.questions.push(makeEmptyQuestion());
+        renderQuestions();
       };
       top.appendChild(title); top.appendChild(delQ);
 
@@ -738,12 +724,12 @@ function startEditorMode(){
       qInput.type = "text";
       qInput.value = q.q || "";
       qInput.placeholder = "Текст вопроса...";
-      qInput.oninput = ()=>{ cfg.questions[qi].q = qInput.value; updateAll(); };
+      qInput.oninput = ()=>{ cfgDraft.questions[qi].q = qInput.value; };
 
       const answers = document.createElement("div");
       answers.className = "answers";
 
-      cfg.questions[qi].answers.forEach((a, ai)=>{
+      cfgDraft.questions[qi].answers.forEach((a, ai)=>{
         const row = document.createElement("div");
         row.className = "ansRow";
 
@@ -751,13 +737,13 @@ function startEditorMode(){
         lab.type = "text";
         lab.value = a.label || "";
         lab.placeholder = "A";
-        lab.oninput = ()=>{ cfg.questions[qi].answers[ai].label = lab.value; updateAll(); };
+        lab.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].label = lab.value; };
 
         const txt = document.createElement("input");
         txt.type = "text";
         txt.value = a.text || "";
         txt.placeholder = "Текст варианта...";
-        txt.oninput = ()=>{ cfg.questions[qi].answers[ai].text = txt.value; updateAll(); };
+        txt.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].text = txt.value; };
 
         const right = document.createElement("div");
         right.className = "chk";
@@ -765,9 +751,9 @@ function startEditorMode(){
         chk.type = "checkbox";
         chk.checked = !!a.correct;
         chk.onchange = ()=>{
-          cfg.questions[qi].answers.forEach(x=>x.correct=false);
-          cfg.questions[qi].answers[ai].correct = chk.checked;
-          renderQuestions(); updateAll();
+          cfgDraft.questions[qi].answers.forEach(x=>x.correct=false);
+          cfgDraft.questions[qi].answers[ai].correct = chk.checked;
+          renderQuestions();
         };
         right.appendChild(chk);
         right.appendChild(Object.assign(document.createElement("span"), {textContent:"верный"}));
@@ -784,18 +770,18 @@ function startEditorMode(){
       addA.className = "btn miniBtn";
       addA.textContent = "+ Вариант";
       addA.onclick = ()=>{
-        cfg.questions[qi].answers.push({label: nextLabel(cfg.questions[qi].answers), text:"", correct:false});
-        renderQuestions(); updateAll();
+        cfgDraft.questions[qi].answers.push({label: nextLabel(cfgDraft.questions[qi].answers), text:"", correct:false});
+        renderQuestions();
       };
 
       const delA = document.createElement("button");
       delA.className = "btn miniBtn danger";
       delA.textContent = "− Вариант";
       delA.onclick = ()=>{
-        if(cfg.questions[qi].answers.length <= 2) return;
-        cfg.questions[qi].answers.pop();
-        if(!cfg.questions[qi].answers.some(x=>x.correct)) cfg.questions[qi].answers[0].correct = true;
-        renderQuestions(); updateAll();
+        if(cfgDraft.questions[qi].answers.length <= 2) return;
+        cfgDraft.questions[qi].answers.pop();
+        if(!cfgDraft.questions[qi].answers.some(x=>x.correct)) cfgDraft.questions[qi].answers[0].correct = true;
+        renderQuestions();
       };
 
       qButtons.appendChild(addA); qButtons.appendChild(delA);
@@ -819,76 +805,82 @@ function startEditorMode(){
     });
   }
 
-  function readUIIntoCfg(){
-    cfg.fontFamily = els.fontFamily.value;
-    cfg.fontWeight = Number(els.fontWeight.value || 900);
-    cfg.questionSize = Number(els.questionSize.value || 24);
-    cfg.questionColor = els.questionColor.value;
+  function readUIIntoDraft(){
+    cfgDraft.fontFamily = els.fontFamily.value;
+    cfgDraft.fontWeight = Number(els.fontWeight.value || 900);
+    cfgDraft.questionSize = Number(els.questionSize.value || 24);
+    cfgDraft.questionColor = els.questionColor.value;
 
-    cfg.hudTextColor = els.hudTextColor.value;
-    cfg.hudPanelColor = els.hudPanelColor.value;
-    cfg.scoreSize = Number(els.scoreSize.value || 24);
-    cfg.livesSize = Number(els.livesSize.value || 24);
+    cfgDraft.hudTextColor = els.hudTextColor.value;
+    cfgDraft.hudPanelColor = els.hudPanelColor.value;
+    cfgDraft.scoreSize = Number(els.scoreSize.value || 24);
+    cfgDraft.livesSize = Number(els.livesSize.value || 24);
 
-    cfg.fxShadow = els.fxShadow.checked;
-    cfg.fxNeon = els.fxNeon.checked;
-    cfg.fxStroke = els.fxStroke.checked;
-    cfg.fxStrokeNeon = els.fxStrokeNeon.checked;
+    cfgDraft.fxShadow = els.fxShadow.checked;
+    cfgDraft.fxNeon = els.fxNeon.checked;
+    cfgDraft.fxStroke = els.fxStroke.checked;
+    cfgDraft.fxStrokeNeon = els.fxStrokeNeon.checked;
 
-    cfg.fxToQuestion = els.fxToQuestion.checked;
-    cfg.fxToHud = els.fxToHud.checked;
-    cfg.fxToAnswers = els.fxToAnswers.checked;
-    cfg.fxToPoints = els.fxToPoints.checked;
+    cfgDraft.fxToQuestion = els.fxToQuestion.checked;
+    cfgDraft.fxToHud = els.fxToHud.checked;
+    cfgDraft.fxToAnswers = els.fxToAnswers.checked;
+    cfgDraft.fxToPoints = els.fxToPoints.checked;
 
-    cfg.fxColor = els.fxColor.value;
-    cfg.fxStrength = Number(els.fxStrength.value || 7);
-    cfg.strokeWidth = Number(els.strokeWidth.value || 0.6);
-    cfg.strokeColor = els.strokeColor.value;
+    cfgDraft.fxColor = els.fxColor.value;
+    cfgDraft.fxStrength = Number(els.fxStrength.value || 7);
+    cfgDraft.strokeWidth = Number(els.strokeWidth.value || 0.6);
+    cfgDraft.strokeColor = els.strokeColor.value;
 
-    cfg.progressHeight = Number(els.progressHeight.value || 30);
-    cfg.progressColor = els.progressColor.value;
+    cfgDraft.progressHeight = Number(els.progressHeight.value || 30);
+    cfgDraft.progressColor = els.progressColor.value;
 
-    cfg.transparentBg = els.transparentBg.value === "1";
+    cfgDraft.transparentBg = els.transparentBg.value === "1";
 
-    cfg.answerImgFit = els.answerImgFit.value;
-    cfg.answerImgOpacity = Number(els.answerImgOpacity.value || 0.55);
-    cfg.answerImgScale = Number(els.answerImgScale.value || 1);
-    cfg.answerImgBlur = Number(els.answerImgBlur.value || 0);
-    cfg.answerImgPosX = Number(els.answerImgPosX.value || 50);
-    cfg.answerImgPosY = Number(els.answerImgPosY.value || 50);
+    cfgDraft.answerImgFit = els.answerImgFit.value;
+    cfgDraft.answerImgOpacity = Number(els.answerImgOpacity.value || 0.55);
+    cfgDraft.answerImgScale = Number(els.answerImgScale.value || 1);
+    cfgDraft.answerImgBlur = Number(els.answerImgBlur.value || 0);
+    cfgDraft.answerImgPosX = Number(els.answerImgPosX.value || 50);
+    cfgDraft.answerImgPosY = Number(els.answerImgPosY.value || 50);
 
-    cfg.livesCount = Number(els.livesCount.value || 3);
-    cfg.pointsPerCorrect = Number(els.pointsPerCorrect.value || 10);
-    cfg.cooldownTurns = Number(els.cooldownTurns.value || 3);
-    cfg.playerSpeed = Number(els.playerSpeed.value || 7);
+    cfgDraft.livesCount = Number(els.livesCount.value || 3);
+    cfgDraft.pointsPerCorrect = Number(els.pointsPerCorrect.value || 10);
+    cfgDraft.cooldownTurns = Number(els.cooldownTurns.value || 3);
+    cfgDraft.playerSpeed = Number(els.playerSpeed.value || 7);
 
-    if(els.playerImgUrl.value.trim().startsWith("http")) cfg.playerImg = els.playerImgUrl.value.trim();
-    if(els.answerImgUrl.value.trim().startsWith("http")) cfg.answerImg = els.answerImgUrl.value.trim();
-    if(els.bgImgUrl.value.trim().startsWith("http")) cfg.bgImg = els.bgImgUrl.value.trim();
+    if(els.playerImgUrl.value.trim().startsWith("http")) cfgDraft.playerImg = els.playerImgUrl.value.trim();
+    if(els.answerImgUrl.value.trim().startsWith("http")) cfgDraft.answerImg = els.answerImgUrl.value.trim();
+    if(els.bgImgUrl.value.trim().startsWith("http")) cfgDraft.bgImg = els.bgImgUrl.value.trim();
   }
 
-  function buildCfgParam(){
-    if(!cfg.questions.length) cfg.questions = [makeEmptyQuestion()];
-    cfg.questions.forEach(q=>{
+  function buildCfgParam(fromCfg){
+    const c = deepClone(fromCfg);
+    if(!c.questions?.length) c.questions = [makeEmptyQuestion()];
+    c.questions.forEach(q=>{
       if(!q.answers?.length) q.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
       if(!q.answers.some(a=>a.correct)) q.answers[0].correct = true;
     });
-    return b64urlEncode(JSON.stringify(cfg));
+    return b64urlEncode(JSON.stringify(c));
   }
 
-  function buildPlayUrl(){
+  function buildPlayUrl(fromCfg){
     const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
-    const enc = buildCfgParam();
+    const enc = buildCfgParam(fromCfg);
     els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
     return `${base}?mode=play&cfg=${enc}`;
   }
 
-  function updateAll(){
-    readUIIntoCfg();
-    els.previewFrame.src = buildPlayUrl();
+  function updateSilent(){
+    readUIIntoDraft(); // только обновляем draft, не трогаем iframe
   }
 
-  // simple bindings
+  function applyPreview(){
+    readUIIntoDraft();
+    cfgApplied = deepClone(cfgDraft);
+    els.previewFrame.src = buildPlayUrl(cfgApplied);
+  }
+
+  // bindings (silent)
   const bindInputs = [
     els.baseUrl, els.fontFamily, els.fontWeight,
     els.questionSize, els.questionColor,
@@ -903,47 +895,52 @@ function startEditorMode(){
     els.playerImgUrl, els.answerImgUrl, els.bgImgUrl
   ];
   bindInputs.forEach(el=>{
-    el.addEventListener("input", updateAll);
-    el.addEventListener("change", updateAll);
+    el.addEventListener("input", updateSilent);
+    el.addEventListener("change", updateSilent);
   });
 
-  // range/number pairs
-  pairBind(els.answerImgOpacityR, els.answerImgOpacity, updateAll);
-  pairBind(els.answerImgScaleR, els.answerImgScale, updateAll);
-  pairBind(els.answerImgBlurR, els.answerImgBlur, updateAll);
-  pairBind(els.answerImgPosXR, els.answerImgPosX, updateAll);
-  pairBind(els.answerImgPosYR, els.answerImgPosY, updateAll);
+  // range/number pairs (silent)
+  pairBind(els.answerImgOpacityR, els.answerImgOpacity, updateSilent);
+  pairBind(els.answerImgScaleR, els.answerImgScale, updateSilent);
+  pairBind(els.answerImgBlurR, els.answerImgBlur, updateSilent);
+  pairBind(els.answerImgPosXR, els.answerImgPosX, updateSilent);
+  pairBind(els.answerImgPosYR, els.answerImgPosY, updateSilent);
 
   els.playerImgFile.addEventListener("change", async ()=>{
     const f = els.playerImgFile.files?.[0]; if(!f) return;
-    cfg.playerImg = await fileToDataUrl(f);
+    cfgDraft.playerImg = await fileToDataUrl(f);
     els.playerImgUrl.value = "";
-    updateAll();
   });
   els.answerImgFile.addEventListener("change", async ()=>{
     const f = els.answerImgFile.files?.[0]; if(!f) return;
-    cfg.answerImg = await fileToDataUrl(f);
+    cfgDraft.answerImg = await fileToDataUrl(f);
     els.answerImgUrl.value = "";
-    updateAll();
   });
   els.bgImgFile.addEventListener("change", async ()=>{
     const f = els.bgImgFile.files?.[0]; if(!f) return;
-    cfg.bgImg = await fileToDataUrl(f);
+    cfgDraft.bgImg = await fileToDataUrl(f);
     els.bgImgUrl.value = "";
-    updateAll();
   });
 
   els.addQuestionBtn.onclick = ()=>{
-    cfg.questions.push(makeEmptyQuestion());
-    renderQuestions(); updateAll();
+    cfgDraft.questions.push(makeEmptyQuestion());
+    renderQuestions();
   };
   els.resetQuestionsBtn.onclick = ()=>{
-    cfg = deepClone(DEFAULT_CFG);
-    cfgToUI(); renderQuestions(); updateAll();
+    cfgDraft = deepClone(DEFAULT_CFG);
+    cfgApplied = deepClone(DEFAULT_CFG);
+    cfgToUI(); renderQuestions();
+    els.codeBox.value = "";
+    applyPreview();
   };
 
+  // APPLY preview button
+  els.applyPreviewBtn.onclick = ()=>{ applyPreview(); };
+
+  // generate iframe ALWAYS from applied cfg (or apply if never applied)
   els.genIframeBtn.onclick = ()=>{
-    const src = buildPlayUrl();
+    if(!cfgApplied) applyPreview();
+    const src = buildPlayUrl(cfgApplied);
     els.codeBox.value =
 `<iframe src="${src}"
         style="width:100%;height:650px;border:0;background:transparent"
@@ -963,9 +960,11 @@ function startEditorMode(){
     }
   };
 
+  // init
   cfgToUI();
   renderQuestions();
-  updateAll();
+  updateSilent();
+  applyPreview(); // первый предпросмотр (по дефолту)
 }
 
 /* ================= GAME ================= */
@@ -1339,7 +1338,6 @@ function startGameMode(){
   let state = null;
   let pendingTimer = null;
 
-  // sound
   let audioCtx = null, unlocked = false;
   function ensureAudio(){ if(audioCtx) return; const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return; audioCtx = new Ctx(); }
   async function unlockAudio(){ ensureAudio(); if(!audioCtx) return; if(audioCtx.state==="suspended"){ try{await audioCtx.resume();}catch(e){} } unlocked = true; }
