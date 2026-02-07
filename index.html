@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Answer v4</title>
+<title>Catch the Answer v5</title>
 
 <style>
   :root{
@@ -22,8 +22,7 @@
     --good: #4cff9e;
     --bad:  #ff6b6b;
 
-    /* игрок и ответы одного размера */
-    --size: 78px;
+    --size: 78px; /* игрок и ответы одного размера */
   }
 
   html,body{
@@ -55,7 +54,7 @@
   .pill .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
   .pill .value{font-size:16px;font-weight:1100}
 
-  /* Вопрос по центру */
+  /* Вопрос по центру в рамочке */
   #questionWrap{
     position:absolute; top:12px; left:50%;
     transform:translateX(-50%);
@@ -124,8 +123,6 @@
     text-align:center;
     gap:4px;
   }
-
-  /* ВАЖНО: делаем текст заметным */
   .answer .lab{
     font-weight:1100;
     font-size:18px;
@@ -137,8 +134,8 @@
     font-size:12px;
     line-height:1.05;
     opacity:1;
-    max-width: 140px;      /* шире, чем круг, не режем */
-    white-space:normal;     /* разрешаем переносы */
+    max-width: 140px;
+    white-space:normal;
     word-break:break-word;
   }
 
@@ -169,6 +166,44 @@
   }
   #feedback.show{ opacity:1; }
 
+  /* Прогресс-бар снизу */
+  #progressWrap{
+    position:absolute;
+    left:12px; right:12px; bottom:12px;
+    z-index:18;
+    pointer-events:none;
+  }
+  #progressBar{
+    height: 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    position:relative;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  #progressFill{
+    height:100%;
+    width:0%;
+    background: rgba(120,90,255,.65);
+    border-radius: 999px;
+    transition: width .25s ease;
+  }
+  #progressText{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:1000;
+    color: rgba(255,255,255,.92);
+    text-shadow: 0 8px 18px rgba(0,0,0,.45);
+    letter-spacing:.2px;
+  }
+
   #final{
     position:absolute; inset:0;
     background: rgba(0,0,0,.78);
@@ -195,8 +230,8 @@
   }
 
   #version{
-    position:absolute; bottom:10px; right:12px;
-    font-size:12px; opacity:.55; pointer-events:none;
+    position:absolute; bottom:34px; right:12px;
+    font-size:12px; opacity:.45; pointer-events:none;
   }
 </style>
 </head>
@@ -223,13 +258,20 @@
 
   <div id="feedback"></div>
 
+  <div id="progressWrap">
+    <div id="progressBar">
+      <div id="progressFill"></div>
+      <div id="progressText">Вопрос 1 из 1</div>
+    </div>
+  </div>
+
   <div id="final">
     <h1 id="finalTitle">—</h1>
     <div class="small" id="finalText"></div>
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v4</div>
+  <div id="version">v5</div>
 </div>
 
 <script>
@@ -248,13 +290,18 @@ const GAME_CONFIG = {
 
   sound: {
     enabled: true,
-    ok:  { type:"ok",  volume: 0.25 },
-    bad: { type:"bad", volume: 0.30 },
+    ok:  { volume: 0.25 },
+    bad: { volume: 0.30 },
+  },
+
+  progress: {
+    show: true,
+    text: (current,total)=>`Вопрос ${current} из ${total}`,
   },
 
   layout: {
     paddingTop: 92,
-    paddingBottom: 34,
+    paddingBottom: 70,   // ⬅️ оставляем место снизу под прогресс
     minDistY: 90,
     startX: 160,
     xSpreadMin: 160,
@@ -287,6 +334,11 @@ const questionBox = document.getElementById("questionBox");
 const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
 const feedback = document.getElementById("feedback");
+
+const progressWrap = document.getElementById("progressWrap");
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
+
 const final = document.getElementById("final");
 const finalTitle = document.getElementById("finalTitle");
 const finalText = document.getElementById("finalText");
@@ -295,7 +347,7 @@ let keys = {};
 let raf = null;
 let state = null;
 
-/* ---------- SOUND (WebAudio, без файлов) ---------- */
+/* ---------- SOUND (WebAudio) ---------- */
 let audioCtx = null;
 let audioUnlocked = false;
 
@@ -306,61 +358,46 @@ function ensureAudio(){
   if(!Ctx) return;
   audioCtx = new Ctx();
 }
-
 async function unlockAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
   ensureAudio();
   if(!audioCtx) return;
-  if(audioCtx.state === "suspended") {
-    try { await audioCtx.resume(); } catch(e){}
-  }
+  if(audioCtx.state === "suspended") { try{ await audioCtx.resume(); } catch(e){} }
   audioUnlocked = true;
 }
-
 function beepOk(){
   if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
   const v = GAME_CONFIG.sound.ok.volume ?? 0.25;
-
   const now = audioCtx.currentTime;
-  const o1 = audioCtx.createOscillator();
-  const g  = audioCtx.createGain();
-
-  o1.type = "sine";
-  o1.frequency.setValueAtTime(660, now);
-  o1.frequency.exponentialRampToValueAtTime(990, now + 0.12);
-
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type="sine";
+  o.frequency.setValueAtTime(660, now);
+  o.frequency.exponentialRampToValueAtTime(990, now + 0.12);
   g.gain.setValueAtTime(0.0001, now);
   g.gain.exponentialRampToValueAtTime(v, now + 0.01);
   g.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
-
-  o1.connect(g); g.connect(audioCtx.destination);
-  o1.start(now);
-  o1.stop(now + 0.2);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(now); o.stop(now + 0.2);
 }
-
 function beepBad(){
   if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
   const v = GAME_CONFIG.sound.bad.volume ?? 0.30;
-
   const now = audioCtx.currentTime;
   const o1 = audioCtx.createOscillator();
   const o2 = audioCtx.createOscillator();
   const g  = audioCtx.createGain();
-
-  o1.type = "square";
-  o2.type = "sawtooth";
+  o1.type="square";  o2.type="sawtooth";
   o1.frequency.setValueAtTime(220, now);
   o2.frequency.setValueAtTime(170, now);
-
   g.gain.setValueAtTime(0.0001, now);
   g.gain.exponentialRampToValueAtTime(v, now + 0.01);
   g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-
   o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
   o1.start(now); o2.start(now);
   o1.stop(now + 0.24); o2.stop(now + 0.24);
 }
-/* -------------------------------------------------- */
+/* ------------------------------------- */
 
 function initState(){
   state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
@@ -368,10 +405,25 @@ function initState(){
 
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
 
+function updateProgress(){
+  const total = GAME_CONFIG.questions.length;
+  const current = Math.min(state.qIndex + 1, total);
+  if(!GAME_CONFIG.progress.show){
+    progressWrap.style.display = "none";
+    return;
+  }
+  progressWrap.style.display = "block";
+
+  const pct = total ? Math.round(((current-1) / total) * 100) : 0;
+  progressFill.style.width = pct + "%";
+  progressText.textContent = GAME_CONFIG.progress.text(current, total);
+}
+
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
   questionBox.textContent = state.qIndex < GAME_CONFIG.questions.length ? GAME_CONFIG.questions[state.qIndex].q : "";
+  updateProgress();
 }
 
 function clearAnswers(){
@@ -410,14 +462,13 @@ function spawnAnswersForQuestion(){
     el.className = "orb answer";
     el.dataset.correct = a.correct ? "1":"0";
 
-    // ✅ ВАРИАНТЫ ТОЧНО ЕСТЬ: буква + текст
     const lab = document.createElement("div");
     lab.className = "lab";
     lab.textContent = a.label;
 
     const txt = document.createElement("div");
     txt.className = "txt";
-    txt.textContent = a.text; // <-- важное: тут текст варианта
+    txt.textContent = a.text;
 
     el.appendChild(lab);
     el.appendChild(txt);
@@ -558,7 +609,6 @@ window.addEventListener("keydown", async (e)=>{
   if(!audioUnlocked) await unlockAudio();
 });
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
-
 window.addEventListener("pointerdown", async ()=>{
   if(!audioUnlocked) await unlockAudio();
 }, {passive:true});
