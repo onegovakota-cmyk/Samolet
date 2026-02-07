@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Answer v3</title>
+<title>Catch the Answer v4</title>
 
 <style>
   :root{
@@ -15,18 +15,15 @@
     --panel-brd: rgba(255,255,255,.14);
     --shadow: 0 14px 50px rgba(0,0,0,.35);
 
-    --accent: rgba(120,90,255,.95);
-
-    /* все ответы одинаковые, одного цвета */
     --answer-bg: rgba(255,255,255,.16);
-    --answer-brd: rgba(255,255,255,.18);
-    --answer-text: rgba(255,255,255,.92);
+    --answer-brd: rgba(255,255,255,.22);
+    --answer-text: rgba(255,255,255,.95);
 
     --good: #4cff9e;
     --bad:  #ff6b6b;
 
     /* игрок и ответы одного размера */
-    --size: 64px;
+    --size: 78px;
   }
 
   html,body{
@@ -58,7 +55,7 @@
   .pill .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
   .pill .value{font-size:16px;font-weight:1100}
 
-  /* Вопрос по центру в рамочке */
+  /* Вопрос по центру */
   #questionWrap{
     position:absolute; top:12px; left:50%;
     transform:translateX(-50%);
@@ -82,21 +79,23 @@
     text-overflow:ellipsis;
   }
 
-  /* Сцена */
+  /* Scene */
   #scene{position:absolute; inset:0; overflow:hidden;}
 
-  /* Игрок и ответы */
+  /* Player + Answers */
   .orb{
     position:absolute;
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
-    display:flex; align-items:center; justify-content:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     user-select:none;
   }
 
   #player{
-    left:78px;
+    left:84px;
     top:50%;
     transform:translate(-50%,-50%);
     background: rgba(120,90,255,.22);
@@ -116,31 +115,31 @@
     border: 1px solid var(--answer-brd);
     box-shadow: 0 14px 45px rgba(0,0,0,.28);
     color: var(--answer-text);
+    padding: 8px 9px;
+    box-sizing:border-box;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding: 6px 8px;
-    box-sizing:border-box;
     text-align:center;
+    gap:4px;
   }
+
+  /* ВАЖНО: делаем текст заметным */
   .answer .lab{
     font-weight:1100;
-    font-size:16px;
+    font-size:18px;
     line-height:1;
-    letter-spacing:.6px;
-    margin-bottom:2px;
+    letter-spacing:.8px;
   }
   .answer .txt{
     font-weight:900;
-    font-size:10px;
-    line-height:1.1;
-    opacity:.9;
-    max-width: 92px;            /* переносы */
-    display:-webkit-box;
-    -webkit-line-clamp: 2;      /* максимум 2 строки */
-    -webkit-box-orient: vertical;
-    overflow:hidden;
+    font-size:12px;
+    line-height:1.05;
+    opacity:1;
+    max-width: 140px;      /* шире, чем круг, не режем */
+    white-space:normal;     /* разрешаем переносы */
+    word-break:break-word;
   }
 
   /* +очки */
@@ -160,7 +159,6 @@
     100% { opacity:0; transform:translate(-50%,-105%) scale(1.0); }
   }
 
-  /* Фидбек */
   #feedback{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
@@ -171,7 +169,6 @@
   }
   #feedback.show{ opacity:1; }
 
-  /* Финал */
   #final{
     position:absolute; inset:0;
     background: rgba(0,0,0,.78);
@@ -199,8 +196,7 @@
 
   #version{
     position:absolute; bottom:10px; right:12px;
-    font-size:12px; opacity:.55;
-    pointer-events:none;
+    font-size:12px; opacity:.55; pointer-events:none;
   }
 </style>
 </head>
@@ -233,7 +229,7 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v3</div>
+  <div id="version">v4</div>
 </div>
 
 <script>
@@ -250,20 +246,26 @@ const GAME_CONFIG = {
     popText: (pts)=>`+${pts}`,
   },
 
+  sound: {
+    enabled: true,
+    ok:  { type:"ok",  volume: 0.25 },
+    bad: { type:"bad", volume: 0.30 },
+  },
+
   layout: {
     paddingTop: 92,
     paddingBottom: 34,
-    minDistY: 92,
-    startX: 140,
-    xSpreadMin: 130,
-    xSpreadMax: 210,
+    minDistY: 90,
+    startX: 160,
+    xSpreadMin: 160,
+    xSpreadMax: 240,
   },
 
   questions: [
     { q: "Столица Франции?", answers: [
-      { label:"A", text:"Париж", correct:true  },
-      { label:"B", text:"Рим",   correct:false },
-      { label:"C", text:"Берлин",correct:false }
+      { label:"A", text:"Париж",  correct:true  },
+      { label:"B", text:"Рим",    correct:false },
+      { label:"C", text:"Берлин", correct:false }
     ]},
     { q: "2 + 2 = ?", answers: [
       { label:"A", text:"3", correct:false },
@@ -292,6 +294,73 @@ const finalText = document.getElementById("finalText");
 let keys = {};
 let raf = null;
 let state = null;
+
+/* ---------- SOUND (WebAudio, без файлов) ---------- */
+let audioCtx = null;
+let audioUnlocked = false;
+
+function ensureAudio(){
+  if(!GAME_CONFIG.sound.enabled) return;
+  if(audioCtx) return;
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if(!Ctx) return;
+  audioCtx = new Ctx();
+}
+
+async function unlockAudio(){
+  if(!GAME_CONFIG.sound.enabled) return;
+  ensureAudio();
+  if(!audioCtx) return;
+  if(audioCtx.state === "suspended") {
+    try { await audioCtx.resume(); } catch(e){}
+  }
+  audioUnlocked = true;
+}
+
+function beepOk(){
+  if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
+  const v = GAME_CONFIG.sound.ok.volume ?? 0.25;
+
+  const now = audioCtx.currentTime;
+  const o1 = audioCtx.createOscillator();
+  const g  = audioCtx.createGain();
+
+  o1.type = "sine";
+  o1.frequency.setValueAtTime(660, now);
+  o1.frequency.exponentialRampToValueAtTime(990, now + 0.12);
+
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.exponentialRampToValueAtTime(v, now + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+  o1.connect(g); g.connect(audioCtx.destination);
+  o1.start(now);
+  o1.stop(now + 0.2);
+}
+
+function beepBad(){
+  if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
+  const v = GAME_CONFIG.sound.bad.volume ?? 0.30;
+
+  const now = audioCtx.currentTime;
+  const o1 = audioCtx.createOscillator();
+  const o2 = audioCtx.createOscillator();
+  const g  = audioCtx.createGain();
+
+  o1.type = "square";
+  o2.type = "sawtooth";
+  o1.frequency.setValueAtTime(220, now);
+  o2.frequency.setValueAtTime(170, now);
+
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.exponentialRampToValueAtTime(v, now + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+  o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
+  o1.start(now); o2.start(now);
+  o1.stop(now + 0.24); o2.stop(now + 0.24);
+}
+/* -------------------------------------------------- */
 
 function initState(){
   state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
@@ -323,7 +392,7 @@ function spawnAnswersForQuestion(){
   function pickY(){
     const minY = L.paddingTop;
     const maxY = scene.clientHeight - L.paddingBottom;
-    for(let attempt=0; attempt<50; attempt++){
+    for(let attempt=0; attempt<60; attempt++){
       const y = randInt(minY, maxY);
       if(usedY.every(prev => Math.abs(prev-y) >= L.minDistY)){
         usedY.push(y); return y;
@@ -341,14 +410,14 @@ function spawnAnswersForQuestion(){
     el.className = "orb answer";
     el.dataset.correct = a.correct ? "1":"0";
 
-    // ВНУТРИ: буква + текст варианта
+    // ✅ ВАРИАНТЫ ТОЧНО ЕСТЬ: буква + текст
     const lab = document.createElement("div");
     lab.className = "lab";
     lab.textContent = a.label;
 
     const txt = document.createElement("div");
     txt.className = "txt";
-    txt.textContent = a.text || "";
+    txt.textContent = a.text; // <-- важное: тут текст варианта
 
     el.appendChild(lab);
     el.appendChild(txt);
@@ -416,10 +485,12 @@ function handleAnswer(correct, hitX, hitY){
     updateHUD();
     showPointsPop(hitX, hitY, pts);
     showFeedback("Верно", true);
+    beepOk();
   } else {
     state.lives--;
     updateHUD();
     showFeedback("Неверно", false);
+    beepBad();
     player.animate(
       [{transform:"translate(-50%,-50%)"},
        {transform:"translate(-50%,-50%) translateX(-4px)"},
@@ -481,9 +552,18 @@ function restart(){
   loop();
 }
 
-window.addEventListener("keydown",(e)=>keys[e.key]=true);
+// controls + unlock sound on first user action
+window.addEventListener("keydown", async (e)=>{
+  keys[e.key]=true;
+  if(!audioUnlocked) await unlockAudio();
+});
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
 
+window.addEventListener("pointerdown", async ()=>{
+  if(!audioUnlocked) await unlockAudio();
+}, {passive:true});
+
+// start
 initState();
 updateHUD();
 player.style.top = "50%";
