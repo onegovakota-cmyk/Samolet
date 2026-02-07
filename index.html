@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Catch the Answer</title>
+  <title>Genially Game</title>
   <link rel="icon" href="data:,">
 
   <style>
@@ -28,7 +28,12 @@
       --size: 86px;
     }
 
-    html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
+    html,body{
+      margin:0;height:100%;
+      background:var(--bg)!important;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      overflow:hidden;
+    }
     #game{position:relative;width:100%;height:100%;}
 
     /* TOP BAR */
@@ -76,6 +81,7 @@
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
+    /* SCENE */
     #scene{position:absolute; inset:0; overflow:hidden;}
 
     .orb{
@@ -101,6 +107,7 @@
       box-shadow:0 0 14px rgba(255,255,255,.25);
     }
 
+    /* ANSWERS */
     .answer{
       background: var(--answer-bg);
       border: 1px solid var(--answer-brd);
@@ -128,7 +135,6 @@
       font-weight:1100;
       font-size:13px;
       line-height:1.12;
-      opacity:1;
       max-width: 180px;
       white-space:normal;
       word-break:break-word;
@@ -140,6 +146,7 @@
       -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
 
+    /* +points neon */
     .pop{
       position:absolute;
       font-weight:1300;
@@ -172,6 +179,7 @@
     }
     #feedback.show{opacity:1;}
 
+    /* progress bottom */
     #progressWrap{
       position:absolute; left:12px; right:12px; bottom:12px;
       z-index:115; pointer-events:none;
@@ -202,17 +210,19 @@
       text-shadow:0 10px 22px rgba(0,0,0,.5);
     }
 
-    /* START OVERLAY */
-    #startOverlay, #finalOverlay{
+    /* OVERLAYS */
+    #startOverlay,#finalOverlay{
       position:absolute; inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex; align-items:center; justify-content:center;
       z-index:300;
       background: rgba(0,0,0,.55);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
+    #finalOverlay{display:none;}
+    #finalOverlay.show{display:flex;}
+    #startOverlay.hide{display:none;}
+
     .card{
       width:min(560px, calc(100% - 28px));
       background: rgba(20,18,34,.78);
@@ -222,28 +232,12 @@
       padding: 18px 18px 16px;
       color: rgba(255,255,255,.92);
     }
-    .card h2{
-      margin:0 0 8px;
-      font-size:20px;
-      font-weight:1200;
-      letter-spacing:.2px;
-    }
-    .card p{
-      margin:0 0 12px;
-      font-size:13px;
-      line-height:1.35;
-      opacity:.9;
-    }
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .chips{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
+    .card h2{margin:0 0 8px;font-size:20px;font-weight:1200;}
+    .card p{margin:0 0 12px;font-size:13px;line-height:1.35;opacity:.9;}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;}
+
     .chipBtn{
       background: rgba(255,255,255,.10);
       border: 1px solid rgba(255,255,255,.18);
@@ -259,6 +253,7 @@
       background: rgba(120,90,255,.32);
       border-color: rgba(120,90,255,.45);
     }
+
     .btn{
       background: rgba(255,255,255,.12);
       border: 1px solid rgba(255,255,255,.20);
@@ -274,15 +269,8 @@
       background: rgba(120,90,255,.40);
       border-color: rgba(120,90,255,.55);
     }
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      opacity:.75;
-    }
 
-    #finalOverlay{display:none;}
-    #finalOverlay.show{display:flex;}
-    #startOverlay.hide{display:none;}
+    .hint{margin-top:10px;font-size:12px;opacity:.75;}
 
     #version{
       position:absolute; right:12px; bottom:40px;
@@ -294,12 +282,8 @@
 
 <body>
 <div id="game">
-
   <div id="topbar">
-    <div class="pill">
-      <div class="label">Очки</div>
-      <div class="value" id="score">0</div>
-    </div>
+    <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
     <div class="pill" id="lives">❤️❤️❤️</div>
   </div>
 
@@ -318,22 +302,20 @@
     </div>
   </div>
 
-  <!-- START SCREEN -->
   <div id="startOverlay">
-    <div class="card" role="dialog" aria-label="start">
+    <div class="card">
       <h2>Задача игрока</h2>
       <p>
-        Лови игроком <b>правильный ответ</b> на вопрос сверху.<br>
-        Управление: <b>↑</b> и <b>↓</b> (или свайп вверх/вниз на планшете).
+        Лови <b>правильный ответ</b> на вопрос сверху.<br>
+        Управление: <b>↑</b> / <b>↓</b> (можно и кнопками на клавиатуре).
       </p>
 
       <div class="row">
-        <div class="chips" aria-label="difficulty">
+        <div class="chips">
           <div class="chipBtn active" data-level="easy">Лёгкий</div>
           <div class="chipBtn" data-level="medium">Средний</div>
           <div class="chipBtn" data-level="hard">Сложный</div>
         </div>
-
         <button class="btn primary" id="startBtn">Начать игру</button>
       </div>
 
@@ -341,9 +323,8 @@
     </div>
   </div>
 
-  <!-- FINAL SCREEN -->
   <div id="finalOverlay">
-    <div class="card" role="dialog" aria-label="final">
+    <div class="card">
       <h2 id="finalTitle">—</h2>
       <p id="finalText">—</p>
       <div class="row" style="justify-content:flex-end;">
@@ -352,18 +333,16 @@
     </div>
   </div>
 
-  <div id="version">v13</div>
+  <div id="version">v14</div>
 </div>
 
 <script>
-/* ============ CONFIG ============ */
-const GAME_CONFIG = {
+const CFG = {
   lives: 3,
   playerSpeed: 7,
   feedbackMs: 420,
-  scoring: { pointsPerCorrect: 10 },
-
-  sound: { enabled:true, volume:0.28 },
+  pointsPerCorrect: 10,
+  soundVolume: 0.28,
 
   layout: {
     paddingTop: 130,
@@ -371,7 +350,7 @@ const GAME_CONFIG = {
     laneMinDist: 108,
   },
 
-  difficultyPresets: {
+  difficulty: {
     easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
     medium: { speed: 3.2, spawnEveryMs:  900, minXGap: 200, maxOnScreen: 5 },
     hard:   { speed: 4.1, spawnEveryMs:  760, minXGap: 180, maxOnScreen: 6 },
@@ -395,7 +374,6 @@ const GAME_CONFIG = {
     ]},
   ],
 };
-/* =============================== */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -419,28 +397,22 @@ let keys = {};
 let raf = null;
 let state = null;
 
-/* --------- Sound (WebAudio) --------- */
+/* ===== SOUND ===== */
 let audioCtx = null, unlocked = false;
-
 function ensureAudio(){
-  if(!GAME_CONFIG.sound.enabled) return;
   if(audioCtx) return;
   const Ctx = window.AudioContext || window.webkitAudioContext;
   if(!Ctx) return;
   audioCtx = new Ctx();
 }
-
 async function unlockAudio(){
-  if(!GAME_CONFIG.sound.enabled) return;
   ensureAudio();
   if(!audioCtx) return;
   if(audioCtx.state === "suspended") { try{ await audioCtx.resume(); }catch(e){} }
   unlocked = true;
 }
-
-// helper: short synth tones
-function tone(freq, dur=0.18, type="sine", vol=0.28){
-  if(!GAME_CONFIG.sound.enabled || !unlocked || !audioCtx) return;
+function tone(freq, dur=0.16, type="sine", vol=CFG.soundVolume){
+  if(!unlocked || !audioCtx) return;
   const now = audioCtx.currentTime;
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
@@ -451,60 +423,51 @@ function tone(freq, dur=0.18, type="sine", vol=0.28){
   g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
   o.connect(g); g.connect(audioCtx.destination);
   o.start(now);
-  o.stop(now + dur + 0.02);
+  o.stop(now + dur + 0.03);
 }
-
 function soundStart(){
-  // бодрый "три-нотный" старт
-  tone(523.25, 0.10, "sine", GAME_CONFIG.sound.volume);
-  setTimeout(()=>tone(659.25, 0.10, "sine", GAME_CONFIG.sound.volume), 110);
-  setTimeout(()=>tone(783.99, 0.14, "sine", GAME_CONFIG.sound.volume), 230);
+  tone(523.25, 0.10, "sine");
+  setTimeout(()=>tone(659.25, 0.10, "sine"), 110);
+  setTimeout(()=>tone(783.99, 0.14, "sine"), 230);
 }
-
 function soundOk(){
-  tone(660, 0.10, "sine", GAME_CONFIG.sound.volume);
-  setTimeout(()=>tone(990, 0.12, "sine", GAME_CONFIG.sound.volume), 90);
+  tone(660, 0.10, "sine");
+  setTimeout(()=>tone(990, 0.12, "sine"), 90);
 }
-
 function soundBad(){
-  tone(220, 0.14, "square", GAME_CONFIG.sound.volume);
-  setTimeout(()=>tone(180, 0.16, "sawtooth", GAME_CONFIG.sound.volume), 90);
+  tone(220, 0.14, "square");
+  setTimeout(()=>tone(180, 0.16, "sawtooth"), 90);
 }
-
 function soundWin(){
-  // простые "фанфары"
   const seq = [523,659,784,988,784,988,1175];
-  seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.12, "sine", GAME_CONFIG.sound.volume), i*120));
+  seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.12, "sine"), i*120));
 }
-
 function soundLose(){
-  // грустная концовка
   const seq = [392,330,294,262];
-  seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.18, "triangle", GAME_CONFIG.sound.volume), i*160));
+  seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.18, "triangle"), i*160));
 }
-/* ------------------------------------ */
+/* ================= */
 
-function preset(level){
-  return GAME_CONFIG.difficultyPresets[level] || GAME_CONFIG.difficultyPresets.easy;
-}
+function preset(level){ return CFG.difficulty[level] || CFG.difficulty.easy; }
 
 function initState(){
   state = {
+    running: false,
+    locked: true,
+
     qIndex: 0,
-    lives: GAME_CONFIG.lives,
     score: 0,
-    locked: false,
+    lives: CFG.lives,
+
     active: [],
-    running: false,          // стартуем только после кнопки
+    lastSpawnAt: performance.now(),
+    lastLaneY: null,
 
     difficulty: "easy",
     speed: preset("easy").speed,
     spawnEveryMs: preset("easy").spawnEveryMs,
     minXGap: preset("easy").minXGap,
     maxOnScreen: preset("easy").maxOnScreen,
-
-    lastSpawnAt: performance.now(),
-    lastLaneY: null,
   };
 }
 
@@ -515,14 +478,13 @@ function applyDifficulty(level){
   state.spawnEveryMs = p.spawnEveryMs;
   state.minXGap = p.minXGap;
   state.maxOnScreen = p.maxOnScreen;
-
   diffBtns.forEach(b=>b.classList.toggle("active", b.dataset.level===level));
 }
 
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
 
 function updateProgress(){
-  const total = GAME_CONFIG.questions.length;
+  const total = CFG.questions.length;
   const current = Math.min(state.qIndex + 1, total);
   const pct = total ? Math.round(((current-1) / total) * 100) : 0;
   progressFill.style.width = pct + "%";
@@ -532,7 +494,7 @@ function updateProgress(){
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
-  questionBox.textContent = state.qIndex < GAME_CONFIG.questions.length ? GAME_CONFIG.questions[state.qIndex].q : "";
+  questionBox.textContent = state.qIndex < CFG.questions.length ? CFG.questions[state.qIndex].q : "";
   updateProgress();
 }
 
@@ -545,20 +507,19 @@ function clearAnswers(){
 function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
 
 function buildLanes(){
-  const minY = GAME_CONFIG.layout.paddingTop;
-  const maxY = scene.clientHeight - GAME_CONFIG.layout.paddingBottom;
-  const step = GAME_CONFIG.layout.laneMinDist;
+  const minY = CFG.layout.paddingTop;
+  const maxY = scene.clientHeight - CFG.layout.paddingBottom;
+  const step = CFG.layout.laneMinDist;
   const lanes = [];
   for(let y=minY; y<=maxY; y+=step) lanes.push(y);
   return lanes.length ? lanes : [Math.round((minY+maxY)/2)];
 }
-
 function pickLaneY(){
   const lanes = buildLanes();
   let y = lanes[randInt(0, lanes.length-1)];
   if(state.lastLaneY !== null && lanes.length > 1){
     let tries=0;
-    while(y === state.lastLaneY && tries < 10){
+    while(y === state.lastLaneY && tries<10){
       y = lanes[randInt(0, lanes.length-1)];
       tries++;
     }
@@ -567,7 +528,7 @@ function pickLaneY(){
   return y;
 }
 
-function createAnswerOrb(answer){
+function createOrb(answer){
   const el = document.createElement("div");
   el.className = "orb answer";
   el.dataset.correct = answer.correct ? "1":"0";
@@ -586,7 +547,6 @@ function createAnswerOrb(answer){
 }
 
 function rightEdgeX(){ return scene.clientWidth + 50; }
-
 function newestX(){
   let maxX = -Infinity;
   for(const o of state.active) maxX = Math.max(maxX, o.el.offsetLeft);
@@ -601,12 +561,12 @@ function maybeSpawn(now){
 
   const spawnX = rightEdgeX();
   const nx = newestX();
-  if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return; // ✅ gap guarantee
+  if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return; // gap
 
-  const q = GAME_CONFIG.questions[state.qIndex];
+  const q = CFG.questions[state.qIndex];
   const pick = q.answers[randInt(0, q.answers.length-1)];
 
-  const el = createAnswerOrb(pick);
+  const el = createOrb(pick);
   el.style.left = spawnX + "px";
   el.style.top = pickLaneY() + "px";
   el.style.transform = "translate(-50%,-50%)";
@@ -621,7 +581,7 @@ function showFeedback(text, ok){
   feedback.textContent = text;
   feedback.style.color = ok ? "var(--good)" : "var(--bad)";
   feedback.classList.add("show");
-  setTimeout(()=>feedback.classList.remove("show"), Math.max(120, GAME_CONFIG.feedbackMs - 80));
+  setTimeout(()=>feedback.classList.remove("show"), Math.max(120, CFG.feedbackMs - 80));
 }
 
 function showPointsPop(x,y,points){
@@ -635,23 +595,20 @@ function showPointsPop(x,y,points){
 }
 
 function endGame(win){
-  state.locked = true;
   state.running = false;
+  state.locked = true;
   clearAnswers();
   updateHUD();
 
-  // sound end
   if(win) soundWin(); else soundLose();
 
   finalTitle.textContent = win ? "🎉 Молодец!" : "😢 Попробуй ещё";
-  const total = GAME_CONFIG.questions.length;
-  const answered = Math.min(state.qIndex, total);
   finalText.textContent = win
     ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
-    : `Жизни закончились. Пройдено ${answered}/${total}. Очки: ${state.score}.`;
+    : `Жизни закончились. Очки: ${state.score}.`;
 
-  finalOverlay.classList.add("show");
   finalOverlay.style.display = "flex";
+  finalOverlay.classList.add("show");
 }
 
 function goNextQuestion(){
@@ -659,7 +616,7 @@ function goNextQuestion(){
   state.locked = false;
 
   if(state.lives <= 0){ endGame(false); return; }
-  if(state.qIndex >= GAME_CONFIG.questions.length){ endGame(true); return; }
+  if(state.qIndex >= CFG.questions.length){ endGame(true); return; }
 
   updateHUD();
   clearAnswers();
@@ -667,33 +624,24 @@ function goNextQuestion(){
 }
 
 function handleHit(correct, hitX, hitY){
-  if(state.locked) return;
+  if(state.locked || !state.running) return;
   state.locked = true;
-
   clearAnswers();
 
   if(correct){
-    const pts = GAME_CONFIG.scoring.pointsPerCorrect;
-    state.score += pts;
+    state.score += CFG.pointsPerCorrect;
     updateHUD();
-    showPointsPop(hitX, hitY, pts);
+    showPointsPop(hitX, hitY, CFG.pointsPerCorrect);
     showFeedback("Верно", true);
     soundOk();
-  } else {
+  }else{
     state.lives--;
     updateHUD();
     showFeedback("Неверно", false);
     soundBad();
-    player.animate(
-      [{transform:"translate(-50%,-50%)"},
-       {transform:"translate(-50%,-50%) translateX(-4px)"},
-       {transform:"translate(-50%,-50%) translateX(4px)"},
-       {transform:"translate(-50%,-50%)"}],
-      {duration:220}
-    );
   }
 
-  setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
+  setTimeout(goNextQuestion, CFG.feedbackMs);
 }
 
 function checkCollision(obj){
@@ -712,18 +660,15 @@ function checkCollision(obj){
 }
 
 function loop(now){
-  if(!state) return;
-
-  // player movement (только когда игра запущена)
+  // движение игрока только в игре
   if(state.running){
     let y = player.offsetTop;
-    if(keys.ArrowUp) y -= GAME_CONFIG.playerSpeed;
-    if(keys.ArrowDown) y += GAME_CONFIG.playerSpeed;
+    if(keys.ArrowUp) y -= CFG.playerSpeed;
+    if(keys.ArrowDown) y += CFG.playerSpeed;
     y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
     player.style.top = y + "px";
   }
 
-  // spawn + move
   maybeSpawn(now);
 
   if(state.running && !state.locked){
@@ -734,7 +679,7 @@ function loop(now){
       checkCollision(obj);
       if(obj.el.isConnected){
         if(obj.el.offsetLeft >= leftLimit) next.push(obj);
-        else obj.el.remove(); // пропуск без наказания
+        else obj.el.remove(); // пропуск без штрафа
       }
     }
     state.active = next;
@@ -744,27 +689,26 @@ function loop(now){
 }
 
 async function startGame(){
-  await unlockAudio(); // чтобы звук старта точно сыграл
+  await unlockAudio();
   soundStart();
 
-  startOverlay.classList.add("hide");
   finalOverlay.classList.remove("show");
   finalOverlay.style.display = "none";
 
-  state.running = true;
-  state.locked = false;
-  state.qIndex = 0;
-  state.lives = GAME_CONFIG.lives;
+  startOverlay.classList.add("hide");
+
   state.score = 0;
+  state.lives = CFG.lives;
+  state.qIndex = 0;
+  state.locked = false;
+  state.running = true;
   clearAnswers();
   state.lastSpawnAt = performance.now();
   updateHUD();
-
-  // центр игрока
   player.style.top = "50%";
 }
 
-function resetToStart(){
+function backToStart(){
   state.running = false;
   state.locked = true;
   clearAnswers();
@@ -772,12 +716,6 @@ function resetToStart(){
   startOverlay.classList.remove("hide");
 }
 
-function restart(){
-  // вернуть на стартовый экран (как просила: снова выбор уровня + начать)
-  resetToStart();
-}
-
-/* UI */
 diffBtns.forEach(btn=>{
   btn.addEventListener("click", async ()=>{
     await unlockAudio();
@@ -786,16 +724,15 @@ diffBtns.forEach(btn=>{
 });
 
 startBtn.addEventListener("click", startGame);
-restartBtn.addEventListener("click", restart);
+restartBtn.addEventListener("click", backToStart);
 
 window.addEventListener("keydown", async (e)=>{
   keys[e.key]=true;
   await unlockAudio();
 });
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
-window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true});
+window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true });
 
-/* init */
 initState();
 applyDifficulty("easy");
 updateHUD();
