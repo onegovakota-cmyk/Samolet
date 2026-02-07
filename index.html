@@ -7,20 +7,17 @@
   <link rel="icon" href="data:,">
   <style>
     :root{
-      --ui-bg: #0b0b12;
       --ui-card: rgba(18,16,32,.78);
       --ui-border: rgba(255,255,255,.14);
       --ui-text: rgba(255,255,255,.92);
       --ui-sub: rgba(255,255,255,.68);
       --shadow: 0 18px 65px rgba(0,0,0,.45);
-
       --accent: rgba(120,90,255,.55);
       --accent-border: rgba(120,90,255,.65);
     }
     html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:transparent;}
     body{overflow:hidden;}
 
-    /* ====== EDITOR LAYOUT ====== */
     #editorApp{
       height:100%;
       display:flex;
@@ -41,42 +38,21 @@
       -webkit-backdrop-filter: blur(10px);
     }
     #left{
-      width:min(520px, 46vw);
-      min-width:340px;
+      width:min(580px, 50vw);
+      min-width:380px;
       display:flex;
       flex-direction:column;
       overflow:hidden;
     }
-    #right{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      overflow:hidden;
-    }
+    #right{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     .head{
       padding:14px 14px 10px;
       border-bottom:1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
     }
-    .head h1{
-      margin:0;
-      font-size:16px;
-      font-weight:1200;
-      letter-spacing:.2px;
-    }
-    .head .sub{
-      margin-top:4px;
-      font-size:12px;
-      color:var(--ui-sub);
-      line-height:1.35;
-    }
-    .content{
-      padding:12px 14px 14px;
-      overflow:auto;
-    }
+    .head h1{margin:0;font-size:16px;font-weight:1200;letter-spacing:.2px;}
+    .head .sub{margin-top:4px;font-size:12px;color:var(--ui-sub);line-height:1.35;}
+    .content{padding:12px 14px 14px;overflow:auto;}
 
     .section{
       border:1px solid rgba(255,255,255,.10);
@@ -85,140 +61,48 @@
       margin:10px 0;
       background: rgba(255,255,255,.04);
     }
-    .section h3{
-      margin:0 0 10px;
-      font-size:13px;
-      font-weight:1200;
-      color:rgba(255,255,255,.90);
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--ui-sub);
-      margin-bottom:6px;
-    }
+    .section h3{margin:0 0 10px;font-size:13px;font-weight:1200;color:rgba(255,255,255,.90);}
+    .grid{display:grid;grid-template-columns: 1fr 1fr;gap:10px;}
+    label{display:block;font-size:12px;color:var(--ui-sub);margin-bottom:6px;}
     input[type="text"], input[type="number"], select, textarea{
-      width:100%;
-      box-sizing:border-box;
+      width:100%;box-sizing:border-box;
       background: rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.14);
       color: rgba(255,255,255,.95);
-      border-radius:12px;
-      padding:10px 10px;
-      outline:none;
-      font-size:13px;
+      border-radius:12px;padding:10px 10px;outline:none;font-size:13px;
     }
     textarea{min-height:110px; resize:vertical; line-height:1.35;}
     input[type="color"]{
-      width:100%;
-      height:42px;
-      border-radius:12px;
+      width:100%;height:42px;border-radius:12px;
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
-      padding:6px;
-      box-sizing:border-box;
+      padding:6px;box-sizing:border-box;
     }
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
     .btn{
-      appearance:none;
-      border:1px solid rgba(255,255,255,.18);
+      appearance:none;border:1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.10);
       color: rgba(255,255,255,.95);
-      padding:10px 12px;
-      border-radius:12px;
-      font-weight:1100;
-      font-size:13px;
-      cursor:pointer;
-      user-select:none;
-      white-space:nowrap;
+      padding:10px 12px;border-radius:12px;
+      font-weight:1100;font-size:13px;cursor:pointer;user-select:none;white-space:nowrap;
     }
-    .btn.primary{
-      background: var(--accent);
-      border-color: var(--accent-border);
-    }
-    .btn.danger{
-      background: rgba(255,107,107,.25);
-      border-color: rgba(255,107,107,.45);
-    }
-    .hint{
-      font-size:12px;
-      color: var(--ui-sub);
-      line-height:1.35;
-      margin-top:6px;
-    }
+    .btn.primary{background: var(--accent);border-color: var(--accent-border);}
+    .btn.danger{background: rgba(255,107,107,.25);border-color: rgba(255,107,107,.45);}
+    .hint{font-size:12px;color: var(--ui-sub);line-height:1.35;margin-top:6px;}
     .hr{height:1px;background:rgba(255,255,255,.10);margin:10px 0;}
+    .small{font-size:11px;color: rgba(255,255,255,.62);line-height:1.35;}
 
-    .small{
-      font-size:11px;
-      color: rgba(255,255,255,.62);
-      line-height:1.35;
-    }
-
-    /* Questions UI */
-    .qitem{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:14px;
-      padding:10px;
-      background: rgba(0,0,0,.12);
-      margin-bottom:10px;
-    }
-    .qtop{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:8px;
-    }
+    .qitem{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px;background: rgba(0,0,0,.12);margin-bottom:10px;}
+    .qtop{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px;}
     .qtop strong{font-size:12px;}
-    .answers{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .ansRow{
-      display:grid;
-      grid-template-columns: 52px 1fr 84px;
-      gap:8px;
-      align-items:center;
-    }
-    .chk{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      font-size:12px;
-      color: rgba(255,255,255,.85);
-    }
+    .answers{display:flex;flex-direction:column;gap:8px;}
+    .ansRow{display:grid;grid-template-columns: 52px 1fr 84px;gap:8px;align-items:center;}
+    .chk{display:flex;gap:8px;align-items:center;font-size:12px;color: rgba(255,255,255,.85);}
     .chk input{width:18px;height:18px;}
-    .miniBtn{
-      padding:8px 10px;
-      border-radius:10px;
-      font-size:12px;
-    }
+    .miniBtn{padding:8px 10px;border-radius:10px;font-size:12px;}
 
-    /* Preview */
-    #previewWrap{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      overflow:hidden;
-    }
-    #previewFrame{
-      width:100%;
-      flex:1;
-      border:0;
-      background:transparent;
-    }
+    #previewWrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    #previewFrame{width:100%;flex:1;border:0;background:transparent;}
 
     #codeBox{
       width:100%;
@@ -235,7 +119,6 @@
       outline:none;
       resize:vertical;
     }
-
     .badge{
       font-size:11px;
       padding:6px 10px;
@@ -245,24 +128,19 @@
       color: rgba(255,255,255,.85);
       white-space:nowrap;
     }
-
-    /* ====== GAME MODE styles injected dynamically (transparent-friendly) ====== */
     #gameRoot{position:relative;width:100%;height:100%;overflow:hidden;background:transparent;}
   </style>
 </head>
 
 <body>
-<!-- Editor root -->
 <div id="editorApp" style="display:none;">
   <div id="left" class="panel">
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">
-          Настрой внешний вид, добавь вопросы и получи iframe для вставки в Genially.
-        </div>
+        <div class="sub">Добавлены настройки изображения на ответах (позиция/размер).</div>
       </div>
-      <div class="badge" id="versionBadge">Editor+Game • one-file</div>
+      <div class="badge">v23 • one-file</div>
     </div>
 
     <div class="content">
@@ -270,9 +148,7 @@
         <h3>Ссылка проекта (для iframe)</h3>
         <label>Base URL (GitHub Pages)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/" />
-        <div class="hint">
-          Это адрес, где лежит этот файл. Обычно можно оставить как есть — он подставится автоматически.
-        </div>
+        <div class="hint">Обычно подставляется автоматически.</div>
       </div>
 
       <div class="section">
@@ -289,7 +165,7 @@
             </select>
           </div>
           <div>
-            <label>Стиль</label>
+            <label>Насыщенность</label>
             <select id="fontWeight">
               <option value="900">Жирный</option>
               <option value="700">Средний</option>
@@ -300,7 +176,7 @@
 
           <div>
             <label>Размер вопроса (px)</label>
-            <input id="questionSize" type="number" min="12" max="48" value="20" />
+            <input id="questionSize" type="number" min="12" max="64" value="20" />
           </div>
           <div>
             <label>Цвет текста вопроса</label>
@@ -309,14 +185,16 @@
 
           <div>
             <label>Размер очков (px)</label>
-            <input id="scoreSize" type="number" min="12" max="40" value="22" />
+            <input id="scoreSize" type="number" min="12" max="56" value="22" />
           </div>
           <div>
             <label>Размер жизней (px)</label>
-            <input id="livesSize" type="number" min="12" max="40" value="22" />
+            <input id="livesSize" type="number" min="12" max="56" value="22" />
           </div>
         </div>
+
         <div class="hr"></div>
+
         <div class="grid">
           <div>
             <label>Цвет текста HUD (очки/жизни)</label>
@@ -330,11 +208,44 @@
       </div>
 
       <div class="section">
+        <h3>Эффекты текста (тень / неон)</h3>
+        <div class="grid">
+          <div>
+            <label>Эффект (общий)</label>
+            <select id="textFxMode">
+              <option value="none">Нет</option>
+              <option value="shadow">Тень</option>
+              <option value="neon">Неон</option>
+            </select>
+          </div>
+          <div>
+            <label>Сила эффекта (1–12)</label>
+            <input id="textFxStrength" type="number" min="1" max="12" value="6" />
+          </div>
+
+          <div>
+            <label>Цвет эффекта</label>
+            <input id="textFxColor" type="color" value="#ffd84a" />
+          </div>
+          <div>
+            <label>Применять к</label>
+            <select id="textFxTargets">
+              <option value="all" selected>Всё (вопрос + HUD + ответы)</option>
+              <option value="qa">Вопрос + ответы</option>
+              <option value="answers">Только ответы</option>
+              <option value="question">Только вопрос</option>
+              <option value="hud">Только HUD</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
         <h3>Прогресс-бар</h3>
         <div class="grid">
           <div>
-            <label>Высота прогресс-бара (px)</label>
-            <input id="progressHeight" type="number" min="14" max="50" value="28" />
+            <label>Высота (px)</label>
+            <input id="progressHeight" type="number" min="14" max="60" value="28" />
           </div>
           <div>
             <label>Цвет прогресса</label>
@@ -347,19 +258,19 @@
         <h3>Картинки: игрок, ответы, фон</h3>
         <div class="grid">
           <div>
-            <label>Игрок — URL картинки</label>
+            <label>Игрок — URL</label>
             <input id="playerImgUrl" type="text" placeholder="https://..." />
             <div class="small">или загрузить:</div>
             <input id="playerImgFile" type="file" accept="image/*" />
           </div>
           <div>
-            <label>Ответы — URL картинки</label>
+            <label>Ответы — URL</label>
             <input id="answerImgUrl" type="text" placeholder="https://..." />
             <div class="small">или загрузить:</div>
             <input id="answerImgFile" type="file" accept="image/*" />
           </div>
           <div>
-            <label>Фон — URL картинки</label>
+            <label>Фон — URL</label>
             <input id="bgImgUrl" type="text" placeholder="https://..." />
             <div class="small">или загрузить:</div>
             <input id="bgImgFile" type="file" accept="image/*" />
@@ -370,12 +281,44 @@
               <option value="1" selected>Да (transparent)</option>
               <option value="0">Нет (использовать фон)</option>
             </select>
-            <div class="hint">Если выбираешь “Да”, фон игры будет прозрачный, но фон-картинка может быть скрыта.</div>
           </div>
         </div>
-        <div class="hint">
-          ⚠️ Если загружаешь картинки файлами, они кодируются в ссылку. Для больших изображений лучше вставлять URL (чтобы iframe-ссылка не стала слишком длинной).
+
+        <div class="hr"></div>
+
+        <h3 style="margin:0 0 10px;font-size:13px;font-weight:1200;color:rgba(255,255,255,.90);">Картинка внутри ответа: размер и положение</h3>
+        <div class="grid">
+          <div>
+            <label>Вписывание (cover / contain)</label>
+            <select id="answerImgFit">
+              <option value="cover" selected>cover (заполняет)</option>
+              <option value="contain">contain (помещается)</option>
+            </select>
+          </div>
+          <div>
+            <label>Прозрачность (0–1)</label>
+            <input id="answerImgOpacity" type="number" min="0" max="1" step="0.05" value="0.55" />
+          </div>
+
+          <div>
+            <label>Scale (0.6–2.0)</label>
+            <input id="answerImgScale" type="number" min="0.6" max="2" step="0.05" value="1" />
+          </div>
+          <div>
+            <label>Blur (px)</label>
+            <input id="answerImgBlur" type="number" min="0" max="10" step="0.5" value="0" />
+          </div>
+
+          <div>
+            <label>Позиция X (%)</label>
+            <input id="answerImgPosX" type="number" min="0" max="100" step="1" value="50" />
+          </div>
+          <div>
+            <label>Позиция Y (%)</label>
+            <input id="answerImgPosY" type="number" min="0" max="100" step="1" value="50" />
+          </div>
         </div>
+        <div class="hint">Эти настройки влияют на картинку, которую ты задаёшь для “Ответы”.</div>
       </div>
 
       <div class="section">
@@ -386,11 +329,11 @@
             <input id="livesCount" type="number" min="1" max="10" value="3" />
           </div>
           <div>
-            <label>Очки за правильный ответ</label>
-            <input id="pointsPerCorrect" type="number" min="1" max="100" value="10" />
+            <label>Очки за правильный</label>
+            <input id="pointsPerCorrect" type="number" min="1" max="200" value="10" />
           </div>
           <div>
-            <label>Cooldown (через сколько вопросов может вернуться тот же)</label>
+            <label>Cooldown</label>
             <input id="cooldownTurns" type="number" min="0" max="10" value="3" />
           </div>
           <div>
@@ -401,12 +344,12 @@
       </div>
 
       <div class="section">
-        <h3>Вопросы и варианты ответов</h3>
+        <h3>Вопросы и варианты</h3>
         <div class="row">
           <button class="btn miniBtn" id="addQuestionBtn">+ Добавить вопрос</button>
           <button class="btn miniBtn danger" id="resetQuestionsBtn">Сбросить демо</button>
         </div>
-        <div class="hint">Отметь галочкой правильный вариант (только один).</div>
+        <div class="hint">Галочка “верный” должна быть у одного варианта.</div>
         <div id="questionsList" style="margin-top:10px;"></div>
       </div>
 
@@ -426,7 +369,7 @@
     <div class="head">
       <div>
         <h1>Предпросмотр</h1>
-        <div class="sub">Это то, как игра будет выглядеть внутри iframe.</div>
+        <div class="sub">Игра внутри iframe.</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -436,13 +379,9 @@
   </div>
 </div>
 
-<!-- Game root (used in play mode) -->
 <div id="gameRoot" style="display:none;"></div>
 
 <script>
-/* =========================================================
-   Helpers: Base64URL encode/decode JSON
-========================================================= */
 function b64urlEncode(str){
   const b64 = btoa(unescape(encodeURIComponent(str)));
   return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -450,15 +389,11 @@ function b64urlEncode(str){
 function b64urlDecode(b64url){
   let b64 = b64url.replace(/-/g,'+').replace(/_/g,'/');
   while(b64.length % 4) b64 += '=';
-  const str = decodeURIComponent(escape(atob(b64)));
-  return str;
+  return decodeURIComponent(escape(atob(b64)));
 }
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
-/* =========================================================
-   Default config
-========================================================= */
 const DEFAULT_CFG = {
-  // text & style
   fontFamily: "system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif",
   fontWeight: 900,
   questionSize: 20,
@@ -468,30 +403,38 @@ const DEFAULT_CFG = {
   scoreSize: 22,
   livesSize: 22,
 
-  // progress
+  textFxMode: "none",
+  textFxStrength: 6,
+  textFxColor: "#ffd84a",
+  textFxTargets: "all",
+
   progressHeight: 28,
   progressColor: "#7a5aff",
 
-  // images
   playerImg: "",
   answerImg: "",
   bgImg: "",
   transparentBg: true,
 
-  // gameplay
+  // NEW: answer image transform
+  answerImgFit: "cover",
+  answerImgOpacity: 0.55,
+  answerImgScale: 1,
+  answerImgBlur: 0,
+  answerImgPosX: 50,
+  answerImgPosY: 50,
+
   livesCount: 3,
   pointsPerCorrect: 10,
   cooldownTurns: 3,
   playerSpeed: 7,
 
-  // difficulty presets
   difficulty: {
     easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
     medium: { speed: 3.2, spawnEveryMs:  900, minXGap: 200, maxOnScreen: 5 },
     hard:   { speed: 4.1, spawnEveryMs:  760, minXGap: 180, maxOnScreen: 6 },
   },
 
-  // questions
   questions: [
     { q:"Столица Франции?", answers:[
       {label:"A", text:"Париж",  correct:true},
@@ -511,30 +454,21 @@ const DEFAULT_CFG = {
   ]
 };
 
-function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
-
-/* =========================================================
-   Mode switch
-========================================================= */
 const params = new URLSearchParams(location.search);
 const mode = params.get("mode");
-
 if(mode === "play"){
-  // PLAY MODE
   document.getElementById("gameRoot").style.display = "block";
   startGameMode();
 } else {
-  // EDITOR MODE
   document.getElementById("editorApp").style.display = "flex";
   startEditorMode();
 }
 
-/* =========================================================
-   EDITOR MODE
-========================================================= */
+/* ================= EDITOR ================= */
 function startEditorMode(){
   const els = {
     baseUrl: document.getElementById("baseUrl"),
+
     fontFamily: document.getElementById("fontFamily"),
     fontWeight: document.getElementById("fontWeight"),
     questionSize: document.getElementById("questionSize"),
@@ -543,8 +477,15 @@ function startEditorMode(){
     hudPanelColor: document.getElementById("hudPanelColor"),
     scoreSize: document.getElementById("scoreSize"),
     livesSize: document.getElementById("livesSize"),
+
+    textFxMode: document.getElementById("textFxMode"),
+    textFxStrength: document.getElementById("textFxStrength"),
+    textFxColor: document.getElementById("textFxColor"),
+    textFxTargets: document.getElementById("textFxTargets"),
+
     progressHeight: document.getElementById("progressHeight"),
     progressColor: document.getElementById("progressColor"),
+
     playerImgUrl: document.getElementById("playerImgUrl"),
     answerImgUrl: document.getElementById("answerImgUrl"),
     bgImgUrl: document.getElementById("bgImgUrl"),
@@ -552,27 +493,36 @@ function startEditorMode(){
     answerImgFile: document.getElementById("answerImgFile"),
     bgImgFile: document.getElementById("bgImgFile"),
     transparentBg: document.getElementById("transparentBg"),
+
+    // NEW answer img controls
+    answerImgFit: document.getElementById("answerImgFit"),
+    answerImgOpacity: document.getElementById("answerImgOpacity"),
+    answerImgScale: document.getElementById("answerImgScale"),
+    answerImgBlur: document.getElementById("answerImgBlur"),
+    answerImgPosX: document.getElementById("answerImgPosX"),
+    answerImgPosY: document.getElementById("answerImgPosY"),
+
     livesCount: document.getElementById("livesCount"),
     pointsPerCorrect: document.getElementById("pointsPerCorrect"),
     cooldownTurns: document.getElementById("cooldownTurns"),
     playerSpeed: document.getElementById("playerSpeed"),
+
     questionsList: document.getElementById("questionsList"),
     addQuestionBtn: document.getElementById("addQuestionBtn"),
     resetQuestionsBtn: document.getElementById("resetQuestionsBtn"),
+
     genIframeBtn: document.getElementById("genIframeBtn"),
     copyIframeBtn: document.getElementById("copyIframeBtn"),
     codeBox: document.getElementById("codeBox"),
+
     previewFrame: document.getElementById("previewFrame"),
     cfgSizeBadge: document.getElementById("cfgSizeBadge"),
   };
 
-  // init base url auto
-  const autoBase = location.origin + location.pathname;
-  els.baseUrl.value = autoBase;
+  els.baseUrl.value = location.origin + location.pathname;
 
   let cfg = deepClone(DEFAULT_CFG);
 
-  // bind config -> UI
   function cfgToUI(){
     els.fontFamily.value = cfg.fontFamily;
     els.fontWeight.value = String(cfg.fontWeight);
@@ -583,6 +533,11 @@ function startEditorMode(){
     els.scoreSize.value = cfg.scoreSize;
     els.livesSize.value = cfg.livesSize;
 
+    els.textFxMode.value = cfg.textFxMode || "none";
+    els.textFxStrength.value = cfg.textFxStrength ?? 6;
+    els.textFxColor.value = cfg.textFxColor || "#ffd84a";
+    els.textFxTargets.value = cfg.textFxTargets || "all";
+
     els.progressHeight.value = cfg.progressHeight;
     els.progressColor.value = cfg.progressColor;
 
@@ -591,13 +546,33 @@ function startEditorMode(){
     els.bgImgUrl.value = cfg.bgImg && cfg.bgImg.startsWith("http") ? cfg.bgImg : "";
     els.transparentBg.value = cfg.transparentBg ? "1" : "0";
 
+    els.answerImgFit.value = cfg.answerImgFit || "cover";
+    els.answerImgOpacity.value = cfg.answerImgOpacity ?? 0.55;
+    els.answerImgScale.value = cfg.answerImgScale ?? 1;
+    els.answerImgBlur.value = cfg.answerImgBlur ?? 0;
+    els.answerImgPosX.value = cfg.answerImgPosX ?? 50;
+    els.answerImgPosY.value = cfg.answerImgPosY ?? 50;
+
     els.livesCount.value = cfg.livesCount;
     els.pointsPerCorrect.value = cfg.pointsPerCorrect;
     els.cooldownTurns.value = cfg.cooldownTurns;
     els.playerSpeed.value = cfg.playerSpeed;
   }
 
-  // Questions render
+  function nextLabel(arr){
+    const base="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const used=new Set(arr.map(x=>String(x.label||"").trim().toUpperCase()));
+    for(const c of base){ if(!used.has(c)) return c; }
+    return "X";
+  }
+  function makeEmptyQuestion(){
+    return { q:"", answers:[
+      {label:"A", text:"", correct:true},
+      {label:"B", text:"", correct:false},
+      {label:"C", text:"", correct:false},
+    ]};
+  }
+
   function renderQuestions(){
     els.questionsList.innerHTML = "";
     cfg.questions.forEach((q, qi)=>{
@@ -615,24 +590,16 @@ function startEditorMode(){
       delQ.textContent = "Удалить";
       delQ.onclick = ()=>{
         cfg.questions.splice(qi,1);
-        if(cfg.questions.length === 0){
-          cfg.questions.push(makeEmptyQuestion());
-        }
-        renderQuestions();
-        updateAll();
+        if(cfg.questions.length === 0) cfg.questions.push(makeEmptyQuestion());
+        renderQuestions(); updateAll();
       };
-
-      top.appendChild(title);
-      top.appendChild(delQ);
+      top.appendChild(title); top.appendChild(delQ);
 
       const qInput = document.createElement("input");
       qInput.type = "text";
       qInput.value = q.q || "";
       qInput.placeholder = "Текст вопроса...";
-      qInput.oninput = ()=>{
-        cfg.questions[qi].q = qInput.value;
-        updateAll();
-      };
+      qInput.oninput = ()=>{ cfg.questions[qi].q = qInput.value; updateAll(); };
 
       const answers = document.createElement("div");
       answers.className = "answers";
@@ -645,19 +612,13 @@ function startEditorMode(){
         lab.type = "text";
         lab.value = a.label || "";
         lab.placeholder = "A";
-        lab.oninput = ()=>{
-          cfg.questions[qi].answers[ai].label = lab.value;
-          updateAll();
-        };
+        lab.oninput = ()=>{ cfg.questions[qi].answers[ai].label = lab.value; updateAll(); };
 
         const txt = document.createElement("input");
         txt.type = "text";
         txt.value = a.text || "";
         txt.placeholder = "Текст варианта...";
-        txt.oninput = ()=>{
-          cfg.questions[qi].answers[ai].text = txt.value;
-          updateAll();
-        };
+        txt.oninput = ()=>{ cfg.questions[qi].answers[ai].text = txt.value; updateAll(); };
 
         const right = document.createElement("div");
         right.className = "chk";
@@ -665,21 +626,14 @@ function startEditorMode(){
         chk.type = "checkbox";
         chk.checked = !!a.correct;
         chk.onchange = ()=>{
-          // only one correct
           cfg.questions[qi].answers.forEach(x=>x.correct=false);
           cfg.questions[qi].answers[ai].correct = chk.checked;
-          renderQuestions();
-          updateAll();
+          renderQuestions(); updateAll();
         };
-        const t = document.createElement("span");
-        t.textContent = "верный";
         right.appendChild(chk);
-        right.appendChild(t);
+        right.appendChild(Object.assign(document.createElement("span"), {textContent:"верный"}));
 
-        row.appendChild(lab);
-        row.appendChild(txt);
-        row.appendChild(right);
-
+        row.appendChild(lab); row.appendChild(txt); row.appendChild(right);
         answers.appendChild(row);
       });
 
@@ -692,8 +646,7 @@ function startEditorMode(){
       addA.textContent = "+ Вариант";
       addA.onclick = ()=>{
         cfg.questions[qi].answers.push({label: nextLabel(cfg.questions[qi].answers), text:"", correct:false});
-        renderQuestions();
-        updateAll();
+        renderQuestions(); updateAll();
       };
 
       const delA = document.createElement("button");
@@ -702,16 +655,11 @@ function startEditorMode(){
       delA.onclick = ()=>{
         if(cfg.questions[qi].answers.length <= 2) return;
         cfg.questions[qi].answers.pop();
-        // ensure at least one correct
-        if(!cfg.questions[qi].answers.some(x=>x.correct)){
-          cfg.questions[qi].answers[0].correct = true;
-        }
-        renderQuestions();
-        updateAll();
+        if(!cfg.questions[qi].answers.some(x=>x.correct)) cfg.questions[qi].answers[0].correct = true;
+        renderQuestions(); updateAll();
       };
 
-      qButtons.appendChild(addA);
-      qButtons.appendChild(delA);
+      qButtons.appendChild(addA); qButtons.appendChild(delA);
 
       wrap.appendChild(top);
       wrap.appendChild(qInput);
@@ -723,22 +671,6 @@ function startEditorMode(){
     });
   }
 
-  function nextLabel(arr){
-    const base = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const used = new Set(arr.map(x=>String(x.label||"").trim().toUpperCase()));
-    for(const c of base){
-      if(!used.has(c)) return c;
-    }
-    return "X";
-  }
-  function makeEmptyQuestion(){
-    return { q:"", answers:[
-      {label:"A", text:"", correct:true},
-      {label:"B", text:"", correct:false},
-      {label:"C", text:"", correct:false},
-    ]};
-  }
-
   async function fileToDataUrl(file){
     return new Promise((res, rej)=>{
       const r = new FileReader();
@@ -748,73 +680,75 @@ function startEditorMode(){
     });
   }
 
-  // UI -> cfg
   function readUIIntoCfg(){
     cfg.fontFamily = els.fontFamily.value;
     cfg.fontWeight = Number(els.fontWeight.value || 900);
     cfg.questionSize = Number(els.questionSize.value || 20);
     cfg.questionColor = els.questionColor.value;
+
     cfg.hudTextColor = els.hudTextColor.value;
     cfg.hudPanelColor = els.hudPanelColor.value;
     cfg.scoreSize = Number(els.scoreSize.value || 22);
     cfg.livesSize = Number(els.livesSize.value || 22);
+
+    cfg.textFxMode = els.textFxMode.value;
+    cfg.textFxStrength = Number(els.textFxStrength.value || 6);
+    cfg.textFxColor = els.textFxColor.value;
+    cfg.textFxTargets = els.textFxTargets.value;
 
     cfg.progressHeight = Number(els.progressHeight.value || 28);
     cfg.progressColor = els.progressColor.value;
 
     cfg.transparentBg = els.transparentBg.value === "1";
 
+    // NEW answer img controls
+    cfg.answerImgFit = els.answerImgFit.value;
+    cfg.answerImgOpacity = Number(els.answerImgOpacity.value || 0.55);
+    cfg.answerImgScale = Number(els.answerImgScale.value || 1);
+    cfg.answerImgBlur = Number(els.answerImgBlur.value || 0);
+    cfg.answerImgPosX = Number(els.answerImgPosX.value || 50);
+    cfg.answerImgPosY = Number(els.answerImgPosY.value || 50);
+
     cfg.livesCount = Number(els.livesCount.value || 3);
     cfg.pointsPerCorrect = Number(els.pointsPerCorrect.value || 10);
     cfg.cooldownTurns = Number(els.cooldownTurns.value || 3);
     cfg.playerSpeed = Number(els.playerSpeed.value || 7);
 
-    // URL images override only if starts http(s)
     if(els.playerImgUrl.value.trim().startsWith("http")) cfg.playerImg = els.playerImgUrl.value.trim();
     if(els.answerImgUrl.value.trim().startsWith("http")) cfg.answerImg = els.answerImgUrl.value.trim();
     if(els.bgImgUrl.value.trim().startsWith("http")) cfg.bgImg = els.bgImgUrl.value.trim();
   }
 
   function buildCfgParam(){
-    // sanitize: ensure at least one question and one correct per question
     if(!cfg.questions.length) cfg.questions = [makeEmptyQuestion()];
     cfg.questions.forEach(q=>{
       if(!q.answers?.length) q.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
       if(!q.answers.some(a=>a.correct)) q.answers[0].correct = true;
     });
-
-    const json = JSON.stringify(cfg);
-    const enc = b64urlEncode(json);
-    return enc;
+    return b64urlEncode(JSON.stringify(cfg));
   }
 
   function buildPlayUrl(){
     const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
-    const cfgParam = buildCfgParam();
-    // keep URL clean
-    const url = `${base}?mode=play&cfg=${cfgParam}`;
-    els.cfgSizeBadge.textContent = `cfg: ${Math.round(cfgParam.length/1024*10)/10}KB`;
-    return url;
-  }
-
-  function updatePreview(){
-    const url = buildPlayUrl();
-    els.previewFrame.src = url;
+    const enc = buildCfgParam();
+    els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
+    return `${base}?mode=play&cfg=${enc}`;
   }
 
   function updateAll(){
     readUIIntoCfg();
-    updatePreview();
+    els.previewFrame.src = buildPlayUrl();
   }
 
-  // events general
   [
     els.baseUrl, els.fontFamily, els.fontWeight,
     els.questionSize, els.questionColor,
     els.hudTextColor, els.hudPanelColor,
     els.scoreSize, els.livesSize,
+    els.textFxMode, els.textFxStrength, els.textFxColor, els.textFxTargets,
     els.progressHeight, els.progressColor,
     els.transparentBg,
+    els.answerImgFit, els.answerImgOpacity, els.answerImgScale, els.answerImgBlur, els.answerImgPosX, els.answerImgPosY,
     els.livesCount, els.pointsPerCorrect, els.cooldownTurns, els.playerSpeed,
     els.playerImgUrl, els.answerImgUrl, els.bgImgUrl
   ].forEach(el=>{
@@ -822,50 +756,40 @@ function startEditorMode(){
     el.addEventListener("change", ()=> updateAll());
   });
 
-  // file uploads
   els.playerImgFile.addEventListener("change", async ()=>{
-    const f = els.playerImgFile.files?.[0];
-    if(!f) return;
+    const f = els.playerImgFile.files?.[0]; if(!f) return;
     cfg.playerImg = await fileToDataUrl(f);
     els.playerImgUrl.value = "";
     updateAll();
   });
   els.answerImgFile.addEventListener("change", async ()=>{
-    const f = els.answerImgFile.files?.[0];
-    if(!f) return;
+    const f = els.answerImgFile.files?.[0]; if(!f) return;
     cfg.answerImg = await fileToDataUrl(f);
     els.answerImgUrl.value = "";
     updateAll();
   });
   els.bgImgFile.addEventListener("change", async ()=>{
-    const f = els.bgImgFile.files?.[0];
-    if(!f) return;
+    const f = els.bgImgFile.files?.[0]; if(!f) return;
     cfg.bgImg = await fileToDataUrl(f);
     els.bgImgUrl.value = "";
     updateAll();
   });
 
-  // questions controls
   els.addQuestionBtn.onclick = ()=>{
     cfg.questions.push(makeEmptyQuestion());
-    renderQuestions();
-    updateAll();
+    renderQuestions(); updateAll();
   };
   els.resetQuestionsBtn.onclick = ()=>{
     cfg = deepClone(DEFAULT_CFG);
-    cfgToUI();
-    renderQuestions();
-    updateAll();
+    cfgToUI(); renderQuestions(); updateAll();
   };
 
-  // iframe generation
   els.genIframeBtn.onclick = ()=>{
     const src = buildPlayUrl();
-    const code =
+    els.codeBox.value =
 `<iframe src="${src}"
         style="width:100%;height:650px;border:0;background:transparent"
         width="100%" height="650"></iframe>`;
-    els.codeBox.value = code;
   };
   els.copyIframeBtn.onclick = async ()=>{
     const text = els.codeBox.value.trim();
@@ -880,57 +804,40 @@ function startEditorMode(){
     }
   };
 
-  // initial
   cfgToUI();
   renderQuestions();
   updateAll();
 }
 
-/* =========================================================
-   GAME MODE
-========================================================= */
+/* ================= GAME MODE ================= */
+/* NOTE: same as v22, but answer img uses new transform settings */
 function startGameMode(){
   const root = document.getElementById("gameRoot");
 
-  // read cfg
   let cfg = deepClone(DEFAULT_CFG);
   const cfgParam = params.get("cfg");
   if(cfgParam){
-    try{
-      const json = b64urlDecode(cfgParam);
-      const parsed = JSON.parse(json);
-      cfg = Object.assign(cfg, parsed);
-    }catch(e){
-      // ignore, keep defaults
-    }
+    try{ cfg = Object.assign(cfg, JSON.parse(b64urlDecode(cfgParam))); }catch(e){}
   }
+  const CFG = normalizeCfg(cfg);
 
-  // build game html
+  const textFxCSS = buildTextFxCss(CFG.textFxMode, CFG.textFxStrength, CFG.textFxColor);
+  const applyFxQuestion = fxAllowed(CFG.textFxTargets, "question");
+  const applyFxHud = fxAllowed(CFG.textFxTargets, "hud");
+  const applyFxAnswers = fxAllowed(CFG.textFxTargets, "answers");
+
   root.innerHTML = `
     <style>
-      :root{
-        --bg: transparent;
-        --panel-bg: rgba(10,10,20,.60);
-        --panel-brd: rgba(255,255,255,.18);
-        --shadow: 0 16px 60px rgba(0,0,0,.42);
-
-        --answer-bg: rgba(20, 18, 34, .82);
-        --answer-brd: rgba(255,255,255,.22);
-        --answer-text: rgba(255,255,255,.98);
-
-        --player-bg: rgba(120,90,255,.22);
-        --player-brd: rgba(120,90,255,.40);
-
-        --good: #4cff9e;
-        --bad:  #ff6b6b;
-        --neon-yellow: #ffd84a;
-
-        --size: 86px;
-      }
-
       html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;}
-      #game{position:relative;width:100%;height:100%;font-family:${escapeCss(cfg.fontFamily)};}
-      #game *{box-sizing:border-box;}
+      #wrap{position:relative;width:100%;height:100%;background:transparent;}
+      #bg{
+        position:absolute; inset:0; z-index:0;
+        background: ${CFG.transparentBg ? "transparent" : (CFG.bgImg ? `url('${cssUrl(CFG.bgImg)}') ${CFG.bgPosX??50}% ${CFG.bgPosY??50}% / cover no-repeat` : "transparent")};
+      }
+      #game{
+        position:absolute; inset:0; z-index:1;
+        font-family:${escapeCss(CFG.fontFamily)};
+      }
 
       #topbar{
         position:absolute; top:14px; left:14px; right:14px;
@@ -940,21 +847,22 @@ function startGameMode(){
         pointer-events:none;
       }
       .pill{
-        background: ${hexToRgba(cfg.hudPanelColor, 0.70)};
+        background: ${hexToRgba(CFG.hudPanelColor, 0.70)};
         border: 1px solid rgba(255,255,255,.18);
         border-radius: 999px;
         padding: 14px 16px;
-        box-shadow: var(--shadow);
+        box-shadow: 0 16px 60px rgba(0,0,0,.42);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         display:flex; gap:12px; align-items:center;
         white-space:nowrap;
-        color: ${cfg.hudTextColor};
+        color: ${CFG.hudTextColor};
         pointer-events:none;
+        ${applyFxHud ? textFxCSS : ""}
       }
-      .pill .label{font-size:14px;color:${hexToRgba(cfg.hudTextColor, 0.75)};font-weight:${cfg.fontWeight};}
-      .pill .value{font-size:${cfg.scoreSize}px;font-weight:${cfg.fontWeight};}
-      #lives{font-size:${cfg.livesSize}px;letter-spacing:1px;color:${cfg.hudTextColor};}
+      .pill .label{font-size:14px;color:${hexToRgba(CFG.hudTextColor, 0.75)};font-weight:${CFG.fontWeight};}
+      .pill .value{font-size:${CFG.scoreSize}px;font-weight:${CFG.fontWeight};}
+      #lives{font-size:${CFG.livesSize}px;letter-spacing:1px;color:${CFG.hudTextColor};}
 
       #questionWrap{
         position:absolute; top:78px; left:50%; transform:translateX(-50%);
@@ -966,22 +874,23 @@ function startGameMode(){
         border: 1px solid rgba(255,255,255,.18);
         border-radius: 999px;
         padding: 16px 20px;
-        box-shadow: var(--shadow);
+        box-shadow: 0 16px 60px rgba(0,0,0,.42);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         text-align:center;
-        font-weight:${cfg.fontWeight};
-        font-size:${cfg.questionSize}px;
-        color: ${cfg.questionColor};
+        font-weight:${CFG.fontWeight};
+        font-size:${CFG.questionSize}px;
+        color: ${CFG.questionColor};
         white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        ${applyFxQuestion ? textFxCSS : ""}
       }
 
       #scene{position:absolute; inset:0; overflow:hidden;}
 
       .orb{
         position:absolute;
-        width: var(--size);
-        height: var(--size);
+        width: 86px;
+        height: 86px;
         border-radius: 50%;
         display:flex; align-items:center; justify-content:center;
         user-select:none;
@@ -990,8 +899,8 @@ function startGameMode(){
       #player{
         left:92px; top:50%;
         transform:translate(-50%,-50%);
-        background: var(--player-bg);
-        border: 1px solid var(--player-brd);
+        background: rgba(120,90,255,.22);
+        border: 1px solid rgba(120,90,255,.40);
         box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
         overflow:hidden;
       }
@@ -1000,16 +909,7 @@ function startGameMode(){
         background-size:cover;
         background-position:center;
         border-radius:999px;
-        opacity:${cfg.playerImg ? 1 : 0};
-      }
-      #player:before{
-        content:"";
-        width:18px;height:18px;border-radius:999px;
-        background: rgba(255,255,255,.88);
-        box-shadow:0 0 14px rgba(255,255,255,.25);
-        position:absolute;
-        inset:auto;
-        display:${cfg.playerImg ? "none" : "block"};
+        opacity:${CFG.playerImg ? 1 : 0};
       }
 
       .answer{
@@ -1027,30 +927,33 @@ function startGameMode(){
         overflow:hidden;
       }
       .answer .img{
-        position:absolute;
-        inset:0;
-        background-size:cover;
-        background-position:center;
-        opacity:${cfg.answerImg ? 0.55 : 0};
-        filter: saturate(1.05) contrast(1.05);
+        position:absolute; inset:0;
+        background-image: ${CFG.answerImg ? `url('${cssUrl(CFG.answerImg)}')` : "none"};
+        background-repeat:no-repeat;
+        background-size:${CFG.answerImgFit};
+        background-position:${CFG.answerImgPosX}% ${CFG.answerImgPosY}%;
+        opacity:${CFG.answerImg ? CFG.answerImgOpacity : 0};
+        transform: scale(${CFG.answerImgScale});
+        filter: blur(${CFG.answerImgBlur}px);
       }
       .answer .shade{
         position:absolute; inset:0;
         background: rgba(0,0,0,.20);
-        opacity:${cfg.answerImg ? 1 : 0};
+        opacity:${CFG.answerImg ? 1 : 0};
       }
       .answer .lab{
         position:relative;
-        font-weight:${cfg.fontWeight};
+        font-weight:${CFG.fontWeight};
         font-size:18px;
         line-height:1;
         letter-spacing:.8px;
         text-shadow: 0 10px 22px rgba(0,0,0,.55);
         -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
+        ${applyFxAnswers ? textFxCSS : ""}
       }
       .answer .txt{
         position:relative;
-        font-weight:${Math.max(500, Math.min(1100, cfg.fontWeight))};
+        font-weight:${Math.max(500, Math.min(1100, CFG.fontWeight))};
         font-size:13px;
         line-height:1.12;
         max-width: 180px;
@@ -1062,15 +965,16 @@ function startGameMode(){
         border: 1px solid rgba(255,255,255,.10);
         text-shadow: 0 10px 22px rgba(0,0,0,.55);
         -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
+        ${applyFxAnswers ? textFxCSS : ""}
       }
 
       .pop{
         position:absolute;
-        font-weight:${cfg.fontWeight};
+        font-weight:${CFG.fontWeight};
         font-size:22px;
         pointer-events:none;
         transform:translate(-50%,-50%);
-        color: var(--neon-yellow);
+        color: #ffd84a;
         text-shadow:
           0 0 10px rgba(255,216,74,.90),
           0 0 24px rgba(255,216,74,.70),
@@ -1088,7 +992,7 @@ function startGameMode(){
         position:absolute; inset:0;
         display:flex; align-items:center; justify-content:center;
         font-size:34px;
-        font-weight:${cfg.fontWeight};
+        font-weight:${CFG.fontWeight};
         pointer-events:none;
         opacity:0; transition:.18s;
         z-index:130;
@@ -1102,11 +1006,11 @@ function startGameMode(){
         z-index:115; pointer-events:none;
       }
       #progressBar{
-        height: ${cfg.progressHeight}px;
+        height: ${CFG.progressHeight}px;
         border-radius: 999px;
         background: rgba(0,0,0,.14);
         border: 1px solid rgba(255,255,255,.22);
-        box-shadow: var(--shadow);
+        box-shadow: 0 16px 60px rgba(0,0,0,.42);
         overflow:hidden;
         position:relative;
         backdrop-filter: blur(10px);
@@ -1115,7 +1019,7 @@ function startGameMode(){
       #progressFill{
         height:100%;
         width:0%;
-        background: ${cfg.progressColor};
+        background: ${CFG.progressColor};
         border-radius:999px;
         transition: width .25s ease;
       }
@@ -1123,12 +1027,12 @@ function startGameMode(){
         position:absolute; inset:0;
         display:flex; align-items:center; justify-content:center;
         font-size:14px;
-        font-weight:${cfg.fontWeight};
+        font-weight:${CFG.fontWeight};
         color: rgba(255,255,255,.96);
         text-shadow:0 10px 22px rgba(0,0,0,.5);
+        ${applyFxHud ? textFxCSS : ""}
       }
 
-      /* overlays */
       .overlay{
         position:absolute; inset:0;
         display:none;
@@ -1145,11 +1049,11 @@ function startGameMode(){
         background: rgba(20,18,34,.78);
         border: 1px solid rgba(255,255,255,.18);
         border-radius: 22px;
-        box-shadow: var(--shadow);
+        box-shadow: 0 16px 60px rgba(0,0,0,.42);
         padding: 18px 18px 16px;
         color: rgba(255,255,255,.92);
       }
-      .card h2{margin:0 0 8px;font-size:22px;font-weight:${cfg.fontWeight};}
+      .card h2{margin:0 0 8px;font-size:22px;font-weight:${CFG.fontWeight};}
       .card p{margin:0 0 12px;font-size:14px;line-height:1.35;opacity:.9;}
       .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
       .chips{display:flex;gap:8px;flex-wrap:wrap;}
@@ -1158,7 +1062,7 @@ function startGameMode(){
         border: 1px solid rgba(255,255,255,.18);
         border-radius: 999px;
         padding: 10px 14px;
-        font-weight:${cfg.fontWeight};
+        font-weight:${CFG.fontWeight};
         font-size:13px;
         color: rgba(255,255,255,.92);
         cursor:pointer;
@@ -1173,7 +1077,7 @@ function startGameMode(){
         border: 1px solid rgba(255,255,255,.20);
         border-radius: 14px;
         padding: 12px 16px;
-        font-weight:${cfg.fontWeight};
+        font-weight:${CFG.fontWeight};
         color: rgba(255,255,255,.95);
         cursor:pointer;
         user-select:none;
@@ -1185,21 +1089,10 @@ function startGameMode(){
         border-color: rgba(120,90,255,.55);
       }
       .hint{margin-top:10px;font-size:12px;opacity:.75;}
-
-      /* background */
-      #bg{
-        position:absolute; inset:0;
-        background: ${cfg.transparentBg ? "transparent" : (cfg.bgImg ? `url('${cssUrl(cfg.bgImg)}') center/cover no-repeat` : "transparent")};
-        z-index:0;
-      }
-      #gameInner{
-        position:absolute; inset:0; z-index:1;
-        background: ${cfg.transparentBg ? "transparent" : "transparent"};
-      }
     </style>
 
-    <div id="bg"></div>
-    <div id="gameInner">
+    <div id="wrap">
+      <div id="bg"></div>
       <div id="game">
         <div id="topbar">
           <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
@@ -1224,10 +1117,7 @@ function startGameMode(){
         <div id="startOverlay" class="overlay show">
           <div class="card">
             <h2>Задача игрока</h2>
-            <p>
-              Лови <b>правильный ответ</b> на вопрос сверху.<br>
-              Управление: <b>↑</b> / <b>↓</b>.
-            </p>
+            <p>Лови <b>правильный ответ</b> на вопрос сверху. Управление: <b>↑</b> / <b>↓</b>.</p>
             <div class="row">
               <div class="chips">
                 <div class="chipBtn active" data-level="easy">Лёгкий</div>
@@ -1252,9 +1142,6 @@ function startGameMode(){
       </div>
     </div>
   `;
-
-  // game logic (based on your v21 rules)
-  const CFG = normalizeCfg(cfg);
 
   const scene = root.querySelector("#scene");
   const player = root.querySelector("#player");
@@ -1283,7 +1170,6 @@ function startGameMode(){
   let state = null;
   let pendingTimer = null;
 
-  /* sound */
   let audioCtx = null, unlocked = false;
   function ensureAudio(){
     if(audioCtx) return;
@@ -1310,54 +1196,28 @@ function startGameMode(){
     o.connect(g); g.connect(audioCtx.destination);
     o.start(now); o.stop(now + dur + 0.03);
   }
-  function soundStart(){
-    tone(523.25, 0.10, "sine");
-    setTimeout(()=>tone(659.25, 0.10, "sine"), 110);
-    setTimeout(()=>tone(783.99, 0.14, "sine"), 230);
-  }
-  function soundOk(){ tone(660, 0.10, "sine"); setTimeout(()=>tone(990, 0.12, "sine"), 90); }
-  function soundBad(){ tone(220, 0.14, "square"); setTimeout(()=>tone(180, 0.16, "sawtooth"), 90); }
-  function soundWin(){
-    const seq = [523,659,784,988,784,988,1175];
-    seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.12, "sine"), i*120));
-  }
-  function soundLose(){
-    const seq = [392,330,294,262];
-    seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.18, "triangle"), i*160));
-  }
+  function soundStart(){ tone(523.25,0.10,"sine"); setTimeout(()=>tone(659.25,0.10,"sine"),110); setTimeout(()=>tone(783.99,0.14,"sine"),230); }
+  function soundOk(){ tone(660,0.10,"sine"); setTimeout(()=>tone(990,0.12,"sine"),90); }
+  function soundBad(){ tone(220,0.14,"square"); setTimeout(()=>tone(180,0.16,"sawtooth"),90); }
+  function soundWin(){ [523,659,784,988,784,988,1175].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"sine"), i*120)); }
+  function soundLose(){ [392,330,294,262].forEach((f,i)=>setTimeout(()=>tone(f,0.18,"triangle"), i*160)); }
 
-  function clearPending(){
-    if(pendingTimer !== null){
-      clearTimeout(pendingTimer);
-      pendingTimer = null;
-    }
-  }
-  function showOverlay(el, on){
-    if(on) el.classList.add("show"); else el.classList.remove("show");
-  }
+  function clearPending(){ if(pendingTimer!==null){ clearTimeout(pendingTimer); pendingTimer=null; } }
+  function showOverlay(el, on){ if(on) el.classList.add("show"); else el.classList.remove("show"); }
   function preset(level){ return CFG.difficulty[level] || CFG.difficulty.easy; }
 
   function initState(){
     state = {
-      phase: "menu",
-      locked: true,
-
-      score: 0,
-      lives: CFG.lives,
-
-      remaining: CFG.questions.map((_, i)=>i),
-      currentIdx: null,
-      recent: [],
-
-      active: [],
-      lastSpawnAt: performance.now(),
-      lastLaneY: null,
-
-      difficulty: "easy",
-      speed: preset("easy").speed,
-      spawnEveryMs: preset("easy").spawnEveryMs,
-      minXGap: preset("easy").minXGap,
-      maxOnScreen: preset("easy").maxOnScreen,
+      phase:"menu", locked:true,
+      score:0, lives:CFG.lives,
+      remaining: CFG.questions.map((_,i)=>i),
+      currentIdx:null, recent:[],
+      active:[], lastSpawnAt:performance.now(), lastLaneY:null,
+      difficulty:"easy",
+      speed:preset("easy").speed,
+      spawnEveryMs:preset("easy").spawnEveryMs,
+      minXGap:preset("easy").minXGap,
+      maxOnScreen:preset("easy").maxOnScreen,
     };
   }
   function applyDifficulty(level){
@@ -1369,8 +1229,7 @@ function startGameMode(){
     state.maxOnScreen = p.maxOnScreen;
     diffBtns.forEach(b=>b.classList.toggle("active", b.dataset.level===level));
   }
-
-  function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
+  function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0?"—":""); }
 
   function updateProgress(){
     const total = CFG.questions.length;
@@ -1380,39 +1239,33 @@ function startGameMode(){
     progressFill.style.width = pct + "%";
     progressText.textContent = `Вопрос ${current} из ${total}`;
   }
-
   function updateHUD(){
     scoreEl.textContent = String(state.score);
     livesEl.textContent = hearts(state.lives);
-    const q = (state.currentIdx !== null) ? CFG.questions[state.currentIdx] : null;
+    const q = (state.currentIdx!==null) ? CFG.questions[state.currentIdx] : null;
     questionBox.textContent = q ? q.q : "";
     updateProgress();
   }
-
   function clearAnswers(){
     state.active.forEach(o=>o.el.remove());
     state.active = [];
     state.lastLaneY = null;
   }
-
   function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
-
   function buildLanes(){
-    const paddingTop = 150;
-    const paddingBottom = 100;
-    const minY = paddingTop;
-    const maxY = scene.clientHeight - paddingBottom;
+    const minY = 150;
+    const maxY = scene.clientHeight - 100;
     const step = 108;
-    const lanes = [];
+    const lanes=[];
     for(let y=minY; y<=maxY; y+=step) lanes.push(y);
     return lanes.length ? lanes : [Math.round((minY+maxY)/2)];
   }
   function pickLaneY(){
     const lanes = buildLanes();
     let y = lanes[randInt(0, lanes.length-1)];
-    if(state.lastLaneY !== null && lanes.length > 1){
+    if(state.lastLaneY!==null && lanes.length>1){
       let tries=0;
-      while(y === state.lastLaneY && tries<10){
+      while(y===state.lastLaneY && tries<10){
         y = lanes[randInt(0, lanes.length-1)];
         tries++;
       }
@@ -1424,12 +1277,11 @@ function startGameMode(){
   function createOrb(answer){
     const el = document.createElement("div");
     el.className = "orb answer";
-    el.dataset.correct = answer.correct ? "1":"0";
+    el.dataset.correct = answer.correct ? "1" : "0";
 
     if(CFG.answerImg){
       const img = document.createElement("div");
       img.className = "img";
-      img.style.backgroundImage = `url('${cssUrl(CFG.answerImg)}')`;
       el.appendChild(img);
       const sh = document.createElement("div");
       sh.className = "shade";
@@ -1457,15 +1309,15 @@ function startGameMode(){
   }
 
   function maybeSpawn(now){
-    if(state.phase !== "playing" || state.locked) return;
+    if(state.phase!=="playing" || state.locked) return;
     if(state.active.length >= state.maxOnScreen) return;
     if(now - state.lastSpawnAt < state.spawnEveryMs) return;
 
     const spawnX = rightEdgeX();
     const nx = newestX();
-    if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return;
+    if(nx!==-Infinity && nx > (spawnX - state.minXGap)) return;
 
-    const q = (state.currentIdx !== null) ? CFG.questions[state.currentIdx] : null;
+    const q = (state.currentIdx!==null) ? CFG.questions[state.currentIdx] : null;
     if(!q) return;
 
     const pick = q.answers[randInt(0, q.answers.length-1)];
@@ -1481,11 +1333,10 @@ function startGameMode(){
 
   function showFeedback(text, ok){
     feedback.textContent = text;
-    feedback.style.color = ok ? "var(--good)" : "var(--bad)";
+    feedback.style.color = ok ? "#4cff9e" : "#ff6b6b";
     feedback.classList.add("show");
-    setTimeout(()=>feedback.classList.remove("show"), Math.max(120, 420 - 80));
+    setTimeout(()=>feedback.classList.remove("show"), 340);
   }
-
   function showPointsPop(x,y,points){
     const pop = document.createElement("div");
     pop.className = "pop";
@@ -1498,52 +1349,44 @@ function startGameMode(){
 
   function endGame(win){
     clearPending();
-    state.phase = "ended";
-    state.locked = true;
+    state.phase="ended";
+    state.locked=true;
     clearAnswers();
     updateHUD();
-
     win ? soundWin() : soundLose();
-
     finalTitle.textContent = win ? "🎉 Молодец!" : "😢 Попробуй ещё";
-    finalText.textContent = win
-      ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
-      : `Жизни закончились. Очки: ${state.score}.`;
-
+    finalText.textContent = win ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
+                                : `Жизни закончились. Очки: ${state.score}.`;
     showOverlay(finalOverlay, true);
   }
 
   function pushRecent(idx){
-    if(idx === null) return;
+    if(idx===null) return;
     state.recent.push(idx);
     const maxLen = Math.max(0, CFG.cooldownTurns + 1);
     while(state.recent.length > maxLen) state.recent.shift();
   }
-
   function pickNextQuestionWithCooldown(){
     if(!state.remaining.length) return null;
-    if(state.remaining.length === 1) return state.remaining[0];
-
+    if(state.remaining.length===1) return state.remaining[0];
     const banned = new Set(state.recent);
     const candidates = state.remaining.filter(i => !banned.has(i));
-    let pool = candidates.length ? candidates : state.remaining.filter(i => i !== state.currentIdx);
+    let pool = candidates.length ? candidates : state.remaining.filter(i => i!==state.currentIdx);
     if(!pool.length) pool = state.remaining.slice();
     return pool[Math.floor(Math.random() * pool.length)];
   }
-
   function chooseNextQuestion(){
     pushRecent(state.currentIdx);
     state.currentIdx = pickNextQuestionWithCooldown();
-    if(state.currentIdx === null){ endGame(true); return; }
+    if(state.currentIdx===null){ endGame(true); return; }
     updateHUD();
-    state.locked = false;
+    state.locked=false;
     clearAnswers();
     state.lastSpawnAt = performance.now();
   }
 
   function handleHit(correct, hitX, hitY){
-    if(state.locked || state.phase !== "playing") return;
-
+    if(state.locked || state.phase!=="playing") return;
     state.locked = true;
     clearAnswers();
     clearPending();
@@ -1555,29 +1398,26 @@ function startGameMode(){
       soundOk();
 
       const idx = state.currentIdx;
-      state.remaining = state.remaining.filter(x => x !== idx);
+      state.remaining = state.remaining.filter(x => x!==idx);
 
       pendingTimer = setTimeout(()=>{
-        pendingTimer = null;
-        state.remaining.length === 0 ? endGame(true) : chooseNextQuestion();
+        pendingTimer=null;
+        state.remaining.length===0 ? endGame(true) : chooseNextQuestion();
       }, 420);
-
-    } else {
+    }else{
       state.lives--;
       showFeedback("Неверно", false);
       soundBad();
-
       pendingTimer = setTimeout(()=>{
-        pendingTimer = null;
-        state.lives <= 0 ? endGame(false) : chooseNextQuestion();
+        pendingTimer=null;
+        state.lives<=0 ? endGame(false) : chooseNextQuestion();
       }, 420);
     }
-
     updateHUD();
   }
 
   function checkCollision(obj){
-    if(obj.hit || state.locked || state.phase !== "playing") return;
+    if(obj.hit || state.locked || state.phase!=="playing") return;
     const a = obj.el.getBoundingClientRect();
     const p = player.getBoundingClientRect();
     const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
@@ -1594,15 +1434,12 @@ function startGameMode(){
   function resetGameForPlay(){
     clearPending();
     clearAnswers();
-
-    state.score = 0;
-    state.lives = CFG.lives;
-    state.remaining = CFG.questions.map((_, i)=>i);
-    state.recent = [];
-
-    state.phase = "playing";
-    state.locked = false;
-
+    state.score=0;
+    state.lives=CFG.lives;
+    state.remaining = CFG.questions.map((_,i)=>i);
+    state.recent=[];
+    state.phase="playing";
+    state.locked=false;
     state.currentIdx = pickNextQuestionWithCooldown();
     state.lastSpawnAt = performance.now();
     player.style.top = "50%";
@@ -1612,21 +1449,20 @@ function startGameMode(){
   async function startGame(){
     await unlockAudio();
     soundStart();
-    showOverlay(startOverlay, false);
-    showOverlay(finalOverlay, false);
+    showOverlay(startOverlay,false);
+    showOverlay(finalOverlay,false);
     resetGameForPlay();
   }
   async function playAgain(){
     await unlockAudio();
     soundStart();
-    showOverlay(finalOverlay, false);
-    showOverlay(startOverlay, false);
+    showOverlay(finalOverlay,false);
+    showOverlay(startOverlay,false);
     resetGameForPlay();
   }
 
   function loop(now){
-    if(state.phase === "playing"){
-      // movement
+    if(state.phase==="playing"){
       let y = player.offsetTop;
       if(keys.ArrowUp) y -= CFG.playerSpeed;
       if(keys.ArrowDown) y += CFG.playerSpeed;
@@ -1637,13 +1473,13 @@ function startGameMode(){
 
       if(!state.locked){
         const leftLimit = -160;
-        const next = [];
+        const next=[];
         for(const obj of state.active){
           obj.el.style.left = (obj.el.offsetLeft - state.speed) + "px";
           checkCollision(obj);
           if(obj.el.isConnected){
             if(obj.el.offsetLeft >= leftLimit) next.push(obj);
-            else obj.el.remove(); // пропуск без штрафа
+            else obj.el.remove();
           }
         }
         state.active = next;
@@ -1652,7 +1488,6 @@ function startGameMode(){
     requestAnimationFrame(loop);
   }
 
-  // UI events
   diffBtns.forEach(btn=>{
     btn.addEventListener("click", async ()=>{
       await unlockAudio();
@@ -1666,62 +1501,88 @@ function startGameMode(){
   window.addEventListener("keyup",(e)=>{ keys[e.key]=false; });
   window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true});
 
-  // init
   initState();
   applyDifficulty("easy");
   updateHUD();
-  player.style.top = "50%";
-  showOverlay(startOverlay, true);
-  showOverlay(finalOverlay, false);
+  player.style.top="50%";
+  showOverlay(startOverlay,true);
+  showOverlay(finalOverlay,false);
   loop(performance.now());
 }
 
-/* =========================================================
-   Utils
-========================================================= */
+/* ====== normalize + helpers ====== */
 function normalizeCfg(cfg){
   const out = deepClone(DEFAULT_CFG);
   Object.assign(out, cfg || {});
-  // safe questions
-  if(!Array.isArray(out.questions) || out.questions.length === 0){
-    out.questions = deepClone(DEFAULT_CFG.questions);
-  }
+  if(!Array.isArray(out.questions) || out.questions.length===0) out.questions = deepClone(DEFAULT_CFG.questions);
   out.questions = out.questions.map(q=>{
-    const qq = { q: String(q.q||""), answers: Array.isArray(q.answers)?q.answers:[] };
+    const qq = { q:String(q.q||""), answers:Array.isArray(q.answers)?q.answers:[] };
     qq.answers = qq.answers.map(a=>({label:String(a.label||""), text:String(a.text||""), correct:!!a.correct}));
-    if(qq.answers.length < 2){
-      qq.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
-    }
-    if(!qq.answers.some(a=>a.correct)) qq.answers[0].correct = true;
+    if(qq.answers.length<2) qq.answers=[{label:"A",text:"",correct:true},{label:"B",text:"",correct:false}];
+    if(!qq.answers.some(a=>a.correct)) qq.answers[0].correct=true;
     return qq;
   });
-  // ensure numbers
-  out.livesCount = clampInt(out.livesCount, 1, 10, 3);
-  out.pointsPerCorrect = clampInt(out.pointsPerCorrect, 1, 200, 10);
-  out.cooldownTurns = clampInt(out.cooldownTurns, 0, 10, 3);
-  out.playerSpeed = clampInt(out.playerSpeed, 3, 18, 7);
 
-  out.lives = out.livesCount; // game uses CFG.lives
+  out.livesCount = clampInt(out.livesCount,1,10,3);
+  out.pointsPerCorrect = clampInt(out.pointsPerCorrect,1,200,10);
+  out.cooldownTurns = clampInt(out.cooldownTurns,0,10,3);
+  out.playerSpeed = clampInt(out.playerSpeed,3,18,7);
+
+  out.textFxStrength = clampInt(out.textFxStrength,1,12,6);
+  out.textFxMode = ["none","shadow","neon"].includes(out.textFxMode) ? out.textFxMode : "none";
+  out.textFxTargets = ["all","qa","answers","question","hud"].includes(out.textFxTargets) ? out.textFxTargets : "all";
+
+  // NEW answer image constraints
+  out.answerImgFit = ["cover","contain"].includes(out.answerImgFit) ? out.answerImgFit : "cover";
+  out.answerImgOpacity = clampNum(out.answerImgOpacity, 0, 1, 0.55);
+  out.answerImgScale = clampNum(out.answerImgScale, 0.6, 2, 1);
+  out.answerImgBlur = clampNum(out.answerImgBlur, 0, 10, 0);
+  out.answerImgPosX = clampNum(out.answerImgPosX, 0, 100, 50);
+  out.answerImgPosY = clampNum(out.answerImgPosY, 0, 100, 50);
+
+  out.lives = out.livesCount;
   return out;
 }
-function clampInt(v, a, b, d){
-  const n = Number(v);
-  if(!Number.isFinite(n)) return d;
+function clampInt(v,a,b,d){
+  const n=Number(v); if(!Number.isFinite(n)) return d;
   return Math.max(a, Math.min(b, Math.round(n)));
 }
-function escapeCss(s){
-  return String(s||"").replace(/</g,"").replace(/>/g,"").replace(/"/g,"");
+function clampNum(v,a,b,d){
+  const n=Number(v); if(!Number.isFinite(n)) return d;
+  return Math.max(a, Math.min(b, n));
 }
-function cssUrl(u){
-  return String(u||"").replace(/'/g,"%27");
-}
+function escapeCss(s){ return String(s||"").replace(/</g,"").replace(/>/g,"").replace(/"/g,""); }
+function cssUrl(u){ return String(u||"").replace(/'/g,"%27"); }
 function hexToRgba(hex, alpha){
   const h = String(hex||"").replace("#","");
-  if(h.length !== 6) return `rgba(255,255,255,${alpha})`;
-  const r = parseInt(h.slice(0,2),16);
-  const g = parseInt(h.slice(2,4),16);
-  const b = parseInt(h.slice(4,6),16);
+  if(h.length!==6) return `rgba(255,255,255,${alpha})`;
+  const r=parseInt(h.slice(0,2),16);
+  const g=parseInt(h.slice(2,4),16);
+  const b=parseInt(h.slice(4,6),16);
   return `rgba(${r},${g},${b},${alpha})`;
+}
+function buildTextFxCss(mode, strength, color){
+  if(!mode || mode==="none") return "";
+  const s=Math.max(1, Math.min(12, Number(strength)||6));
+  const c=color||"#ffd84a";
+  if(mode==="shadow"){
+    const blur=6+s*2;
+    const y=2+Math.floor(s/3);
+    return `text-shadow: 0 ${y}px ${blur}px ${hexToRgba(c,0.55)};`;
+  }
+  const b1=4+s*1.2, b2=10+s*2.2, b3=18+s*3.2;
+  return `text-shadow:
+    0 0 ${b1}px ${hexToRgba(c,0.85)},
+    0 0 ${b2}px ${hexToRgba(c,0.65)},
+    0 0 ${b3}px ${hexToRgba(c,0.45)};`;
+}
+function fxAllowed(targets, part){
+  if(targets==="all") return true;
+  if(targets==="qa") return (part==="question"||part==="answers");
+  if(targets==="answers") return part==="answers";
+  if(targets==="question") return part==="question";
+  if(targets==="hud") return part==="hud";
+  return true;
 }
 </script>
 </body>
