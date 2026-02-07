@@ -28,15 +28,9 @@
       --size: 86px;
     }
 
-    html,body{
-      margin:0;height:100%;
-      background:var(--bg)!important;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      overflow:hidden;
-    }
+    html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
     #game{position:relative;width:100%;height:100%;}
 
-    /* TOP BAR */
     #topbar{
       position:absolute; top:12px; left:12px; right:12px;
       display:flex; align-items:flex-start; justify-content:space-between;
@@ -60,7 +54,6 @@
     .pill .label{font-size:12px;color:rgba(255,255,255,.72);font-weight:900}
     .pill .value{font-size:16px;font-weight:1100}
 
-    /* QUESTION */
     #questionWrap{
       position:absolute; top:62px; left:50%; transform:translateX(-50%);
       z-index:110; pointer-events:none;
@@ -81,7 +74,6 @@
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
-    /* SCENE */
     #scene{position:absolute; inset:0; overflow:hidden;}
 
     .orb{
@@ -96,8 +88,8 @@
     #player{
       left:92px; top:50%;
       transform:translate(-50%,-50%);
-      background: var(--player-bg);
-      border: 1px solid var(--player-brd);
+      background: rgba(120,90,255,.22);
+      border: 1px solid rgba(120,90,255,.40);
       box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
     }
     #player:before{
@@ -107,7 +99,6 @@
       box-shadow:0 0 14px rgba(255,255,255,.25);
     }
 
-    /* ANSWERS */
     .answer{
       background: var(--answer-bg);
       border: 1px solid var(--answer-brd);
@@ -127,7 +118,6 @@
       font-size:18px;
       line-height:1;
       letter-spacing:.8px;
-      opacity:.98;
       text-shadow: 0 10px 22px rgba(0,0,0,.55);
       -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
@@ -146,7 +136,6 @@
       -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
 
-    /* +points neon */
     .pop{
       position:absolute;
       font-weight:1300;
@@ -179,7 +168,6 @@
     }
     #feedback.show{opacity:1;}
 
-    /* progress bottom */
     #progressWrap{
       position:absolute; left:12px; right:12px; bottom:12px;
       z-index:115; pointer-events:none;
@@ -307,7 +295,7 @@
       <h2>Задача игрока</h2>
       <p>
         Лови <b>правильный ответ</b> на вопрос сверху.<br>
-        Управление: <b>↑</b> / <b>↓</b> (можно и кнопками на клавиатуре).
+        Управление: <b>↑</b> / <b>↓</b>.
       </p>
 
       <div class="row">
@@ -319,7 +307,7 @@
         <button class="btn primary" id="startBtn">Начать игру</button>
       </div>
 
-      <div class="hint">Подсказка: пропускать ответы можно — они появятся снова.</div>
+      <div class="hint">Пропускать ответы можно — они появятся снова.</div>
     </div>
   </div>
 
@@ -328,12 +316,13 @@
       <h2 id="finalTitle">—</h2>
       <p id="finalText">—</p>
       <div class="row" style="justify-content:flex-end;">
-        <button class="btn" id="restartBtn">Играть ещё</button>
+        <button class="btn primary" id="playAgainBtn">Играть ещё</button>
+        <button class="btn" id="menuBtn">В меню</button>
       </div>
     </div>
   </div>
 
-  <div id="version">v14</div>
+  <div id="version">v15</div>
 </div>
 
 <script>
@@ -344,11 +333,7 @@ const CFG = {
   pointsPerCorrect: 10,
   soundVolume: 0.28,
 
-  layout: {
-    paddingTop: 130,
-    paddingBottom: 86,
-    laneMinDist: 108,
-  },
+  layout: { paddingTop: 130, paddingBottom: 86, laneMinDist: 108 },
 
   difficulty: {
     easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
@@ -391,7 +376,8 @@ const diffBtns = Array.from(document.querySelectorAll(".chipBtn"));
 const finalOverlay = document.getElementById("finalOverlay");
 const finalTitle = document.getElementById("finalTitle");
 const finalText = document.getElementById("finalText");
-const restartBtn = document.getElementById("restartBtn");
+const playAgainBtn = document.getElementById("playAgainBtn");
+const menuBtn = document.getElementById("menuBtn");
 
 let keys = {};
 let raf = null;
@@ -561,7 +547,7 @@ function maybeSpawn(now){
 
   const spawnX = rightEdgeX();
   const nx = newestX();
-  if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return; // gap
+  if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return;
 
   const q = CFG.questions[state.qIndex];
   const pick = q.answers[randInt(0, q.answers.length-1)];
@@ -640,7 +626,6 @@ function handleHit(correct, hitX, hitY){
     showFeedback("Неверно", false);
     soundBad();
   }
-
   setTimeout(goNextQuestion, CFG.feedbackMs);
 }
 
@@ -659,8 +644,50 @@ function checkCollision(obj){
   }
 }
 
+function resetGameStateForPlay(){
+  // ✅ гарантированный reset
+  clearAnswers();
+  state.score = 0;
+  state.lives = CFG.lives;
+  state.qIndex = 0;
+  state.locked = false;
+  state.running = true;
+  state.lastSpawnAt = performance.now();
+  updateHUD();
+  player.style.top = "50%";
+}
+
+async function startGame(){
+  await unlockAudio();
+  soundStart();
+
+  startOverlay.classList.add("hide");
+  finalOverlay.classList.remove("show");
+  finalOverlay.style.display = "none";
+
+  resetGameStateForPlay();
+}
+
+async function playAgain(){
+  await unlockAudio();
+  soundStart(); // как "старт"
+  finalOverlay.classList.remove("show");
+  finalOverlay.style.display = "none";
+  startOverlay.classList.add("hide");
+  resetGameStateForPlay();
+}
+
+function backToMenu(){
+  state.running = false;
+  state.locked = true;
+  clearAnswers();
+  updateHUD();
+  finalOverlay.classList.remove("show");
+  finalOverlay.style.display = "none";
+  startOverlay.classList.remove("hide");
+}
+
 function loop(now){
-  // движение игрока только в игре
   if(state.running){
     let y = player.offsetTop;
     if(keys.ArrowUp) y -= CFG.playerSpeed;
@@ -688,43 +715,16 @@ function loop(now){
   raf = requestAnimationFrame(loop);
 }
 
-async function startGame(){
-  await unlockAudio();
-  soundStart();
-
-  finalOverlay.classList.remove("show");
-  finalOverlay.style.display = "none";
-
-  startOverlay.classList.add("hide");
-
-  state.score = 0;
-  state.lives = CFG.lives;
-  state.qIndex = 0;
-  state.locked = false;
-  state.running = true;
-  clearAnswers();
-  state.lastSpawnAt = performance.now();
-  updateHUD();
-  player.style.top = "50%";
-}
-
-function backToStart(){
-  state.running = false;
-  state.locked = true;
-  clearAnswers();
-  updateHUD();
-  startOverlay.classList.remove("hide");
-}
-
+/* UI */
 diffBtns.forEach(btn=>{
   btn.addEventListener("click", async ()=>{
     await unlockAudio();
     applyDifficulty(btn.dataset.level);
   });
 });
-
 startBtn.addEventListener("click", startGame);
-restartBtn.addEventListener("click", backToStart);
+playAgainBtn.addEventListener("click", playAgain);
+menuBtn.addEventListener("click", backToMenu);
 
 window.addEventListener("keydown", async (e)=>{
   keys[e.key]=true;
@@ -733,6 +733,7 @@ window.addEventListener("keydown", async (e)=>{
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
 window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true });
 
+/* init */
 initState();
 applyDifficulty("easy");
 updateHUD();
