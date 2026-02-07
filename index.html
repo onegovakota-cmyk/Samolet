@@ -293,7 +293,7 @@
       <h2>Задача игрока</h2>
       <p>
         Вопросы выбираются <b>рандомно</b>.<br>
-        Ошибка = минус жизнь, вопрос может вернуться, но <b>не сразу</b>.
+        Тот же вопрос может вернуться <b>не раньше чем через 3 других вопроса</b>.
       </p>
 
       <div class="row">
@@ -320,7 +320,7 @@
     </div>
   </div>
 
-  <div id="version">v19</div>
+  <div id="version">v20</div>
 </div>
 
 <script>
@@ -331,8 +331,8 @@ const CFG = {
   pointsPerCorrect: 10,
   soundVolume: 0.28,
 
-  // ✅ сколько "других" вопросов должно пройти, чтобы тот же мог вернуться
-  cooldownTurns: 2,
+  // ✅ через 3 вопроса
+  cooldownTurns: 3,
 
   layout: { paddingTop: 130, paddingBottom: 86, laneMinDist: 108 },
 
@@ -460,7 +460,7 @@ function initState(){
     remaining: [],
     currentIdx: null,
 
-    // ✅ хранит последние показанные вопросы (для cooldown)
+    // ✅ последние показанные вопросы
     recent: [],
 
     active: [],
@@ -624,7 +624,8 @@ function endGame(win){
 function pushRecent(idx){
   if(idx === null) return;
   state.recent.push(idx);
-  // держим длину = cooldownTurns + 1 (чтобы "через N вопросов")
+
+  // ✅ чтобы вернулся "после 3 других" — держим 4 последних (сам + 3 следующих)
   const maxLen = Math.max(0, CFG.cooldownTurns + 1);
   while(state.recent.length > maxLen) state.recent.shift();
 }
@@ -632,28 +633,21 @@ function pushRecent(idx){
 function pickNextQuestionWithCooldown(){
   if(!state.remaining.length) return null;
 
-  // если остался 1 — показываем его (иначе зависнем)
   if(state.remaining.length === 1) return state.remaining[0];
 
-  // кандидаты = remaining без recent
   const banned = new Set(state.recent);
   const candidates = state.remaining.filter(i => !banned.has(i));
 
-  // если вдруг все забанены (малый пул) — ослабляем и берём любой, кроме текущего
   let pool = candidates.length ? candidates : state.remaining.filter(i => i !== state.currentIdx);
-
-  // финальный fallback
   if(!pool.length) pool = state.remaining.slice();
 
-  const r = Math.floor(Math.random() * pool.length);
-  return pool[r];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function chooseNextQuestion(){
-  // ✅ добавляем текущий в recent (чтобы он не мог выпасть сразу снова)
   pushRecent(state.currentIdx);
-
   state.currentIdx = pickNextQuestionWithCooldown();
+
   if(state.currentIdx === null){
     endGame(true);
     return;
@@ -678,7 +672,6 @@ function handleHit(correct, hitX, hitY){
     showFeedback("Верно", true);
     soundOk();
 
-    // удаляем текущий из remaining
     const idx = state.currentIdx;
     state.remaining = state.remaining.filter(x => x !== idx);
 
