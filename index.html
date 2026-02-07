@@ -14,7 +14,7 @@
       --panel-brd: rgba(255,255,255,.18);
       --shadow: 0 16px 60px rgba(0,0,0,.42);
 
-      /* ВАЖНО: ответы тёмные => текст точно виден на белом фоне */
+      /* ответы тёмные => текст виден на белом фоне */
       --answer-bg: rgba(20, 18, 34, .82);
       --answer-brd: rgba(255,255,255,.22);
       --answer-text: rgba(255,255,255,.98);
@@ -27,15 +27,10 @@
 
       --neon-yellow: #ffd84a;
 
-      --size: 86px; /* игрок и ответы одного размера */
+      --size: 86px;
     }
 
-    html,body{
-      margin:0;height:100%;
-      background:var(--bg)!important;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      overflow:hidden;
-    }
+    html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
     #game{position:relative;width:100%;height:100%;}
 
     /* HUD */
@@ -130,7 +125,6 @@
       text-shadow: 0 10px 22px rgba(0,0,0,.55);
       -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
-    /* Текст варианта — делаем "как бейдж" чтобы точно был виден */
     .answer .txt{
       font-weight:1100;
       font-size:13px;
@@ -149,7 +143,7 @@
       -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
 
-    /* +points (жёлтый неон) */
+    /* +points neon yellow */
     .pop{
       position:absolute;
       font-weight:1300;
@@ -270,13 +264,14 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v8</div>
+  <div id="version">v10</div>
 </div>
 
 <script>
+/* ============ CONFIG ============ */
 const GAME_CONFIG = {
   lives: 3,
-  speed: 3.0,
+  speed: 3.2,
   playerSpeed: 7,
   feedbackMs: 420,
 
@@ -284,18 +279,18 @@ const GAME_CONFIG = {
 
   sound: { enabled:true, ok:{volume:0.25}, bad:{volume:0.30} },
 
-  progress: { show:true, text:(cur,total)=>`Вопрос ${cur} из ${total}` },
-
-  // ✅ если ответы улетели и игрок их "пропустил" — это ошибка
-  missCountsAsWrong: true,
-
   layout: {
     paddingTop: 96,
     paddingBottom: 86,
-    minDistY: 96,
-    startX: 180,
-    xSpreadMin: 170,
-    xSpreadMax: 260,
+    laneMinDist: 92,
+  },
+
+  // Поток: как часто спавнить новый объект (меньше = плотнее)
+  spawn: {
+    everyMs: 520,
+    jitterMs: 220,     // небольшая случайность
+    startXPad: 50,     // за правым краем
+    minXGap: 22,       // минимальный зазор по X между новыми объектами
   },
 
   questions: [
@@ -316,6 +311,7 @@ const GAME_CONFIG = {
     ]},
   ],
 };
+/* =============================== */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -331,10 +327,9 @@ const finalText = document.getElementById("finalText");
 
 let keys = {};
 let raf = null;
-
 let state = null;
 
-/* ---------- SOUND (WebAudio) ---------- */
+/* WebAudio */
 let audioCtx = null, audioUnlocked = false;
 function ensureAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
@@ -382,7 +377,6 @@ function beepBad(){
   o1.start(now); o2.start(now);
   o1.stop(now+0.24); o2.stop(now+0.24);
 }
-/* ------------------------------------- */
 
 function initState(){
   state = {
@@ -390,13 +384,10 @@ function initState(){
     lives: GAME_CONFIG.lives,
     score: 0,
     locked: false,
-
-    // ✅ важно: чтобы не было дублей
-    setId: 0,
     active: [],
-
-    // чтобы не было второго loop()
     running: true,
+    lastSpawnAt: performance.now(),
+    lastSpawnX: null,
   };
 }
 
@@ -420,64 +411,76 @@ function updateHUD(){
 function clearAnswers(){
   state.active.forEach(o=>o.el.remove());
   state.active = [];
+  state.lastSpawnX = null;
 }
 
 function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
+function pickLaneY(){
+  // создаём "уровни" по вертикали, чтобы варианты были на разных местах
+  const minY = GAME_CONFIG.layout.paddingTop;
+  const maxY = scene.clientHeight - GAME_CONFIG.layout.paddingBottom;
+  const step = GAME_CONFIG.layout.laneMinDist;
+  const lanes = [];
+  for(let y=minY; y<=maxY; y+=step) lanes.push(y);
+  if(!lanes.length) return Math.round((minY+maxY)/2);
+  return lanes[randInt(0, lanes.length-1)];
+}
 
-function spawnAnswersForQuestion(){
-  // ✅ стоп: если уже есть ответы — не создаём новую пачку
-  if(state.active.length) return;
+function createAnswerOrb(answer){
+  const el = document.createElement("div");
+  el.className = "orb answer";
+  el.dataset.correct = answer.correct ? "1":"0";
 
-  const q = GAME_CONFIG.questions[state.qIndex];
-  const L = GAME_CONFIG.layout;
+  const lab = document.createElement("div");
+  lab.className = "lab";
+  lab.textContent = answer.label;
 
-  state.setId++;
-  const mySetId = state.setId;
+  const txt = document.createElement("div");
+  txt.className = "txt";
+  txt.textContent = answer.text;
 
-  const usedY = [];
-  const startX = scene.clientWidth + L.startX;
+  el.appendChild(lab);
+  el.appendChild(txt);
+  return el;
+}
 
-  function pickY(){
-    const minY = L.paddingTop;
-    const maxY = scene.clientHeight - L.paddingBottom;
-    for(let attempt=0; attempt<80; attempt++){
-      const y = randInt(minY, maxY);
-      if(usedY.every(prev => Math.abs(prev-y) >= L.minDistY)){
-        usedY.push(y); return y;
-      }
-    }
-    const fallback = randInt(minY, maxY);
-    usedY.push(fallback);
-    return fallback;
+function maybeSpawnStream(now){
+  if(state.locked) return;
+
+  const base = GAME_CONFIG.spawn.everyMs;
+  const jitter = GAME_CONFIG.spawn.jitterMs;
+  const due = state.lastSpawnAt + base + (Math.random()*jitter - jitter/2);
+
+  if(now < due) return;
+
+  // не делаем слишком большой зазор по X: если последний объект ещё близко справа, подождём чуть
+  const rightEdge = scene.clientWidth + GAME_CONFIG.spawn.startXPad;
+  const minGap = GAME_CONFIG.spawn.minXGap;
+
+  // вычислим текущий самый "правый" объект
+  let currentMaxX = -Infinity;
+  for(const o of state.active){
+    const x = o.el.offsetLeft;
+    if(x > currentMaxX) currentMaxX = x;
+  }
+  if(currentMaxX !== -Infinity && currentMaxX > rightEdge - minGap){
+    // слишком близко — подождём немного
+    state.lastSpawnAt = now - base/2;
+    return;
   }
 
-  const shuffled = [...q.answers].sort(()=>Math.random()-0.5);
+  const q = GAME_CONFIG.questions[state.qIndex];
+  const pick = q.answers[randInt(0, q.answers.length-1)]; // ✅ можно много одинаковых
+  const el = createAnswerOrb(pick);
 
-  shuffled.forEach((a,i)=>{
-    const el = document.createElement("div");
-    el.className = "orb answer";
-    el.dataset.correct = a.correct ? "1":"0";
-    el.dataset.setid = String(mySetId);
+  el.style.left = rightEdge + "px";
+  el.style.top = pickLaneY() + "px";
+  el.style.transform = "translate(-50%,-50%)";
 
-    const lab = document.createElement("div");
-    lab.className = "lab";
-    lab.textContent = a.label;
+  scene.appendChild(el);
+  state.active.push({ el, data: pick, hit:false });
 
-    const txt = document.createElement("div");
-    txt.className = "txt";
-    txt.textContent = a.text;  // ✅ текст варианта
-
-    el.appendChild(lab);
-    el.appendChild(txt);
-
-    const xOffset = i * randInt(L.xSpreadMin, L.xSpreadMax);
-    el.style.left = (startX + xOffset) + "px";
-    el.style.top = pickY() + "px";
-    el.style.transform = "translate(-50%,-50%)";
-
-    scene.appendChild(el);
-    state.active.push({ el, data:a, hit:false, setId: mySetId });
-  });
+  state.lastSpawnAt = now;
 }
 
 function showFeedback(text, ok){
@@ -514,34 +517,20 @@ function endGame(win){
 function goNextQuestion(){
   state.qIndex++;
   state.locked = false;
-  clearAnswers();
 
   if(state.lives <= 0){ endGame(false); return; }
   if(state.qIndex >= GAME_CONFIG.questions.length){ endGame(true); return; }
 
   updateHUD();
-  spawnAnswersForQuestion();
+  clearAnswers();                 // очищаем поток под следующий вопрос
+  state.lastSpawnAt = performance.now();
 }
 
-function applyWrong(reasonText){
-  state.lives--;
-  updateHUD();
-  showFeedback(reasonText || "Неверно", false);
-  beepBad();
-  player.animate(
-    [{transform:"translate(-50%,-50%)"},
-     {transform:"translate(-50%,-50%) translateX(-4px)"},
-     {transform:"translate(-50%,-50%) translateX(4px)"},
-     {transform:"translate(-50%,-50%)"}],
-    {duration:220}
-  );
-}
-
-function handleAnswer(correct, hitX, hitY){
+function handleHit(correct, hitX, hitY){
   if(state.locked) return;
   state.locked = true;
 
-  // убрать остальные, чтобы не было вторичных попаданий
+  // при попадании останавливаем и чистим поток
   clearAnswers();
 
   if(correct){
@@ -551,8 +540,18 @@ function handleAnswer(correct, hitX, hitY){
     showPointsPop(hitX, hitY, pts);
     showFeedback("Верно", true);
     beepOk();
-  }else{
-    applyWrong("Неверно");
+  } else {
+    state.lives--;
+    updateHUD();
+    showFeedback("Неверно", false);
+    beepBad();
+    player.animate(
+      [{transform:"translate(-50%,-50%)"},
+       {transform:"translate(-50%,-50%) translateX(-4px)"},
+       {transform:"translate(-50%,-50%) translateX(4px)"},
+       {transform:"translate(-50%,-50%)"}],
+      {duration:220}
+    );
   }
 
   setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
@@ -560,67 +559,47 @@ function handleAnswer(correct, hitX, hitY){
 
 function checkCollision(obj){
   if(obj.hit || state.locked) return;
-
   const a = obj.el.getBoundingClientRect();
   const p = player.getBoundingClientRect();
   const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
-
   if(overlap){
     obj.hit = true;
     const sr = scene.getBoundingClientRect();
     const hitX = (a.left+a.right)/2 - sr.left;
     const hitY = (a.top+a.bottom)/2 - sr.top;
-
     obj.el.remove();
-    handleAnswer(obj.data.correct===true, hitX, hitY);
+    handleHit(obj.data.correct===true, hitX, hitY);
   }
 }
 
-function loop(){
+function loop(now){
   if(!state || !state.running) return;
 
-  // движение игрока
+  // player
   let y = player.offsetTop;
   if(keys.ArrowUp) y -= GAME_CONFIG.playerSpeed;
   if(keys.ArrowDown) y += GAME_CONFIG.playerSpeed;
   y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
   player.style.top = y + "px";
 
-  // гарантируем, что есть ответы
-  if(!state.locked) spawnAnswersForQuestion();
+  // stream spawn
+  maybeSpawnStream(now);
 
-  // движение ответов + удаление ушедших за экран
+  // move answers + remove missed (✅ пропуск НЕ ошибка)
   if(!state.locked){
-    const leftLimit = -120; // ушёл далеко
+    const leftLimit = -140;
+    const next = [];
     for(const obj of state.active){
       const x = obj.el.offsetLeft - GAME_CONFIG.speed;
       obj.el.style.left = x + "px";
       checkCollision(obj);
-    }
 
-    // если все ответы ушли за экран — это "пропуск"
-    const stillOnScreen = state.active.filter(o=>{
-      const x = o.el.offsetLeft;
-      if(x < leftLimit){
-        o.el.remove();
-        return false;
-      }
-      return true;
-    });
-    const removedCount = state.active.length - stillOnScreen.length;
-    state.active = stillOnScreen;
-
-    if(removedCount > 0 && state.active.length === 0 && !state.locked){
-      // ✅ пропустили все варианты -> считаем ошибкой и идём дальше
-      if(GAME_CONFIG.missCountsAsWrong){
-        state.locked = true;
-        applyWrong("Пропуск");
-        clearAnswers();
-        setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
-      } else {
-        goNextQuestion();
+      if(obj.el.isConnected){
+        if(obj.el.offsetLeft >= leftLimit) next.push(obj);
+        else obj.el.remove();
       }
     }
+    state.active = next;
   }
 
   raf = requestAnimationFrame(loop);
@@ -635,8 +614,9 @@ function restart(){
   updateHUD();
   player.style.top = "50%";
   clearAnswers();
-  spawnAnswersForQuestion();
-  loop();
+  state.lastSpawnAt = performance.now();
+  state.running = true;
+  loop(performance.now());
 }
 
 window.addEventListener("keydown", async (e)=>{
@@ -644,14 +624,13 @@ window.addEventListener("keydown", async (e)=>{
   if(!audioUnlocked) await unlockAudio();
 });
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
-window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true});
+window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true });
 
-// start
 initState();
 updateHUD();
 player.style.top = "50%";
-spawnAnswersForQuestion();
-loop();
+state.lastSpawnAt = performance.now();
+loop(performance.now());
 </script>
 </body>
 </html>
