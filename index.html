@@ -1,217 +1,225 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Answer v6</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Catch the Answer</title>
 
-<style>
-  :root{
-    --bg: transparent;
-    --text: rgba(255,255,255,.92);
-    --muted: rgba(255,255,255,.72);
+  <!-- убирает 404 favicon.ico -->
+  <link rel="icon" href="data:,">
 
-    --panel-bg: rgba(10,10,20,.60);
-    --panel-brd: rgba(255,255,255,.18);
-    --shadow: 0 16px 60px rgba(0,0,0,.42);
+  <style>
+    :root{
+      --bg: transparent;
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
 
-    --answer-bg: rgba(255,255,255,.18);
-    --answer-brd: rgba(255,255,255,.28);
-    --answer-text: rgba(255,255,255,.96);
+      --panel-bg: rgba(10,10,20,.60);
+      --panel-brd: rgba(255,255,255,.18);
+      --shadow: 0 16px 60px rgba(0,0,0,.42);
 
-    --good: #4cff9e;
-    --bad:  #ff6b6b;
+      --answer-bg: rgba(255,255,255,.18);
+      --answer-brd: rgba(255,255,255,.28);
+      --answer-text: rgba(255,255,255,.96);
 
-    --size: 84px; /* игрок и ответы одного размера */
-  }
+      --good: #4cff9e;
+      --bad:  #ff6b6b;
 
-  html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);overflow:hidden;}
-  #game{position:relative;width:100%;height:100%;}
+      --size: 84px; /* игрок и ответы одного размера */
+    }
 
-  /* HUD */
-  #hud{
-    position:absolute; top:12px; left:12px; right:12px;
-    display:flex; align-items:flex-start; justify-content:space-between;
-    gap:12px; z-index:60; pointer-events:none;
-  }
-  .pill{
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-brd);
-    border-radius: 999px;
-    padding: 10px 12px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display:flex; gap:10px; align-items:center;
-    white-space:nowrap;
-  }
-  .pill .label{font-size:12px;color:var(--muted);font-weight:900}
-  .pill .value{font-size:16px;font-weight:1100}
+    html,body{
+      margin:0;height:100%;
+      background:var(--bg)!important;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      overflow:hidden;
+    }
+    #game{position:relative;width:100%;height:100%;}
 
-  /* QUESTION */
-  #questionWrap{
-    position:absolute; top:12px; left:50%; transform:translateX(-50%);
-    z-index:61; pointer-events:none;
-    max-width:min(900px, calc(100% - 24px));
-  }
-  #questionBox{
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-brd);
-    border-radius: 999px;
-    padding: 12px 16px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    text-align:center;
-    font-weight:1100;
-    font-size:14px;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
+    /* HUD */
+    #hud{
+      position:absolute; top:12px; left:12px; right:12px;
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; z-index:60; pointer-events:none;
+    }
+    .pill{
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-brd);
+      border-radius: 999px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:flex; gap:10px; align-items:center;
+      white-space:nowrap;
+    }
+    .pill .label{font-size:12px;color:var(--muted);font-weight:900}
+    .pill .value{font-size:16px;font-weight:1100}
 
-  /* SCENE */
-  #scene{position:absolute; inset:0; overflow:hidden;}
+    /* QUESTION */
+    #questionWrap{
+      position:absolute; top:12px; left:50%; transform:translateX(-50%);
+      z-index:61; pointer-events:none;
+      max-width:min(900px, calc(100% - 24px));
+    }
+    #questionBox{
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-brd);
+      border-radius: 999px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align:center;
+      font-weight:1100;
+      font-size:14px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
 
-  .orb{
-    position:absolute;
-    width: var(--size);
-    height: var(--size);
-    border-radius: 50%;
-    display:flex; align-items:center; justify-content:center;
-    user-select:none;
-  }
+    /* SCENE */
+    #scene{position:absolute; inset:0; overflow:hidden;}
 
-  #player{
-    left:92px; top:50%;
-    transform:translate(-50%,-50%);
-    background: rgba(120,90,255,.22);
-    border: 1px solid rgba(120,90,255,.40);
-    box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
-  }
-  #player:before{
-    content:"";
-    width:18px;height:18px;border-radius:999px;
-    background: rgba(255,255,255,.88);
-    box-shadow:0 0 14px rgba(255,255,255,.25);
-  }
+    .orb{
+      position:absolute;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      display:flex; align-items:center; justify-content:center;
+      user-select:none;
+    }
 
-  /* ANSWER ORBS (одинаковые, одного цвета) */
-  .answer{
-    background: var(--answer-bg);
-    border: 1px solid var(--answer-brd);
-    box-shadow: 0 16px 55px rgba(0,0,0,.35);
-    color: var(--answer-text);
-    padding: 8px 10px;
-    box-sizing:border-box;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    gap:5px;
-  }
-  .answer .lab{
-    font-weight:1200;
-    font-size:18px;
-    line-height:1;
-    letter-spacing:.8px;
-    opacity:.95;
-  }
-  /* ТЕКСТ ВАРИАНТА — делаем крупнее и без clamp */
-  .answer .txt{
-    font-weight:1000;
-    font-size:13px;
-    line-height:1.08;
-    opacity:1;
-    max-width: 160px;
-    white-space:normal;
-    word-break:break-word;
-  }
+    #player{
+      left:92px; top:50%;
+      transform:translate(-50%,-50%);
+      background: rgba(120,90,255,.22);
+      border: 1px solid rgba(120,90,255,.40);
+      box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
+    }
+    #player:before{
+      content:"";
+      width:18px;height:18px;border-radius:999px;
+      background: rgba(255,255,255,.88);
+      box-shadow:0 0 14px rgba(255,255,255,.25);
+    }
 
-  /* +points */
-  .pop{
-    position:absolute;
-    font-weight:1200;
-    font-size:18px;
-    pointer-events:none;
-    transform:translate(-50%,-50%);
-    text-shadow:0 16px 36px rgba(0,0,0,.55);
-    animation: popUp .78s ease-out forwards;
-    z-index:80;
-  }
-  @keyframes popUp{
-    0%{opacity:0;transform:translate(-50%,-50%) scale(.9);}
-    15%{opacity:1;transform:translate(-50%,-62%) scale(1.05);}
-    100%{opacity:0;transform:translate(-50%,-110%) scale(1);}
-  }
+    /* ANSWER ORBS (одинаковые, одного цвета) */
+    .answer{
+      background: var(--answer-bg);
+      border: 1px solid var(--answer-brd);
+      box-shadow: 0 16px 55px rgba(0,0,0,.35);
+      color: var(--answer-text);
+      padding: 8px 10px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:5px;
+    }
+    .answer .lab{
+      font-weight:1200;
+      font-size:18px;
+      line-height:1;
+      letter-spacing:.8px;
+      opacity:.95;
+    }
+    .answer .txt{
+      font-weight:1000;
+      font-size:13px;
+      line-height:1.08;
+      opacity:1;
+      max-width: 160px;
+      white-space:normal;
+      word-break:break-word;
+    }
 
-  #feedback{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    font-size:30px; font-weight:1200;
-    pointer-events:none;
-    opacity:0; transition:.18s;
-    z-index:70;
-  }
-  #feedback.show{opacity:1;}
+    /* +points */
+    .pop{
+      position:absolute;
+      font-weight:1200;
+      font-size:18px;
+      pointer-events:none;
+      transform:translate(-50%,-50%);
+      text-shadow:0 16px 36px rgba(0,0,0,.55);
+      animation: popUp .78s ease-out forwards;
+      z-index:80;
+    }
+    @keyframes popUp{
+      0%{opacity:0;transform:translate(-50%,-50%) scale(.9);}
+      15%{opacity:1;transform:translate(-50%,-62%) scale(1.05);}
+      100%{opacity:0;transform:translate(-50%,-110%) scale(1);}
+    }
 
-  /* ПРОГРЕСС-БАР СНИЗУ — максимально явный */
-  #progressWrap{
-    position:absolute;
-    left:12px; right:12px; bottom:12px;
-    z-index:90; pointer-events:none;
-  }
-  #progressBar{
-    height: 20px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.12);
-    border: 1px solid rgba(255,255,255,.22);
-    box-shadow: var(--shadow);
-    overflow:hidden;
-    position:relative;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  #progressFill{
-    height:100%;
-    width:0%;
-    background: rgba(120,90,255,.72);
-    border-radius:999px;
-    transition: width .25s ease;
-  }
-  #progressText{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    font-size:12px; font-weight:1200;
-    color: rgba(255,255,255,.96);
-    text-shadow:0 10px 22px rgba(0,0,0,.5);
-  }
+    #feedback{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:30px; font-weight:1200;
+      pointer-events:none;
+      opacity:0; transition:.18s;
+      z-index:70;
+    }
+    #feedback.show{opacity:1;}
 
-  #final{
-    position:absolute; inset:0;
-    background: rgba(0,0,0,.78);
-    display:none;
-    align-items:center; justify-content:center;
-    flex-direction:column; gap:14px;
-    z-index:120; text-align:center; padding:20px;
-  }
-  #final.show{display:flex;}
-  #final h1{margin:0;font-size:30px;}
-  #final .small{opacity:.85;max-width:560px;line-height:1.4;font-size:13px;}
-  #final button{
-    pointer-events:auto;
-    padding:10px 16px;border-radius:14px;
-    border:1px solid rgba(255,255,255,.18);
-    background:rgba(255,255,255,.10);
-    color:rgba(255,255,255,.92);
-    font-weight:1100;cursor:pointer;
-  }
+    /* ПРОГРЕСС-БАР СНИЗУ */
+    #progressWrap{
+      position:absolute;
+      left:12px; right:12px; bottom:12px;
+      z-index:90; pointer-events:none;
+    }
+    #progressBar{
+      height: 20px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    #progressFill{
+      height:100%;
+      width:0%;
+      background: rgba(120,90,255,.72);
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+    #progressText{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:1200;
+      color: rgba(255,255,255,.96);
+      text-shadow:0 10px 22px rgba(0,0,0,.5);
+    }
 
-  /* Явный маркер версии */
-  #version{
-    position:absolute; right:12px; bottom:40px;
-    font-size:12px; opacity:.55; pointer-events:none; z-index:200;
-  }
-</style>
+    #final{
+      position:absolute; inset:0;
+      background: rgba(0,0,0,.78);
+      display:none;
+      align-items:center; justify-content:center;
+      flex-direction:column; gap:14px;
+      z-index:120; text-align:center; padding:20px;
+    }
+    #final.show{display:flex;}
+    #final h1{margin:0;font-size:30px;}
+    #final .small{opacity:.85;max-width:560px;line-height:1.4;font-size:13px;}
+    #final button{
+      pointer-events:auto;
+      padding:10px 16px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.10);
+      color:rgba(255,255,255,.92);
+      font-weight:1100;cursor:pointer;
+    }
+
+    /* маркер версии */
+    #version{
+      position:absolute; right:12px; bottom:40px;
+      font-size:12px; opacity:.55; pointer-events:none; z-index:200;
+    }
+  </style>
 </head>
 
 <body>
@@ -242,10 +250,11 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v6</div>
+  <div id="version">v6-index</div>
 </div>
 
 <script>
+/* ================= НАСТРОЙКИ (потом будет редактор) ================= */
 const GAME_CONFIG = {
   lives: 3,
   speed: 3.0,
@@ -282,8 +291,14 @@ const GAME_CONFIG = {
       {label:"B", text:"4", correct:true},
       {label:"C", text:"5", correct:false},
     ]},
+    { q:"Где больше: 7 или 9?", answers:[
+      {label:"A", text:"7", correct:false},
+      {label:"B", text:"9", correct:true},
+      {label:"C", text:"равны", correct:false},
+    ]},
   ],
 };
+/* =================================================================== */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -352,6 +367,7 @@ function beepBad(){
   o1.stop(now+0.24); o2.stop(now+0.24);
 }
 
+/* game state */
 function initState(){
   state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
 }
@@ -414,7 +430,7 @@ function spawnAnswersForQuestion(){
 
     const txt = document.createElement("div");
     txt.className = "txt";
-    txt.textContent = a.text; // <-- ТЕКСТ ВАРИАНТА ТОЧНО ЕСТЬ
+    txt.textContent = a.text;
 
     el.appendChild(lab);
     el.appendChild(txt);
@@ -550,6 +566,7 @@ window.addEventListener("keydown", async (e)=>{
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
 window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true});
 
+/* start */
 initState();
 updateHUD();
 player.style.top = "50%";
