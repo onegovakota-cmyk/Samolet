@@ -301,7 +301,7 @@
       <h2>Задача игрока</h2>
       <p>
         Лови <b>правильный ответ</b> на вопрос сверху.<br>
-        Управление: <b>↑</b> / <b>↓</b>.
+        Если ошибся — теряешь жизнь, а вопрос вернётся позже.
       </p>
 
       <div class="row">
@@ -313,7 +313,7 @@
         <button class="btn primary" id="startBtn">Начать игру</button>
       </div>
 
-      <div class="hint">Пропускать ответы можно — вопрос повторится, пока не ответишь правильно.</div>
+      <div class="hint">Пропускать ответы можно — это не ошибка.</div>
     </div>
   </div>
 
@@ -329,7 +329,7 @@
     </div>
   </div>
 
-  <div id="version">v16</div>
+  <div id="version">v17</div>
 </div>
 
 <script>
@@ -450,21 +450,21 @@ function clearPending(){
     pendingTimer = null;
   }
 }
-
 function showOverlay(el, on){
-  // ✅ всегда правильно: show/remove show
   if(on) el.classList.add("show");
   else el.classList.remove("show");
 }
 
 function initState(){
   state = {
-    phase: "menu",   // menu | playing | ended
+    phase: "menu",     // menu | playing | ended
     locked: true,
 
-    qIndex: 0,
     score: 0,
     lives: CFG.lives,
+
+    // ✅ очередь вопросов: массив индексов (например [0,1,2])
+    queue: [],
 
     active: [],
     lastSpawnAt: performance.now(),
@@ -476,6 +476,8 @@ function initState(){
     minXGap: preset("easy").minXGap,
     maxOnScreen: preset("easy").maxOnScreen,
   };
+  // заполним очередь
+  state.queue = CFG.questions.map((_, i)=>i);
 }
 
 function applyDifficulty(level){
@@ -492,16 +494,25 @@ function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : "");
 
 function updateProgress(){
   const total = CFG.questions.length;
-  const current = Math.min(state.qIndex + 1, total);
-  const pct = total ? Math.round(((current-1) / total) * 100) : 0;
+  const done = total - state.queue.length;
+  const current = Math.min(done + 1, total);
+  const pct = total ? Math.round((done / total) * 100) : 0;
   progressFill.style.width = pct + "%";
   progressText.textContent = `Вопрос ${current} из ${total}`;
+}
+
+function currentQuestion(){
+  if(!state.queue.length) return null;
+  return CFG.questions[state.queue[0]];
 }
 
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
-  questionBox.textContent = state.qIndex < CFG.questions.length ? CFG.questions[state.qIndex].q : "";
+
+  const cq = currentQuestion();
+  questionBox.textContent = cq ? cq.q : "";
+
   updateProgress();
 }
 
@@ -570,7 +581,9 @@ function maybeSpawn(now){
   const nx = newestX();
   if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return;
 
-  const q = CFG.questions[state.qIndex];
+  const q = currentQuestion();
+  if(!q) return;
+
   const pick = q.answers[randInt(0, q.answers.length-1)];
 
   const el = createOrb(pick);
@@ -618,65 +631,53 @@ function endGame(win){
   showOverlay(finalOverlay, true);
 }
 
-function resumeSameQuestion(){
-  // ✅ продолжаем тот же вопрос после ошибки
+function nextRoundSameOrNext(){
   state.locked = false;
   clearAnswers();
   state.lastSpawnAt = performance.now();
-}
-
-function goNextQuestion(){
-  // ✅ следующий вопрос только при ПРАВИЛЬНОМ ответе
-  state.qIndex++;
-
-  if(state.qIndex >= CFG.questions.length){
-    endGame(true);
-    return;
-  }
-
   updateHUD();
-  state.locked = false;
-  clearAnswers();
-  state.lastSpawnAt = performance.now();
 }
 
 function handleHit(correct, hitX, hitY){
   if(state.locked || state.phase !== "playing") return;
+
   state.locked = true;
   clearAnswers();
   clearPending();
 
   if(correct){
+    // ✅ правильный: убираем вопрос из очереди
     state.score += CFG.pointsPerCorrect;
-    updateHUD();
     showPointsPop(hitX, hitY, CFG.pointsPerCorrect);
     showFeedback("Верно", true);
     soundOk();
 
+    // remove current
+    state.queue.shift();
+
     pendingTimer = setTimeout(()=> {
       pendingTimer = null;
-      goNextQuestion();
+      if(state.queue.length === 0) endGame(true);
+      else nextRoundSameOrNext();
     }, CFG.feedbackMs);
 
-  }else{
+  } else {
+    // ✅ неправильный: -жизнь и переносим вопрос в конец очереди
     state.lives--;
-    updateHUD();
     showFeedback("Неверно", false);
     soundBad();
 
-    if(state.lives <= 0){
-      pendingTimer = setTimeout(()=> {
-        pendingTimer = null;
-        endGame(false);
-      }, Math.max(120, CFG.feedbackMs));
-    }else{
-      // ✅ тот же вопрос снова
-      pendingTimer = setTimeout(()=> {
-        pendingTimer = null;
-        resumeSameQuestion();
-      }, CFG.feedbackMs);
-    }
+    const wrongIdx = state.queue.shift();
+    state.queue.push(wrongIdx);
+
+    pendingTimer = setTimeout(()=> {
+      pendingTimer = null;
+      if(state.lives <= 0) endGame(false);
+      else nextRoundSameOrNext();
+    }, CFG.feedbackMs);
   }
+
+  updateHUD();
 }
 
 function checkCollision(obj){
@@ -700,47 +701,41 @@ function resetGameForPlay(){
 
   state.score = 0;
   state.lives = CFG.lives;
-  state.qIndex = 0;
+
+  // ✅ заново очередь всех вопросов
+  state.queue = CFG.questions.map((_, i)=>i);
 
   state.phase = "playing";
   state.locked = false;
 
   state.lastSpawnAt = performance.now();
-  updateHUD();
   player.style.top = "50%";
+  updateHUD();
 }
 
 async function startGame(){
   await unlockAudio();
   soundStart();
-
   showOverlay(startOverlay, false);
   showOverlay(finalOverlay, false);
-
   resetGameForPlay();
 }
 
 async function playAgain(){
   await unlockAudio();
   soundStart();
-
-  // ✅ главное: прячем финальный оверлей
   showOverlay(finalOverlay, false);
   showOverlay(startOverlay, false);
-
   resetGameForPlay();
 }
 
 function backToMenu(){
   clearPending();
   clearAnswers();
-
   state.phase = "menu";
   state.locked = true;
-
   showOverlay(finalOverlay, false);
   showOverlay(startOverlay, true);
-
   updateHUD();
 }
 
@@ -770,7 +765,6 @@ function loop(now){
       state.active = next;
     }
   }
-
   raf = requestAnimationFrame(loop);
 }
 
