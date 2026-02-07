@@ -38,7 +38,7 @@
       -webkit-backdrop-filter: blur(10px);
     }
     #left{
-      width:min(640px, 54vw);
+      width:min(660px, 56vw);
       min-width:390px;
       display:flex;flex-direction:column;overflow:hidden;
     }
@@ -75,6 +75,8 @@
       background: rgba(255,255,255,.06);
       padding:6px;box-sizing:border-box;
     }
+    input[type="range"]{width:100%;}
+    .rangeRow{display:grid;grid-template-columns: 1fr 86px;gap:10px;align-items:center;}
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
     .btn{
       appearance:none;border:1px solid rgba(255,255,255,.18);
@@ -144,9 +146,9 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">v30: русский интерфейс • предпросмотр карточки ответа • бесшовный бесконечный фон • фикс предпросмотра и картинки ответа.</div>
+        <div class="sub">v31: убрана буква у ответов • ползунки для настроек картинки ответа • опциональная подложка текста • размер игрока + тень по контуру • без обводки игрока.</div>
       </div>
-      <div class="badge">v30 • one-file</div>
+      <div class="badge">v31 • one-file</div>
     </div>
 
     <div class="content">
@@ -336,63 +338,86 @@
       </div>
 
       <div class="section">
-        <h3>Ответы: размер и размещение на картинке</h3>
-        <div class="grid">
-          <div>
-            <label>Размер ответа (px)</label>
-            <input id="answerSize" type="number" min="56" max="220" value="86" />
-          </div>
-          <div>
-            <label>Масштаб содержимого (0.6–1.6)</label>
-            <input id="answerContentScale" type="number" min="0.6" max="1.6" step="0.05" value="1" />
-          </div>
+        <h3>Игрок: размер и эффект</h3>
 
-          <div>
-            <label>Буква: X (%)</label>
-            <input id="answerLabelX" type="number" min="0" max="100" step="1" value="50" />
-          </div>
-          <div>
-            <label>Буква: Y (%)</label>
-            <input id="answerLabelY" type="number" min="0" max="100" step="1" value="36" />
-          </div>
-
-          <div>
-            <label>Текст: X (%)</label>
-            <input id="answerTextX" type="number" min="0" max="100" step="1" value="50" />
-          </div>
-          <div>
-            <label>Текст: Y (%)</label>
-            <input id="answerTextY" type="number" min="0" max="100" step="1" value="64" />
-          </div>
-
-          <div>
-            <label>Заполнение картинки ответа</label>
-            <select id="answerCardFit">
-              <option value="contain" selected>Вписать (contain)</option>
-              <option value="cover">Заполнить (cover)</option>
-            </select>
-          </div>
-          <div>
-            <label>Масштаб картинки ответа</label>
-            <input id="answerCardScale" type="number" min="0.6" max="2" step="0.05" value="1" />
-          </div>
-
-          <div>
-            <label>Картинка ответа: X (%)</label>
-            <input id="answerCardPosX" type="number" min="0" max="100" step="1" value="50" />
-          </div>
-          <div>
-            <label>Картинка ответа: Y (%)</label>
-            <input id="answerCardPosY" type="number" min="0" max="100" step="1" value="50" />
-          </div>
+        <label>Размер игрока (px)</label>
+        <div class="rangeRow">
+          <input id="playerSizeR" type="range" min="56" max="180" step="1" value="86" />
+          <input id="playerSize" type="number" min="56" max="180" step="1" value="86" />
         </div>
 
-        <div class="hint">У ответов нет подложки — только твоя картинка как фон “карточки”.</div>
+        <div class="checkGrid" style="margin-top:10px;">
+          <div class="checkItem"><input id="playerShadow" type="checkbox" /> <span>Тень по контуру игрока</span></div>
+        </div>
+
+        <div class="hint">Обводка у игрока убрана. Можно включить мягкую тень по контуру.</div>
+      </div>
+
+      <div class="section">
+        <h3>Ответы: оформление (ползунки)</h3>
+
+        <label>Размер ответа (px)</label>
+        <div class="rangeRow">
+          <input id="answerSizeR" type="range" min="56" max="220" step="1" value="86" />
+          <input id="answerSize" type="number" min="56" max="220" step="1" value="86" />
+        </div>
+
+        <label style="margin-top:10px;">Масштаб текста/контента ответа</label>
+        <div class="rangeRow">
+          <input id="answerContentScaleR" type="range" min="0.6" max="1.6" step="0.05" value="1" />
+          <input id="answerContentScale" type="number" min="0.6" max="1.6" step="0.05" value="1" />
+        </div>
+
+        <div class="hr"></div>
+
+        <label>Положение текста: X (%)</label>
+        <div class="rangeRow">
+          <input id="answerTextXR" type="range" min="0" max="100" step="1" value="50" />
+          <input id="answerTextX" type="number" min="0" max="100" step="1" value="50" />
+        </div>
+
+        <label style="margin-top:10px;">Положение текста: Y (%)</label>
+        <div class="rangeRow">
+          <input id="answerTextYR" type="range" min="0" max="100" step="1" value="64" />
+          <input id="answerTextY" type="number" min="0" max="100" step="1" value="64" />
+        </div>
+
+        <div class="checkGrid" style="margin-top:10px;">
+          <div class="checkItem"><input id="answerTextBgOn" type="checkbox" checked /> <span>Подложка у текста ответа</span></div>
+        </div>
+
+        <div class="hr"></div>
+
+        <label>Заполнение картинки ответа</label>
+        <select id="answerCardFit">
+          <option value="contain" selected>Вписать (contain)</option>
+          <option value="cover">Заполнить (cover)</option>
+        </select>
+
+        <label style="margin-top:10px;">Масштаб картинки ответа</label>
+        <div class="rangeRow">
+          <input id="answerCardScaleR" type="range" min="0.6" max="2" step="0.05" value="1" />
+          <input id="answerCardScale" type="number" min="0.6" max="2" step="0.05" value="1" />
+        </div>
+
+        <label style="margin-top:10px;">Картинка ответа: X (%)</label>
+        <div class="rangeRow">
+          <input id="answerCardPosXR" type="range" min="0" max="100" step="1" value="50" />
+          <input id="answerCardPosX" type="number" min="0" max="100" step="1" value="50" />
+        </div>
+
+        <label style="margin-top:10px;">Картинка ответа: Y (%)</label>
+        <div class="rangeRow">
+          <input id="answerCardPosYR" type="range" min="0" max="100" step="1" value="50" />
+          <input id="answerCardPosY" type="number" min="0" max="100" step="1" value="50" />
+        </div>
+
+        <div class="hint">У вариантов ответа буква убрана. Подложку текста можно включать/выключать.</div>
       </div>
 
       <div class="section">
         <h3>Предпросмотр карточки ответа</h3>
-        <div class="hint">Здесь ты видишь одну карточку ответа: картинка + расположение текста.</div>
+        <div class="hint">Один ответ: твоя картинка + текст + текущие ползунки.</div>
 
         <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px;">
           <div id="answerPreviewBox" style="
@@ -421,15 +446,6 @@
                 transform-origin:50% 50%;
                 pointer-events:none;
               ">
-                <div id="answerPreviewLabel" style="
-                  position:absolute; left:50%; top:36%;
-                  transform:translate(-50%,-50%);
-                  font-weight:900;
-                  font-size:18px;
-                  color:#fff;
-                  text-shadow:0 10px 22px rgba(0,0,0,.55);
-                ">A</div>
-
                 <div id="answerPreviewText" style="
                   position:absolute; left:50%; top:64%;
                   transform:translate(-50%,-50%);
@@ -438,10 +454,10 @@
                   color:#fff;
                   max-width: 220px;
                   text-align:center;
-                  padding:4px 8px;
+                  padding:0;
                   border-radius:10px;
-                  background: rgba(0,0,0,.18);
-                  border: 1px solid rgba(255,255,255,.10);
+                  background: transparent;
+                  border: none;
                   text-shadow:0 10px 22px rgba(0,0,0,.55);
                 ">Текст варианта</div>
               </div>
@@ -456,8 +472,7 @@
             <div class="hr"></div>
 
             <div class="hint">
-              Если картинка ответа не бесшовная — на фоне стык может быть заметен.
-              Для “без линии стыка” используй бесшовный фон (tile/seamless).
+              Для “фона без шва” используй бесшовную картинку (tile/seamless). Код двигает фон repeat-x бесконечно.
             </div>
           </div>
         </div>
@@ -547,6 +562,16 @@ function hexToRgba(hex, alpha){
   const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
+function pairSync(rangeEl, numberEl, v){
+  rangeEl.value = String(v);
+  numberEl.value = String(v);
+}
+function pairBind(rangeEl, numberEl, onChange){
+  rangeEl.addEventListener("input", ()=>{ numberEl.value = rangeEl.value; onChange(); });
+  numberEl.addEventListener("input", ()=>{ rangeEl.value = numberEl.value; onChange(); });
+  rangeEl.addEventListener("change", ()=>{ numberEl.value = rangeEl.value; onChange(); });
+  numberEl.addEventListener("change", ()=>{ rangeEl.value = numberEl.value; onChange(); });
+}
 
 /* ===== default cfg ===== */
 const DEFAULT_CFG = {
@@ -584,14 +609,18 @@ const DEFAULT_CFG = {
   progressColor: "#7a5aff",
 
   playerImg: "",
-  answerCardImg: "",     // ВАЖНО: одна и та же переменная и в редакторе, и в игре
+  playerSize: 86,
+  playerShadow: false,
+
+  answerCardImg: "",
   bgImg: "",
   transparentBg: true,
 
   answerSize: 86,
   answerContentScale: 1,
-  answerLabelX: 50, answerLabelY: 36,
-  answerTextX: 50,  answerTextY: 64,
+  answerTextX: 50,
+  answerTextY: 64,
+  answerTextBgOn: true,
 
   answerCardFit: "contain",
   answerCardScale: 1,
@@ -735,15 +764,27 @@ function startEditorMode(){
 
     transparentBg: document.getElementById("transparentBg"),
 
+    // player
+    playerSizeR: document.getElementById("playerSizeR"),
+    playerSize: document.getElementById("playerSize"),
+    playerShadow: document.getElementById("playerShadow"),
+
+    // answer sliders
+    answerSizeR: document.getElementById("answerSizeR"),
     answerSize: document.getElementById("answerSize"),
+    answerContentScaleR: document.getElementById("answerContentScaleR"),
     answerContentScale: document.getElementById("answerContentScale"),
-    answerLabelX: document.getElementById("answerLabelX"),
-    answerLabelY: document.getElementById("answerLabelY"),
+    answerTextXR: document.getElementById("answerTextXR"),
     answerTextX: document.getElementById("answerTextX"),
+    answerTextYR: document.getElementById("answerTextYR"),
     answerTextY: document.getElementById("answerTextY"),
+    answerTextBgOn: document.getElementById("answerTextBgOn"),
     answerCardFit: document.getElementById("answerCardFit"),
+    answerCardScaleR: document.getElementById("answerCardScaleR"),
     answerCardScale: document.getElementById("answerCardScale"),
+    answerCardPosXR: document.getElementById("answerCardPosXR"),
     answerCardPosX: document.getElementById("answerCardPosX"),
+    answerCardPosYR: document.getElementById("answerCardPosYR"),
     answerCardPosY: document.getElementById("answerCardPosY"),
 
     livesCount: document.getElementById("livesCount"),
@@ -763,15 +804,14 @@ function startEditorMode(){
     previewFrame: document.getElementById("previewFrame"),
     cfgSizeBadge: document.getElementById("cfgSizeBadge"),
 
+    // answer preview
     answerPreviewOrb: document.getElementById("answerPreviewOrb"),
     answerPreviewImg: document.getElementById("answerPreviewImg"),
     answerPreviewLayer: document.getElementById("answerPreviewLayer"),
-    answerPreviewLabel: document.getElementById("answerPreviewLabel"),
     answerPreviewText: document.getElementById("answerPreviewText"),
     answerPreviewTextInput: document.getElementById("answerPreviewTextInput"),
   };
 
-  // автоподстановка (лучше пусть укажут файл.html на GitHub Pages)
   els.baseUrl.value = location.origin + location.pathname;
 
   let cfgDraft = deepClone(DEFAULT_CFG);
@@ -789,6 +829,12 @@ function startEditorMode(){
     const used=new Set(arr.map(x=>String(x.label||"").trim().toUpperCase()));
     for(const c of base){ if(!used.has(c)) return c; }
     return "X";
+  }
+
+  function refreshAnswerImgStatus(){
+    const has = !!cfgDraft.answerCardImg;
+    const kind = has ? (cfgDraft.answerCardImg.startsWith("data:") ? "файл (dataURL)" : "URL") : "нет";
+    els.answerImgStatus.textContent = `Статус: ${kind}`;
   }
 
   function cfgToUI(){
@@ -833,16 +879,19 @@ function startEditorMode(){
     els.bgImgUrl.value = (cfgDraft.bgImg && cfgDraft.bgImg.startsWith("http")) ? cfgDraft.bgImg : "";
     els.transparentBg.value = cfgDraft.transparentBg ? "1" : "0";
 
-    els.answerSize.value = cfgDraft.answerSize ?? 86;
-    els.answerContentScale.value = cfgDraft.answerContentScale ?? 1;
-    els.answerLabelX.value = cfgDraft.answerLabelX ?? 50;
-    els.answerLabelY.value = cfgDraft.answerLabelY ?? 36;
-    els.answerTextX.value = cfgDraft.answerTextX ?? 50;
-    els.answerTextY.value = cfgDraft.answerTextY ?? 64;
+    pairSync(els.playerSizeR, els.playerSize, cfgDraft.playerSize ?? 86);
+    els.playerShadow.checked = !!cfgDraft.playerShadow;
+
+    pairSync(els.answerSizeR, els.answerSize, cfgDraft.answerSize ?? 86);
+    pairSync(els.answerContentScaleR, els.answerContentScale, cfgDraft.answerContentScale ?? 1);
+    pairSync(els.answerTextXR, els.answerTextX, cfgDraft.answerTextX ?? 50);
+    pairSync(els.answerTextYR, els.answerTextY, cfgDraft.answerTextY ?? 64);
+    els.answerTextBgOn.checked = cfgDraft.answerTextBgOn !== false;
+
     els.answerCardFit.value = cfgDraft.answerCardFit || "contain";
-    els.answerCardScale.value = cfgDraft.answerCardScale ?? 1;
-    els.answerCardPosX.value = cfgDraft.answerCardPosX ?? 50;
-    els.answerCardPosY.value = cfgDraft.answerCardPosY ?? 50;
+    pairSync(els.answerCardScaleR, els.answerCardScale, cfgDraft.answerCardScale ?? 1);
+    pairSync(els.answerCardPosXR, els.answerCardPosX, cfgDraft.answerCardPosX ?? 50);
+    pairSync(els.answerCardPosYR, els.answerCardPosY, cfgDraft.answerCardPosY ?? 50);
 
     els.livesCount.value = cfgDraft.livesCount;
     els.pointsPerCorrect.value = cfgDraft.pointsPerCorrect;
@@ -850,12 +899,6 @@ function startEditorMode(){
     els.playerSpeed.value = cfgDraft.playerSpeed;
 
     refreshAnswerImgStatus();
-  }
-
-  function refreshAnswerImgStatus(){
-    const has = !!cfgDraft.answerCardImg;
-    const kind = has ? (cfgDraft.answerCardImg.startsWith("data:") ? "файл (dataURL)" : "URL") : "нет";
-    els.answerImgStatus.textContent = `Статус: ${kind}`;
   }
 
   function renderQuestions(){
@@ -1007,12 +1050,15 @@ function startEditorMode(){
 
     cfgDraft.transparentBg = els.transparentBg.value === "1";
 
+    cfgDraft.playerSize = Number(els.playerSize.value || 86);
+    cfgDraft.playerShadow = els.playerShadow.checked;
+
     cfgDraft.answerSize = Number(els.answerSize.value || 86);
     cfgDraft.answerContentScale = Number(els.answerContentScale.value || 1);
-    cfgDraft.answerLabelX = Number(els.answerLabelX.value || 50);
-    cfgDraft.answerLabelY = Number(els.answerLabelY.value || 36);
     cfgDraft.answerTextX = Number(els.answerTextX.value || 50);
     cfgDraft.answerTextY = Number(els.answerTextY.value || 64);
+    cfgDraft.answerTextBgOn = els.answerTextBgOn.checked;
+
     cfgDraft.answerCardFit = els.answerCardFit.value;
     cfgDraft.answerCardScale = Number(els.answerCardScale.value || 1);
     cfgDraft.answerCardPosX = Number(els.answerCardPosX.value || 50);
@@ -1023,7 +1069,6 @@ function startEditorMode(){
     cfgDraft.cooldownTurns = Number(els.cooldownTurns.value || 3);
     cfgDraft.playerSpeed = Number(els.playerSpeed.value || 7);
 
-    // URL картинки — только если http/https
     if(els.playerImgUrl.value.trim().startsWith("http")) cfgDraft.playerImg = els.playerImgUrl.value.trim();
     if(els.answerCardImgUrl.value.trim().startsWith("http")) cfgDraft.answerCardImg = els.answerCardImgUrl.value.trim();
     if(els.bgImgUrl.value.trim().startsWith("http")) cfgDraft.bgImg = els.bgImgUrl.value.trim();
@@ -1045,7 +1090,6 @@ function startEditorMode(){
     const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
     const enc = buildCfgParam(fromCfg);
     els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
-    // добавляем v=..., чтобы браузер не держал старую страницу
     return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
   }
 
@@ -1064,20 +1108,29 @@ function startEditorMode(){
 
     els.answerPreviewLayer.style.transform = `scale(${cfgDraft.answerContentScale ?? 1})`;
 
-    els.answerPreviewLabel.style.left = (cfgDraft.answerLabelX ?? 50) + "%";
-    els.answerPreviewLabel.style.top  = (cfgDraft.answerLabelY ?? 36) + "%";
     els.answerPreviewText.style.left  = (cfgDraft.answerTextX ?? 50) + "%";
     els.answerPreviewText.style.top   = (cfgDraft.answerTextY ?? 64) + "%";
 
     const t = (els.answerPreviewTextInput?.value || "Текст варианта");
     els.answerPreviewText.textContent = t;
 
-    // эффекты текста (как в игре)
     const fx = buildFxCss(cfgDraft);
     const fxAns = (cfgDraft.fxToAnswers !== false) ? fx : "";
-    // (важно: не через +=, чтобы не накапливались)
-    els.answerPreviewLabel.style.cssText = els.answerPreviewLabel.style.cssText.replace(/text-shadow:[^;]*;?/g,"").replace(/-webkit-text-stroke:[^;]*;?/g,"") + fxAns;
-    els.answerPreviewText.style.cssText  = els.answerPreviewText.style.cssText.replace(/text-shadow:[^;]*;?/g,"").replace(/-webkit-text-stroke:[^;]*;?/g,"") + fxAns;
+
+    // подложка текста (в предпросмотре)
+    if(cfgDraft.answerTextBgOn){
+      els.answerPreviewText.style.padding = "4px 8px";
+      els.answerPreviewText.style.background = "rgba(0,0,0,.18)";
+      els.answerPreviewText.style.border = "1px solid rgba(255,255,255,.10)";
+    }else{
+      els.answerPreviewText.style.padding = "0";
+      els.answerPreviewText.style.background = "transparent";
+      els.answerPreviewText.style.border = "none";
+    }
+
+    // применим эффекты (без накопления)
+    const clean = (s)=>s.replace(/text-shadow:[^;]*;?/g,"").replace(/-webkit-text-stroke:[^;]*;?/g,"");
+    els.answerPreviewText.style.cssText = clean(els.answerPreviewText.style.cssText) + fxAns;
   }
 
   function updateSilent(){
@@ -1089,13 +1142,11 @@ function startEditorMode(){
     readUIIntoDraft();
     cfgApplied = deepClone(cfgDraft);
     const url = buildPlayUrl(cfgApplied);
-
-    // ЖЕЛЕЗНЫЙ фикс: принудительно перезагружаем iframe
     els.previewFrame.src = "about:blank";
     requestAnimationFrame(()=>{ els.previewFrame.src = url; });
   }
 
-  // bindings
+  // bindings (обычные)
   const bindInputs = [
     els.baseUrl,
     els.fontFamily, els.fontWeight, els.questionSize,
@@ -1108,15 +1159,26 @@ function startEditorMode(){
     els.fxColor, els.fxStrength, els.strokeWidth, els.strokeColor,
     els.progressHeight, els.progressColor,
     els.transparentBg,
-    els.answerSize, els.answerContentScale, els.answerLabelX, els.answerLabelY, els.answerTextX, els.answerTextY,
-    els.answerCardFit, els.answerCardScale, els.answerCardPosX, els.answerCardPosY,
+    els.answerTextBgOn,
+    els.answerCardFit,
     els.livesCount, els.pointsPerCorrect, els.cooldownTurns, els.playerSpeed,
-    els.playerImgUrl, els.answerCardImgUrl, els.bgImgUrl
+    els.playerImgUrl, els.answerCardImgUrl, els.bgImgUrl,
+    els.playerShadow
   ];
   bindInputs.forEach(el=>{
     el.addEventListener("input", updateSilent);
     el.addEventListener("change", updateSilent);
   });
+
+  // пары range/number
+  pairBind(els.playerSizeR, els.playerSize, updateSilent);
+  pairBind(els.answerSizeR, els.answerSize, updateSilent);
+  pairBind(els.answerContentScaleR, els.answerContentScale, updateSilent);
+  pairBind(els.answerTextXR, els.answerTextX, updateSilent);
+  pairBind(els.answerTextYR, els.answerTextY, updateSilent);
+  pairBind(els.answerCardScaleR, els.answerCardScale, updateSilent);
+  pairBind(els.answerCardPosXR, els.answerCardPosX, updateSilent);
+  pairBind(els.answerCardPosYR, els.answerCardPosY, updateSilent);
 
   els.answerPreviewTextInput.addEventListener("input", updateAnswerPreview);
   els.answerPreviewTextInput.addEventListener("change", updateAnswerPreview);
@@ -1128,7 +1190,6 @@ function startEditorMode(){
     updateSilent();
   });
 
-  // ВАЖНО: фикс картинки ответа — точно пишем в cfgDraft.answerCardImg
   els.answerCardImgFile.addEventListener("change", async ()=>{
     const f = els.answerCardImgFile.files?.[0]; if(!f) return;
     cfgDraft.answerCardImg = await fileToDataUrl(f);
@@ -1159,7 +1220,6 @@ function startEditorMode(){
 
   els.applyPreviewBtn.onclick = ()=>{ applyPreview(); };
 
-  // iframe: делаем стабильную ссылку (без v=Date.now())
   els.genIframeBtn.onclick = ()=>{
     readUIIntoDraft();
     cfgApplied = deepClone(cfgDraft);
@@ -1215,12 +1275,14 @@ function normalizeCfg(cfg){
   out.scoreSize = clampInt(out.scoreSize, 12, 70, 24);
   out.livesSize = clampInt(out.livesSize, 12, 70, 24);
 
+  out.playerSize = clampInt(out.playerSize, 56, 180, 86);
+  out.playerShadow = !!out.playerShadow;
+
   out.answerSize = clampInt(out.answerSize, 56, 220, 86);
   out.answerContentScale = clampNum(out.answerContentScale, 0.6, 1.6, 1);
-  out.answerLabelX = clampNum(out.answerLabelX, 0, 100, 50);
-  out.answerLabelY = clampNum(out.answerLabelY, 0, 100, 36);
   out.answerTextX  = clampNum(out.answerTextX, 0, 100, 50);
   out.answerTextY  = clampNum(out.answerTextY, 0, 100, 64);
+  out.answerTextBgOn = out.answerTextBgOn !== false;
 
   out.answerCardFit = ["contain","cover"].includes(out.answerCardFit) ? out.answerCardFit : "contain";
   out.answerCardScale = clampNum(out.answerCardScale, 0.6, 2, 1);
@@ -1266,8 +1328,6 @@ function startGameMode(){
       html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;}
       #wrap{position:relative;width:100%;height:100%;background:transparent;touch-action:none;}
       #bg{position:absolute; inset:0; z-index:0; overflow:hidden; background:transparent;}
-
-      /* БЕСШОВНЫЙ ФОН: repeat-x + смещение background-position */
       #bgLayer{
         position:absolute; inset:-40px;
         background: ${CFG.transparentBg ? "transparent" : (CFG.bgImg ? `url('${cssUrl(CFG.bgImg)}') 0 50% / auto 110% repeat-x` : "transparent")};
@@ -1345,15 +1405,17 @@ function startGameMode(){
         will-change: transform, left, top;
       }
 
+      /* ===== игрок: без обводки ===== */
       #player{
-        width: 86px; height: 86px;
+        width: ${CFG.playerSize}px; height: ${CFG.playerSize}px;
         left:92px; top:50%;
         transform:translate(-50%,-50%) rotate(var(--tilt, 0deg));
         transform-origin: 50% 50%;
         transition: transform 0.06s linear;
-        background: rgba(120,90,255,.22);
-        border: 1px solid rgba(120,90,255,.40);
-        box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
+        background: rgba(120,90,255,.12);
+        border: none;
+        box-shadow: ${CFG.playerShadow ? "0 12px 40px rgba(0,0,0,.30), 0 0 26px rgba(120,90,255,.22)" : "none"};
+        filter: ${CFG.playerShadow ? "drop-shadow(0 0 14px rgba(120,90,255,.18))" : "none"};
         overflow:hidden;
       }
       #playerInner{
@@ -1378,8 +1440,9 @@ function startGameMode(){
         opacity:${CFG.playerImg ? 1 : 0};
       }
 
-      /* ===== ответы: без подложки ===== */
+      /* ===== ответы: без подложки (картинка — фон) ===== */
       .answer{
+        width:${CFG.answerSize}px; height:${CFG.answerSize}px;
         background: transparent;
         border: none;
         box-shadow: none;
@@ -1403,17 +1466,7 @@ function startGameMode(){
         pointer-events:none;
       }
 
-      .answer .lab{
-        position:absolute;
-        left:${CFG.answerLabelX}%;
-        top:${CFG.answerLabelY}%;
-        transform: translate(-50%,-50%);
-        font-weight:${CFG.fontWeight};
-        font-size:18px; line-height:1;
-        letter-spacing:.8px;
-        text-shadow: 0 10px 22px rgba(0,0,0,.55);
-        ${fxAns}
-      }
+      /* буква убрана — остаётся только текст */
       .answer .txt{
         position:absolute;
         left:${CFG.answerTextX}%;
@@ -1423,10 +1476,10 @@ function startGameMode(){
         font-size:13px; line-height:1.12;
         max-width: 210px;
         white-space:normal; word-break:break-word;
-        padding: 4px 8px;
+        padding: ${CFG.answerTextBgOn ? "4px 8px" : "0"};
         border-radius: 10px;
-        background: rgba(0,0,0,.18);
-        border: 1px solid rgba(255,255,255,.10);
+        background: ${CFG.answerTextBgOn ? "rgba(0,0,0,.18)" : "transparent"};
+        border: ${CFG.answerTextBgOn ? "1px solid rgba(255,255,255,.10)" : "none"};
         text-shadow: 0 10px 22px rgba(0,0,0,.55);
         ${fxAns}
       }
@@ -1845,25 +1898,17 @@ function startGameMode(){
     const el = document.createElement("div");
     el.className = "orb answer";
     el.dataset.correct = answer.correct ? "1" : "0";
-    el.style.width = CFG.answerSize + "px";
-    el.style.height = CFG.answerSize + "px";
     el.style.transform = "translate(-50%,-50%)";
 
     const layer = document.createElement("div");
     layer.className = "ansLayer";
 
-    const lab = document.createElement("div");
-    lab.className = "lab";
-    lab.textContent = answer.label;
-
     const txt = document.createElement("div");
     txt.className = "txt";
     txt.textContent = answer.text;
 
-    layer.appendChild(lab);
     layer.appendChild(txt);
     el.appendChild(layer);
-
     return el;
   }
 
@@ -2058,7 +2103,7 @@ function startGameMode(){
       let y = player.offsetTop;
 
       // движение
-      let dir = 0; // -1 вверх, +1 вниз
+      let dir = 0;
       if(!touchActive){
         if(keys.ArrowUp){ y -= CFG.playerSpeed; dir = -1; }
         if(keys.ArrowDown){ y += CFG.playerSpeed; dir = +1; }
@@ -2083,7 +2128,7 @@ function startGameMode(){
       if(dir === 0) state.tilt *= 0.88;
       player.style.setProperty("--tilt", state.tilt.toFixed(2) + "deg");
 
-      // БЕСШОВНЫЙ фон: сдвигаем background-position-x (repeat-x)
+      // бесшовный фон (repeat-x)
       if(bgLayer && !CFG.transparentBg && CFG.bgImg){
         const factor = clampNum(CFG.bgScrollFactor, 0, 3, 0.35);
         state.bgX = (state.bgX - state.speed * factor);
