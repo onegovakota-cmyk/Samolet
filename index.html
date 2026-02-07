@@ -6,6 +6,9 @@
   <title>Игра + Редактор (Genially, one-file)</title>
   <link rel="icon" href="data:,">
   <style>
+    /* Google Fonts (если где-то блокируются — будет fallback на системные) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Montserrat:wght@400;600;700;900&family=Rubik:wght@400;600;700;900&family=Nunito:wght@400;600;700;900&family=Oswald:wght@400;600;700&family=Russo+One&family=Press+Start+2P&family=Roboto+Condensed:wght@400;700&display=swap');
+
     :root{
       --ui-card: rgba(18,16,32,.78);
       --ui-border: rgba(255,255,255,.14);
@@ -152,7 +155,7 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">⚡ Мгновенный предпросмотр без кэша (postMessage) • Сенсор • Парение/наклон • Эффекты текста</div>
+        <div class="sub">⚡ Мгновенный предпросмотр без кэша • Сенсор • Парение/наклон • Эффекты текста</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -162,7 +165,7 @@
         <h3>Ссылка проекта (для iframe Genially)</h3>
         <label>Base URL (полный путь к этому .html)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/game.html" />
-        <div class="hint">Если Genially показывает старую версию — обнови GitHub Pages и подожди 1–2 минуты.</div>
+        <div class="hint">Если Genially показывает старую версию — обнови GitHub Pages и подожди пару минут.</div>
       </div>
 
       <div class="section">
@@ -172,9 +175,21 @@
             <label>Шрифт</label>
             <select id="fontFamily">
               <option value="system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">Системный</option>
+
+              <option value="'Inter', system-ui, sans-serif">Inter (modern)</option>
+              <option value="'Montserrat', system-ui, sans-serif">Montserrat</option>
+              <option value="'Rubik', system-ui, sans-serif">Rubik</option>
+              <option value="'Nunito', system-ui, sans-serif">Nunito</option>
+              <option value="'Roboto Condensed', system-ui, sans-serif">Roboto Condensed</option>
+              <option value="'Oswald', system-ui, sans-serif">Oswald</option>
+              <option value="'Russo One', system-ui, sans-serif">Russo One (RU)</option>
+              <option value="'Press Start 2P', ui-monospace, monospace">Press Start 2P (pixel)</option>
+
               <option value="'Arial', sans-serif">Arial</option>
               <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
               <option value="'Verdana', sans-serif">Verdana</option>
+              <option value="'Georgia', serif">Georgia</option>
+              <option value="'Times New Roman', serif">Times New Roman</option>
             </select>
           </div>
           <div>
@@ -184,6 +199,7 @@
               <option value="700">Жирный</option>
               <option value="600">Полужирный</option>
               <option value="500">Обычный</option>
+              <option value="400">Тонкий</option>
             </select>
           </div>
         </div>
@@ -206,7 +222,7 @@
       </div>
 
       <div class="section">
-        <h3>Эффекты текста (неон / обводка)</h3>
+        <h3>Эффекты текста (неон / обводка) — общие</h3>
 
         <div class="checkGrid" style="margin-bottom:10px;">
           <div class="checkItem"><input id="fxShadow" type="checkbox" /> <span>Тень</span></div>
@@ -245,7 +261,7 @@
           </div>
         </div>
 
-        <div class="hint">Если включить и тень, и неон — будет комбинированный эффект.</div>
+        <div class="hint">Это общие эффекты (вопрос/HUD/ответы/+очки). Ниже есть отдельные эффекты именно для текста ответа.</div>
       </div>
 
       <div class="section">
@@ -292,7 +308,7 @@
               </select>
             </div>
 
-            <div class="hint">Чтобы стык не был виден — картинка фона должна быть бесшовной (seamless/tile).</div>
+            <div class="hint">Чтобы стык не был виден — фон должен быть бесшовный (tile/seamless).</div>
           </div>
         </div>
       </div>
@@ -368,6 +384,36 @@
                   <input id="answerTextBgOn" type="checkbox" checked />
                   <span>Подложка под текстом</span>
                 </div>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+            <h3 style="margin:0 0 10px;">Текст ответа: цвет / тень / неон</h3>
+
+            <div class="grid">
+              <div>
+                <label>Цвет текста ответа</label>
+                <input id="answerTextColor" type="color" value="#ffffff" />
+              </div>
+
+              <div class="checkItem" style="align-items:center;">
+                <input id="answerTextShadowOn" type="checkbox" checked />
+                <span>Тень у текста</span>
+              </div>
+
+              <div class="checkItem" style="align-items:center;">
+                <input id="answerTextNeonOn" type="checkbox" />
+                <span>Неон у текста</span>
+              </div>
+
+              <div>
+                <label>Цвет неона (и эффекта)</label>
+                <input id="answerTextFxColor" type="color" value="#ffd84a" />
+              </div>
+
+              <div>
+                <label>Сила неона/эффекта (1–12)</label>
+                <input id="answerTextFxStrength" type="number" min="1" max="12" value="7" />
               </div>
             </div>
 
@@ -472,7 +518,7 @@
 
       <div class="section">
         <h3>Скорости уровней</h3>
-        <div class="hint">Скорость — насколько быстро летят ответы. Частота — как часто они появляются.</div>
+        <div class="hint">Скорость — насколько быстро летят ответы. Частота — как часто появляются.</div>
 
         <div class="hr"></div>
         <h3 style="margin:0 0 10px;">Лёгкий</h3>
@@ -559,7 +605,7 @@
           <button class="btn" id="copyIframeBtn">Скопировать</button>
         </div>
         <textarea id="codeBox" readonly placeholder="Тут появится iframe..."></textarea>
-        <div class="hint">Подсказка: Genially иногда кэширует. Но игра внутри iframe всё равно получает настройки корректно.</div>
+        <div class="hint">Даже если Genially кэширует iframe — настройки всё равно применяются, потому что предпросмотр живой.</div>
       </div>
 
       <div class="hint">Все изменения автоматически влияют на предпросмотр справа (без перезагрузки).</div>
@@ -620,7 +666,7 @@ async function fileToDataUrl(file){
   });
 }
 
-/* ===== text fx builder ===== */
+/* ===== text fx builder (общий) ===== */
 function buildFxCss(cfg){
   const s = clampInt(cfg.fxStrength, 1, 12, 7);
   const c = cfg.fxColor || "#ffd84a";
@@ -652,6 +698,24 @@ function buildFxCss(cfg){
   return `${textShadow}${stroke}`;
 }
 
+/* ===== отдельный FX для текста ответа (цвет/тень/неон) ===== */
+function buildAnswerTextShadow(cfg){
+  const s = clampInt(cfg.answerTextFxStrength ?? 7, 1, 12, 7);
+  const c = cfg.answerTextFxColor || "#ffd84a";
+  const parts = [];
+
+  if(cfg.answerTextShadowOn !== false){
+    parts.push(`0 10px 22px rgba(0,0,0,.55)`);
+  }
+  if(cfg.answerTextNeonOn){
+    const b1=4+s*1.2, b2=10+s*2.2, b3=18+s*3.2;
+    parts.push(`0 0 ${b1}px ${hexToRgba(c,0.85)}`);
+    parts.push(`0 0 ${b2}px ${hexToRgba(c,0.65)}`);
+    parts.push(`0 0 ${b3}px ${hexToRgba(c,0.45)}`);
+  }
+  return parts.length ? parts.join(",") : "none";
+}
+
 /* ===== cfg ===== */
 const DEFAULT_CFG = {
   fontFamily: "system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif",
@@ -667,7 +731,7 @@ const DEFAULT_CFG = {
   scoreSize: 24,
   livesSize: 24,
 
-  /* text fx */
+  /* общие эффекты */
   fxShadow: false,
   fxNeon: true,
   fxStroke: true,
@@ -702,6 +766,13 @@ const DEFAULT_CFG = {
   answerCardImg: "",
   answerSize: 86,
   answerTextBgOn: true,
+
+  /* отдельные настройки текста ответа */
+  answerTextColor: "#ffffff",
+  answerTextShadowOn: true,
+  answerTextNeonOn: false,
+  answerTextFxColor: "#ffd84a",
+  answerTextFxStrength: 7,
 
   answerContentScale: 1,
   answerTextX: 50,
@@ -746,7 +817,7 @@ const params = new URLSearchParams(location.search);
 const mode = params.get("mode");
 
 /* ==========================================================
-   ВАЖНО: live предпросмотр без кэша:
+   LIVE предпросмотр без кэша:
    - редактор загружает iframe один раз (?mode=play&live=1)
    - потом отправляет cfg через postMessage
    ========================================================== */
@@ -757,7 +828,7 @@ if(mode === "play"){
   // старт из cfg в URL (если есть)
   startGameMode(null);
 
-  // ✅ live обновления из редактора
+  // live обновления из редактора
   window.addEventListener("message", (e)=>{
     const d = e.data;
     if(!d || typeof d !== "object") return;
@@ -836,6 +907,13 @@ function startEditorMode(){
     answerSizeR: document.getElementById("answerSizeR"),
     answerSize: document.getElementById("answerSize"),
     answerTextBgOn: document.getElementById("answerTextBgOn"),
+
+    /* NEW: текст ответа */
+    answerTextColor: document.getElementById("answerTextColor"),
+    answerTextShadowOn: document.getElementById("answerTextShadowOn"),
+    answerTextNeonOn: document.getElementById("answerTextNeonOn"),
+    answerTextFxColor: document.getElementById("answerTextFxColor"),
+    answerTextFxStrength: document.getElementById("answerTextFxStrength"),
 
     answerContentScaleR: document.getElementById("answerContentScaleR"),
     answerContentScale: document.getElementById("answerContentScale"),
@@ -959,6 +1037,13 @@ function startEditorMode(){
     pairSync(els.answerSizeR, els.answerSize, cfgDraft.answerSize ?? 86);
     els.answerTextBgOn.checked = cfgDraft.answerTextBgOn !== false;
 
+    // NEW: текст ответа
+    els.answerTextColor.value = cfgDraft.answerTextColor || "#ffffff";
+    els.answerTextShadowOn.checked = cfgDraft.answerTextShadowOn !== false;
+    els.answerTextNeonOn.checked = !!cfgDraft.answerTextNeonOn;
+    els.answerTextFxColor.value = cfgDraft.answerTextFxColor || "#ffd84a";
+    els.answerTextFxStrength.value = cfgDraft.answerTextFxStrength ?? 7;
+
     pairSync(els.answerContentScaleR, els.answerContentScale, cfgDraft.answerContentScale ?? 1);
     pairSync(els.answerTextXR, els.answerTextX, cfgDraft.answerTextX ?? 50);
     pairSync(els.answerTextYR, els.answerTextY, cfgDraft.answerTextY ?? 64);
@@ -1033,6 +1118,13 @@ function startEditorMode(){
     cfgDraft.answerSize = clampInt(els.answerSize.value, 42, 260, 86);
     cfgDraft.answerTextBgOn = !!els.answerTextBgOn.checked;
 
+    // NEW: текст ответа
+    cfgDraft.answerTextColor = els.answerTextColor.value || "#ffffff";
+    cfgDraft.answerTextShadowOn = !!els.answerTextShadowOn.checked;
+    cfgDraft.answerTextNeonOn = !!els.answerTextNeonOn.checked;
+    cfgDraft.answerTextFxColor = els.answerTextFxColor.value || "#ffd84a";
+    cfgDraft.answerTextFxStrength = clampInt(els.answerTextFxStrength.value, 1, 12, 7);
+
     cfgDraft.answerContentScale = clampNum(els.answerContentScale.value, 0.6, 2, 1);
     cfgDraft.answerTextX = clampNum(els.answerTextX.value, 0, 100, 50);
     cfgDraft.answerTextY = clampNum(els.answerTextY.value, 0, 100, 64);
@@ -1085,9 +1177,19 @@ function startEditorMode(){
     els.answerPreviewText.style.left = (cfgDraft.answerTextX ?? 50) + "%";
     els.answerPreviewText.style.top  = (cfgDraft.answerTextY ?? 64) + "%";
     els.answerPreviewText.style.transform = `translate(-50%,-50%) scale(${cfgDraft.answerContentScale ?? 1})`;
+
     els.answerPreviewText.style.background = (cfgDraft.answerTextBgOn === false) ? "transparent" : "rgba(0,0,0,.22)";
     els.answerPreviewText.style.border = (cfgDraft.answerTextBgOn === false) ? "0" : "1px solid rgba(255,255,255,.10)";
     els.answerPreviewText.style.padding = (cfgDraft.answerTextBgOn === false) ? "0" : "6px 10px";
+
+    // NEW: стиль текста ответа в предпросмотре
+    els.answerPreviewText.style.color = cfgDraft.answerTextColor || "#ffffff";
+    const shadow = buildAnswerTextShadow(cfgDraft);
+    els.answerPreviewText.style.textShadow = shadow;
+
+    // Пример показывает выбранный шрифт/жирность
+    els.answerPreviewText.style.fontFamily = cfgDraft.fontFamily || "system-ui";
+    els.answerPreviewText.style.fontWeight = String(cfgDraft.fontWeight || 900);
   }
 
   function renderQuestions(){
@@ -1203,7 +1305,6 @@ function startEditorMode(){
     readUIIntoDraft();
     updateInlinePreviews();
 
-    // размер cfg “индикатор”
     const enc = b64urlEncode(JSON.stringify(cfgDraft));
     els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
 
@@ -1268,8 +1369,14 @@ function startEditorMode(){
     els.progressColor, els.progressHeight,
 
     els.bgImgUrl, els.transparentBg, els.bgSizeMode,
+
     els.playerImgUrl, els.playerShadowOn, els.playerShadowColor,
+
     els.answerCardImgUrl, els.answerTextBgOn, els.answerCardFit,
+
+    // NEW: текст ответа
+    els.answerTextColor, els.answerTextShadowOn, els.answerTextNeonOn,
+    els.answerTextFxColor, els.answerTextFxStrength,
 
     els.livesCount, els.pointsPerCorrect, els.cooldownTurns, els.playerSpeed,
     els.hitOkText, els.hitBadText, els.finalWinText, els.finalLoseText,
@@ -1374,6 +1481,9 @@ function normalizeCfg(cfg){
   out.answerTextX = clampNum(out.answerTextX, 0, 100, 50);
   out.answerTextY = clampNum(out.answerTextY, 0, 100, 64);
 
+  // NEW: ответный текст
+  out.answerTextFxStrength = clampInt(out.answerTextFxStrength, 1, 12, 7);
+
   out.answerCardFit = (out.answerCardFit === "cover") ? "cover" : "contain";
   out.answerCardScale = clampNum(out.answerCardScale, 0.6, 2, 1);
   out.answerCardPosX = clampNum(out.answerCardPosX, 0, 100, 50);
@@ -1409,13 +1519,7 @@ function normalizeCfg(cfg){
   return out;
 }
 
-/**
- * startGameMode(cfgOverride)
- * - cfgOverride: объект конфига из редактора (live)
- * - если null: берёт из URL ?cfg=...
- */
 function startGameMode(cfgOverride){
-  // ✅ очистка прошлой игры (чтобы ничего не накапливалось)
   if(window.__GAME_CLEANUP__){
     try{ window.__GAME_CLEANUP__(); }catch(e){}
     window.__GAME_CLEANUP__ = null;
@@ -1423,9 +1527,7 @@ function startGameMode(cfgOverride){
 
   const root = document.getElementById("gameRoot");
 
-  // собрать cfg
   let cfg = deepClone(DEFAULT_CFG);
-
   if(cfgOverride && typeof cfgOverride === "object"){
     cfg = Object.assign(cfg, cfgOverride);
   } else {
@@ -1442,19 +1544,19 @@ function startGameMode(cfgOverride){
   const fxAns = CFG.fxToAnswers ? fxCSS : "";
   const fxPts = CFG.fxToPoints ? fxCSS : "";
 
+  const answerShadow = buildAnswerTextShadow(CFG);
+
   root.innerHTML = `
     <style>
       html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;touch-action:none;}
       *{ -webkit-tap-highlight-color: transparent; }
 
+      :root{ --ansShadow: ${answerShadow}; }
+
       #wrap{position:relative;width:100%;height:100%;background:transparent;}
 
-      /* ===== background repeat-x ===== */
-      #bg{
-        position:absolute; inset:0; z-index:0;
-        overflow:hidden;
-        background: ${CFG.transparentBg ? "transparent" : "rgba(0,0,0,.18)"};
-      }
+      /* background repeat-x */
+      #bg{position:absolute; inset:0; z-index:0; overflow:hidden; background: ${CFG.transparentBg ? "transparent" : "rgba(0,0,0,.18)"};}
       .bgLayer{
         position:absolute; inset:0;
         background-image: ${(!CFG.transparentBg && CFG.bgImg) ? `url('${cssUrl(CFG.bgImg)}')` : "none"};
@@ -1517,7 +1619,7 @@ function startGameMode(cfgOverride){
         ${fxQ}
       }
 
-      /* ===== player ===== */
+      /* player */
       #player{
         position:absolute;
         left:92px;
@@ -1549,7 +1651,7 @@ function startGameMode(cfgOverride){
       }
       #playerImg.boost{ animation: playerBoost .22s ease-out; }
 
-      /* ===== answers (no panel) ===== */
+      /* answers */
       .answer{
         position:absolute;
         width:${CFG.answerSize}px;
@@ -1577,7 +1679,7 @@ function startGameMode(cfgOverride){
         top:${CFG.answerTextY}%;
         transform: translate(-50%,-50%) scale(${CFG.answerContentScale});
         text-align:center;
-        color: rgba(255,255,255,.95);
+        color: ${CFG.answerTextColor || "#ffffff"};
         font-weight:${CFG.fontWeight};
         font-size: 14px;
         line-height:1.15;
@@ -1588,7 +1690,7 @@ function startGameMode(cfgOverride){
         border-radius: 10px;
         border: ${CFG.answerTextBgOn ? "1px solid rgba(255,255,255,.10)" : "0"};
         background: ${CFG.answerTextBgOn ? "rgba(0,0,0,.22)" : "transparent"};
-        text-shadow: 0 10px 22px rgba(0,0,0,.55);
+        text-shadow: var(--ansShadow);
         ${fxAns}
       }
       @keyframes flashBad{
@@ -1600,7 +1702,6 @@ function startGameMode(cfgOverride){
       }
       .answer.flash{ animation: flashBad .28s ease-in-out; }
 
-      /* +очки */
       .pop{
         position:absolute;
         font-weight:${CFG.fontWeight};
@@ -1631,7 +1732,6 @@ function startGameMode(cfgOverride){
       }
       #feedback.show{opacity:1;}
 
-      /* progress */
       #progressWrap{
         position:absolute; left:14px; right:14px; bottom:14px;
         z-index:115; pointer-events:none;
@@ -1662,7 +1762,6 @@ function startGameMode(cfgOverride){
         ${fxHud}
       }
 
-      /* overlays */
       .overlay{
         position:absolute; inset:0;
         display:none;
@@ -1723,7 +1822,6 @@ function startGameMode(cfgOverride){
         font-size:18px; color:${CFG.iconColor};
       }
 
-      /* lose tint */
       #loseTint{
         position:absolute; inset:0; z-index:500;
         pointer-events:none;
@@ -1733,7 +1831,6 @@ function startGameMode(cfgOverride){
       }
       #loseTint.show{ opacity:1; }
 
-      /* fireworks */
       #fxLayer{
         position:absolute; inset:0; z-index:520;
         pointer-events:none;
@@ -1837,7 +1934,7 @@ function startGameMode(cfgOverride){
     playerImg.style.backgroundImage = `url('${cssUrl(CFG.playerImg)}')`;
   }
 
-  // ===== AUDIO (mobile safe) =====
+  // AUDIO
   let audioCtx = window.__AUDIO_CTX__ || null;
   let unlocked = window.__AUDIO_UNLOCKED__ || false;
 
@@ -1876,7 +1973,7 @@ function startGameMode(cfgOverride){
   function soundWin(){ [523,659,784,988,784,988,1175].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"sine",0.22), i*120)); }
   function soundLose(){ [392,330,294,262].forEach((f,i)=>setTimeout(()=>tone(f,0.18,"triangle",0.22), i*160)); }
 
-  // ===== state
+  // state
   let keys = {};
   let state = null;
   let pendingTimer = null;
