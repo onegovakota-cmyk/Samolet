@@ -27,11 +27,17 @@
       --size: 86px;
     }
 
-    html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
+    html,body{
+      margin:0;height:100%;
+      background:var(--bg)!important;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      overflow:hidden;
+    }
     #game{position:relative;width:100%;height:100%;}
 
+    /* ====== TOP HUD (bigger) ====== */
     #topbar{
-      position:absolute; top:12px; left:12px; right:12px;
+      position:absolute; top:14px; left:14px; right:14px;
       display:flex; align-items:flex-start; justify-content:space-between;
       gap:12px;
       z-index:120;
@@ -41,35 +47,47 @@
       background: var(--panel-bg);
       border: 1px solid var(--panel-brd);
       border-radius: 999px;
-      padding: 10px 12px;
+      padding: 14px 16px;            /* bigger */
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      display:flex; gap:10px; align-items:center;
+      display:flex; gap:12px; align-items:center;
       white-space:nowrap;
       color: rgba(255,255,255,.92);
       pointer-events:none;
     }
-    .pill .label{font-size:12px;color:rgba(255,255,255,.72);font-weight:900}
-    .pill .value{font-size:16px;font-weight:1100}
+    .pill .label{
+      font-size:14px;                /* bigger */
+      color:rgba(255,255,255,.72);
+      font-weight:900
+    }
+    .pill .value{
+      font-size:22px;                /* bigger */
+      font-weight:1200
+    }
+    #lives{
+      font-size:22px;                /* bigger hearts */
+      letter-spacing:1px;
+    }
 
+    /* ====== QUESTION (bigger) ====== */
     #questionWrap{
-      position:absolute; top:62px; left:50%; transform:translateX(-50%);
+      position:absolute; top:78px; left:50%; transform:translateX(-50%);
       z-index:110; pointer-events:none;
-      max-width:min(900px, calc(100% - 24px));
+      max-width:min(980px, calc(100% - 28px));
     }
     #questionBox{
       background: var(--panel-bg);
       border: 1px solid var(--panel-brd);
       border-radius: 999px;
-      padding: 12px 16px;
+      padding: 16px 20px;            /* bigger */
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       text-align:center;
-      font-weight:1100;
-      font-size:14px;
-      color: rgba(255,255,255,.92);
+      font-weight:1200;
+      font-size:20px;                /* bigger */
+      color: rgba(255,255,255,.95);
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
@@ -138,7 +156,7 @@
     .pop{
       position:absolute;
       font-weight:1300;
-      font-size:20px;
+      font-size:22px;
       pointer-events:none;
       transform:translate(-50%,-50%);
       color: var(--neon-yellow);
@@ -158,7 +176,8 @@
     #feedback{
       position:absolute; inset:0;
       display:flex; align-items:center; justify-content:center;
-      font-size:30px; font-weight:1200;
+      font-size:34px;                /* slightly bigger */
+      font-weight:1200;
       pointer-events:none;
       opacity:0; transition:.18s;
       z-index:130;
@@ -167,12 +186,13 @@
     }
     #feedback.show{opacity:1;}
 
+    /* ====== PROGRESS BAR (bigger) ====== */
     #progressWrap{
-      position:absolute; left:12px; right:12px; bottom:12px;
+      position:absolute; left:14px; right:14px; bottom:14px;
       z-index:115; pointer-events:none;
     }
     #progressBar{
-      height: 20px;
+      height: 28px;                  /* bigger */
       border-radius: 999px;
       background: rgba(0,0,0,.14);
       border: 1px solid rgba(255,255,255,.22);
@@ -192,7 +212,8 @@
     #progressText{
       position:absolute; inset:0;
       display:flex; align-items:center; justify-content:center;
-      font-size:12px; font-weight:1200;
+      font-size:14px;                /* bigger */
+      font-weight:1200;
       color: rgba(255,255,255,.96);
       text-shadow:0 10px 22px rgba(0,0,0,.5);
     }
@@ -210,7 +231,7 @@
     .overlay.show{display:flex;}
 
     .card{
-      width:min(560px, calc(100% - 28px));
+      width:min(600px, calc(100% - 28px));
       background: rgba(20,18,34,.78);
       border: 1px solid rgba(255,255,255,.18);
       border-radius: 22px;
@@ -218,8 +239,8 @@
       padding: 18px 18px 16px;
       color: rgba(255,255,255,.92);
     }
-    .card h2{margin:0 0 8px;font-size:20px;font-weight:1200;}
-    .card p{margin:0 0 12px;font-size:13px;line-height:1.35;opacity:.9;}
+    .card h2{margin:0 0 8px;font-size:22px;font-weight:1200;}
+    .card p{margin:0 0 12px;font-size:14px;line-height:1.35;opacity:.9;}
 
     .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
     .chips{display:flex;gap:8px;flex-wrap:wrap;}
@@ -228,9 +249,9 @@
       background: rgba(255,255,255,.10);
       border: 1px solid rgba(255,255,255,.18);
       border-radius: 999px;
-      padding: 8px 12px;
+      padding: 10px 14px;
       font-weight:1100;
-      font-size:12px;
+      font-size:13px;
       color: rgba(255,255,255,.92);
       cursor:pointer;
       user-select:none;
@@ -244,12 +265,13 @@
       background: rgba(255,255,255,.12);
       border: 1px solid rgba(255,255,255,.20);
       border-radius: 14px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       font-weight:1200;
       color: rgba(255,255,255,.95);
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
+      font-size:14px;
     }
     .btn.primary{
       background: rgba(120,90,255,.40);
@@ -259,7 +281,7 @@
     .hint{margin-top:10px;font-size:12px;opacity:.75;}
 
     #version{
-      position:absolute; right:12px; bottom:40px;
+      position:absolute; right:12px; bottom:50px;
       font-size:12px; opacity:.55; pointer-events:none; z-index:400;
       color: rgba(0,0,0,.35);
     }
@@ -320,7 +342,7 @@
     </div>
   </div>
 
-  <div id="version">v20</div>
+  <div id="version">v21</div>
 </div>
 
 <script>
@@ -331,10 +353,9 @@ const CFG = {
   pointsPerCorrect: 10,
   soundVolume: 0.28,
 
-  // ✅ через 3 вопроса
   cooldownTurns: 3,
 
-  layout: { paddingTop: 130, paddingBottom: 86, laneMinDist: 108 },
+  layout: { paddingTop: 150, paddingBottom: 100, laneMinDist: 108 },
 
   difficulty: {
     easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
@@ -381,7 +402,6 @@ const playAgainBtn = document.getElementById("playAgainBtn");
 const menuBtn = document.getElementById("menuBtn");
 
 let keys = {};
-let raf = null;
 let state = null;
 let pendingTimer = null;
 
@@ -457,10 +477,9 @@ function initState(){
     score: 0,
     lives: CFG.lives,
 
-    remaining: [],
+    remaining: CFG.questions.map((_, i)=>i),
     currentIdx: null,
 
-    // ✅ последние показанные вопросы
     recent: [],
 
     active: [],
@@ -473,7 +492,6 @@ function initState(){
     minXGap: preset("easy").minXGap,
     maxOnScreen: preset("easy").maxOnScreen,
   };
-  state.remaining = CFG.questions.map((_, i)=>i);
 }
 
 function applyDifficulty(level){
@@ -500,10 +518,8 @@ function updateProgress(){
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
-
   const q = (state.currentIdx !== null) ? CFG.questions[state.currentIdx] : null;
   questionBox.textContent = q ? q.q : "";
-
   updateProgress();
 }
 
@@ -565,7 +581,6 @@ function newestX(){
 function maybeSpawn(now){
   if(state.phase !== "playing" || state.locked) return;
   if(state.active.length >= state.maxOnScreen) return;
-
   if(now - state.lastSpawnAt < state.spawnEveryMs) return;
 
   const spawnX = rightEdgeX();
@@ -583,7 +598,6 @@ function maybeSpawn(now){
 
   scene.appendChild(el);
   state.active.push({ el, data: pick, hit:false });
-
   state.lastSpawnAt = now;
 }
 
@@ -611,7 +625,7 @@ function endGame(win){
   clearAnswers();
   updateHUD();
 
-  if(win) soundWin(); else soundLose();
+  win ? soundWin() : soundLose();
 
   finalTitle.textContent = win ? "🎉 Молодец!" : "😢 Попробуй ещё";
   finalText.textContent = win
@@ -624,15 +638,12 @@ function endGame(win){
 function pushRecent(idx){
   if(idx === null) return;
   state.recent.push(idx);
-
-  // ✅ чтобы вернулся "после 3 других" — держим 4 последних (сам + 3 следующих)
-  const maxLen = Math.max(0, CFG.cooldownTurns + 1);
+  const maxLen = Math.max(0, CFG.cooldownTurns + 1); // 4
   while(state.recent.length > maxLen) state.recent.shift();
 }
 
 function pickNextQuestionWithCooldown(){
   if(!state.remaining.length) return null;
-
   if(state.remaining.length === 1) return state.remaining[0];
 
   const banned = new Set(state.recent);
@@ -648,10 +659,7 @@ function chooseNextQuestion(){
   pushRecent(state.currentIdx);
   state.currentIdx = pickNextQuestionWithCooldown();
 
-  if(state.currentIdx === null){
-    endGame(true);
-    return;
-  }
+  if(state.currentIdx === null){ endGame(true); return; }
 
   updateHUD();
   state.locked = false;
@@ -675,10 +683,9 @@ function handleHit(correct, hitX, hitY){
     const idx = state.currentIdx;
     state.remaining = state.remaining.filter(x => x !== idx);
 
-    pendingTimer = setTimeout(()=> {
+    pendingTimer = setTimeout(()=>{
       pendingTimer = null;
-      if(state.remaining.length === 0) endGame(true);
-      else chooseNextQuestion();
+      state.remaining.length === 0 ? endGame(true) : chooseNextQuestion();
     }, CFG.feedbackMs);
 
   } else {
@@ -686,10 +693,9 @@ function handleHit(correct, hitX, hitY){
     showFeedback("Неверно", false);
     soundBad();
 
-    pendingTimer = setTimeout(()=> {
+    pendingTimer = setTimeout(()=>{
       pendingTimer = null;
-      if(state.lives <= 0) endGame(false);
-      else chooseNextQuestion();
+      state.lives <= 0 ? endGame(false) : chooseNextQuestion();
     }, CFG.feedbackMs);
   }
 
@@ -718,8 +724,8 @@ function resetGameForPlay(){
   state.score = 0;
   state.lives = CFG.lives;
   state.remaining = CFG.questions.map((_, i)=>i);
-
   state.recent = [];
+
   state.phase = "playing";
   state.locked = false;
 
@@ -736,7 +742,6 @@ async function startGame(){
   showOverlay(finalOverlay, false);
   resetGameForPlay();
 }
-
 async function playAgain(){
   await unlockAudio();
   soundStart();
@@ -744,7 +749,6 @@ async function playAgain(){
   showOverlay(startOverlay, false);
   resetGameForPlay();
 }
-
 function backToMenu(){
   clearPending();
   clearAnswers();
@@ -781,7 +785,7 @@ function loop(now){
       state.active = next;
     }
   }
-  raf = requestAnimationFrame(loop);
+  requestAnimationFrame(loop);
 }
 
 /* UI */
@@ -795,12 +799,9 @@ startBtn.addEventListener("click", startGame);
 playAgainBtn.addEventListener("click", playAgain);
 menuBtn.addEventListener("click", backToMenu);
 
-window.addEventListener("keydown", async (e)=>{
-  keys[e.key]=true;
-  await unlockAudio();
-});
-window.addEventListener("keyup",(e)=>keys[e.key]=false);
-window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true });
+window.addEventListener("keydown", async (e)=>{ keys[e.key]=true; await unlockAudio(); });
+window.addEventListener("keyup",(e)=>{ keys[e.key]=false; });
+window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true});
 
 /* init */
 initState();
