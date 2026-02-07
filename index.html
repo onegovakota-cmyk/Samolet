@@ -151,7 +151,7 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">Авто-предпросмотр • сенсор • парение/наклон • бесконечный фон • предпросмотры игрока и ответа справа</div>
+        <div class="sub">Авто-предпросмотр • сенсор • парение/наклон • бесконечный фон • звуки • предпросмотры справа</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -161,7 +161,7 @@
         <h3>Ссылка проекта (для iframe)</h3>
         <label>Base URL (полный путь к этому .html)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/игра.html" />
-        <div class="hint">Для предпросмотра справа baseUrl не нужен — он всегда открывает этот же файл.</div>
+        <div class="hint">В предпросмотре справа всегда используется этот же файл (без baseUrl).</div>
       </div>
 
       <div class="section">
@@ -240,20 +240,19 @@
             </div>
 
             <div style="margin-top:10px">
-              <label>Размер фона по ширине</label>
+              <label>Размер фона</label>
               <select id="bgSizeMode">
-                <option value="auto" selected>auto (tile)</option>
+                <option value="auto" selected>auto (repeat-x)</option>
                 <option value="cover">cover</option>
                 <option value="contain">contain</option>
               </select>
             </div>
 
-            <div class="hint">Чтобы не было видимого стыка, фон-картинка должна быть «тайловой» (seamless). Мы двигаем repeat-x.</div>
+            <div class="hint">Чтобы стык не был виден — фон лучше делать “seamless/tile”. Мы двигаем repeat-x.</div>
           </div>
         </div>
       </div>
 
-      <!-- Игрок: настройки + предпросмотр справа -->
       <div class="section">
         <h3>Игрок (картинка без круга)</h3>
 
@@ -293,7 +292,7 @@
                 </div>
               </div>
             </div>
-            <div class="hint">Парение и наклон работают в игре автоматически.</div>
+            <div class="hint">Парение + наклон вверх/вниз включены всегда (наклон зависит от движения).</div>
           </div>
 
           <div class="previewCard">
@@ -303,7 +302,6 @@
         </div>
       </div>
 
-      <!-- Ответ: настройки + предпросмотр справа -->
       <div class="section">
         <h3>Ответ (объект)</h3>
 
@@ -392,7 +390,7 @@
               </div>
             </div>
 
-            <div class="hint">В игре у ответов НЕТ подложки/фона — только ваша картинка. Буквы вариантов не показываются.</div>
+            <div class="hint">В игре у ответов нет панели/фона — только ваша картинка. Буквы вариантов скрыты.</div>
           </div>
 
           <div class="previewCard">
@@ -530,7 +528,7 @@
     <div class="head">
       <div>
         <h1>Предпросмотр игры</h1>
-        <div class="sub">Обновляется автоматически по настройкам.</div>
+        <div class="sub">Обновляется автоматически по настройкам (без кнопки “Применить”).</div>
       </div>
       <div class="badge">play</div>
     </div>
@@ -771,7 +769,6 @@ function startEditorMode(){
   };
 
   els.baseUrl.value = location.origin + location.pathname;
-
   let cfgDraft = deepClone(DEFAULT_CFG);
 
   function makeEmptyQuestion(){
@@ -916,17 +913,16 @@ function startEditorMode(){
   }
 
   function updateInlinePreviews(){
-    // Игрок
     const pSize = cfgDraft.playerSize ?? 86;
     els.playerPreviewImg.style.width = pSize + "px";
     els.playerPreviewImg.style.height = pSize + "px";
     els.playerPreviewImg.style.backgroundImage = cfgDraft.playerImg ? `url('${cssUrl(cfgDraft.playerImg)}')` : "none";
+
     const shadowOn = !!cfgDraft.playerShadowOn;
     const s = cfgDraft.playerShadowStrength ?? 18;
     const sc = cfgDraft.playerShadowColor || "#000000";
     els.playerPreviewImg.style.filter = shadowOn ? `drop-shadow(0 0 ${Math.max(0, s)}px ${hexToRgba(sc, 0.85)})` : "none";
 
-    // Ответ
     const aSize = cfgDraft.answerSize ?? 86;
     els.answerPreviewObj.style.width = Math.max(140, aSize + 60) + "px";
     els.answerPreviewObj.style.height = Math.max(140, aSize + 60) + "px";
@@ -946,7 +942,6 @@ function startEditorMode(){
 
   function buildCfgParam(fromCfg){
     const c = deepClone(fromCfg);
-    // нормализация вопросов
     if(!c.questions?.length) c.questions = [makeEmptyQuestion()];
     c.questions.forEach(q=>{
       if(!q.answers?.length) q.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
@@ -1110,7 +1105,6 @@ function startEditorMode(){
     els.progressColor, els.progressHeight,
 
     els.bgImgUrl, els.transparentBg, els.bgSizeMode,
-
     els.playerImgUrl, els.playerShadowOn, els.playerShadowColor,
     els.answerCardImgUrl, els.answerTextBgOn, els.answerCardFit,
 
@@ -1120,7 +1114,6 @@ function startEditorMode(){
   ].forEach(bind);
 
   pairBind(els.bgSpeedR, els.bgSpeed, scheduleAutoPreview);
-
   pairBind(els.playerSizeR, els.playerSize, scheduleAutoPreview);
   pairBind(els.playerShadowStrengthR, els.playerShadowStrength, scheduleAutoPreview);
 
@@ -1182,7 +1175,6 @@ function startEditorMode(){
 /* ================= GAME ================= */
 function normalizeCfg(cfg){
   const out = deepClone(DEFAULT_CFG);
-
   Object.assign(out, cfg || {});
 
   // deep merge difficulty
@@ -1263,7 +1255,7 @@ function startGameMode(){
     html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;touch-action:none;}
     #wrap{position:relative;width:100%;height:100%;background:transparent;}
 
-    /* ===== background (seamless repeat-x) ===== */
+    /* ===== background (repeat-x) ===== */
     #bg{
       position:absolute; inset:0; z-index:0;
       overflow:hidden;
@@ -1349,7 +1341,6 @@ function startGameMode(){
       transform: translate3d(0,0,0);
       will-change: transform;
     }
-    /* парение */
     @keyframes hoverBob {
       0%{transform: translateY(0);}
       50%{transform: translateY(-6px);}
@@ -1358,7 +1349,6 @@ function startGameMode(){
     #playerImg.bob{
       animation: hoverBob 1.2s ease-in-out infinite;
     }
-    /* лёгкое увеличение при правильном попадании */
     @keyframes playerBoost{
       0%{transform: scale(1);}
       35%{transform: scale(1.08);}
@@ -1366,7 +1356,7 @@ function startGameMode(){
     }
     #playerImg.boost{ animation: playerBoost .22s ease-out; }
 
-    /* ===== answers (no panel background) ===== */
+    /* ===== answers ===== */
     .answer{
       position:absolute;
       width:${CFG.answerSize}px;
@@ -1407,7 +1397,6 @@ function startGameMode(){
       background: ${CFG.answerTextBgOn ? "rgba(0,0,0,.22)" : "transparent"};
       text-shadow: 0 10px 22px rgba(0,0,0,.55);
     }
-    /* мигание при ошибке */
     @keyframes flashBad{
       0%,100%{filter:none; opacity:1;}
       20%{filter: drop-shadow(0 0 10px rgba(255,80,80,.95)); opacity:.55;}
@@ -1417,7 +1406,6 @@ function startGameMode(){
     }
     .answer.flash{ animation: flashBad .28s ease-in-out; }
 
-    /* ===== feedback (short) ===== */
     #feedback{
       position:absolute; inset:0;
       display:flex; align-items:center; justify-content:center;
@@ -1550,14 +1538,11 @@ function startGameMode(){
       100%{ transform: translate3d(var(--ex), var(--ey), 0) rotate(520deg); opacity:0; }
     }
 
-    /* prevent selection */
     *{ -webkit-tap-highlight-color: transparent; }
   </style>
 
   <div id="wrap">
-    <div id="bg">
-      <div class="bgLayer" id="bgLayer"></div>
-    </div>
+    <div id="bg"><div class="bgLayer" id="bgLayer"></div></div>
 
     <div id="game">
       <div id="topbar">
@@ -1611,7 +1596,6 @@ function startGameMode(){
   </div>
   `;
 
-  // elements
   const bgLayer = root.querySelector("#bgLayer");
   const scene = root.querySelector("#scene");
   const player = root.querySelector("#player");
@@ -1637,10 +1621,44 @@ function startGameMode(){
   const loseTint = root.querySelector("#loseTint");
   const fxLayer = root.querySelector("#fxLayer");
 
-  // apply player img
   if(CFG.playerImg){
     playerImg.style.backgroundImage = `url('${cssUrl(CFG.playerImg)}')`;
   }
+
+  // ===== AUDIO (works on mobile after first gesture) =====
+  let audioCtx = null, unlocked = false;
+  function ensureAudio(){
+    if(audioCtx) return;
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    audioCtx = new Ctx();
+  }
+  async function unlockAudio(){
+    ensureAudio();
+    if(!audioCtx) return;
+    if(audioCtx.state === "suspended"){
+      try{ await audioCtx.resume(); }catch(e){}
+    }
+    unlocked = true;
+  }
+  function tone(freq, dur=0.16, type="sine", vol=0.28){
+    if(!unlocked || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(vol, now + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(now); o.stop(now + dur + 0.03);
+  }
+  function soundStart(){ tone(523.25,0.10,"sine",0.22); setTimeout(()=>tone(659.25,0.10,"sine",0.22),110); setTimeout(()=>tone(783.99,0.14,"sine",0.22),230); }
+  function soundOk(){ tone(660,0.10,"sine",0.24); setTimeout(()=>tone(990,0.12,"sine",0.24),90); }
+  function soundBad(){ tone(220,0.14,"square",0.22); setTimeout(()=>tone(180,0.16,"sawtooth",0.22),90); }
+  function soundWin(){ [523,659,784,988,784,988,1175].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"sine",0.22), i*120)); }
+  function soundLose(){ [392,330,294,262].forEach((f,i)=>setTimeout(()=>tone(f,0.18,"triangle",0.22), i*160)); }
 
   // ===== state
   let keys = {};
@@ -1679,8 +1697,10 @@ function startGameMode(){
       maxOnScreen:preset("easy").maxOnScreen,
 
       playerY: scene.clientHeight * 0.5,
-      playerV: 0,          // для наклона
+      playerV: 0,
       tiltDeg: 0,
+
+      _lastNow: null,
     };
   }
 
@@ -1799,7 +1819,6 @@ function startGameMode(){
   }
 
   function fireConfettiBurst(){
-    // маленький салют: несколько конфетти из центра
     const cx = scene.clientWidth * 0.55;
     const cy = scene.clientHeight * 0.35;
     const n = 70;
@@ -1823,7 +1842,6 @@ function startGameMode(){
       d.style.setProperty("--ex", endX);
       d.style.setProperty("--ey", endY);
 
-      // случайный цвет
       const colors = ["#ffd84a","#7a5aff","#4cff9e","#ff6b6b","#ffffff"];
       d.style.background = colors[Math.floor(Math.random()*colors.length)];
       d.style.borderRadius = (Math.random()>0.5) ? "4px" : "999px";
@@ -1841,8 +1859,10 @@ function startGameMode(){
     updateHUD();
 
     if(win){
+      soundWin();
       fireConfettiBurst();
     }else{
+      soundLose();
       loseTint.classList.add("show");
     }
 
@@ -1890,18 +1910,17 @@ function startGameMode(){
     clearPending();
 
     if(correct){
-      // player boost
       playerImg.classList.remove("boost");
       void playerImg.offsetWidth;
       playerImg.classList.add("boost");
 
+      soundOk();
       state.score += CFG.pointsPerCorrect;
       showFeedback(CFG.hitOkText || "Верно!", true);
 
       const idx = state.currentIdx;
       state.remaining = state.remaining.filter(x => x!==idx);
 
-      // убрать объект сразу
       hitObj?.el?.remove?.();
 
       pendingTimer = setTimeout(()=>{
@@ -1909,10 +1928,10 @@ function startGameMode(){
         state.remaining.length===0 ? endGame(true) : chooseNextQuestion();
       }, 420);
     }else{
+      soundBad();
       state.lives--;
       showFeedback(CFG.hitBadText || "Неверно!", false);
 
-      // мигание объекта (если есть)
       if(hitObj?.el && hitObj.el.isConnected){
         hitObj.el.classList.add("flash");
         setTimeout(()=>hitObj.el?.remove?.(), 220);
@@ -1924,7 +1943,6 @@ function startGameMode(){
       }, 520);
     }
 
-    // очистим остальные, чтобы не мешали
     state.active.forEach(o=>{
       if(o !== hitObj && o.el?.isConnected) o.el.remove();
     });
@@ -1962,31 +1980,33 @@ function startGameMode(){
     state.playerY = scene.clientHeight * 0.5;
     state.playerV = 0;
     state.tiltDeg = 0;
+    state._lastNow = null;
 
     player.style.top = state.playerY + "px";
     updateHUD();
   }
 
   async function startGame(){
+    await unlockAudio();
+    soundStart();
     showOverlay(startOverlay,false);
     showOverlay(finalOverlay,false);
     resetGameForPlay();
   }
   async function playAgain(){
+    await unlockAudio();
+    soundStart();
     showOverlay(finalOverlay,false);
     showOverlay(startOverlay,false);
     resetGameForPlay();
   }
 
-  // ===== background loop =====
   function updateBg(dt){
     if(CFG.transparentBg || !CFG.bgImg || CFG.bgSpeed<=0) return;
     bgOffset += (CFG.bgSpeed * dt) / 1000;
-    // repeat-x, двигаем background-position
     bgLayer.style.backgroundPosition = (-bgOffset) + "px 50%";
   }
 
-  // ===== player movement + tilt =====
   function updatePlayer(dt){
     if(state.phase!=="playing") return;
 
@@ -1996,23 +2016,20 @@ function startGameMode(){
     let y = state.playerY;
     let v = state.playerV;
 
-    // keyboard control -> acceleration-like
     let dir = 0;
     if(keys.ArrowUp) dir -= 1;
     if(keys.ArrowDown) dir += 1;
 
     if(touchActive && typeof targetY === "number"){
-      // плавно к targetY (сенсор)
       const diff = (targetY - y);
       const step = diff * Math.min(1, dt/120);
-      v = step; // для наклона
+      v = step;
       y += step;
     }else if(dir !== 0){
       const sp = CFG.playerSpeed;
       v = dir * sp;
       y += v;
     }else{
-      // затухание скорости
       v *= 0.85;
     }
 
@@ -2020,7 +2037,6 @@ function startGameMode(){
     state.playerY = y;
     state.playerV = v;
 
-    // tilt: вниз -> наклон вниз, вверх -> вверх
     const targetTilt = clampNum(v * 2.2, -18, 18, 0);
     state.tiltDeg += (targetTilt - state.tiltDeg) * Math.min(1, dt/110);
 
@@ -2036,7 +2052,6 @@ function startGameMode(){
 
     if(state.phase==="playing"){
       updatePlayer(dt);
-
       maybeSpawn(now);
 
       if(!state.locked){
@@ -2058,20 +2073,21 @@ function startGameMode(){
     requestAnimationFrame(loop);
   }
 
-  // ===== input =====
+  // ===== inputs =====
   diffBtns.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+    btn.addEventListener("click", async ()=>{
+      await unlockAudio();
       applyDifficulty(btn.dataset.level);
     });
   });
   startBtn.addEventListener("click", startGame);
   playAgainBtn.addEventListener("click", playAgain);
 
-  window.addEventListener("keydown",(e)=>{ keys[e.key]=true; }, {passive:true});
+  window.addEventListener("keydown", async (e)=>{ keys[e.key]=true; await unlockAudio(); }, {passive:true});
   window.addEventListener("keyup",(e)=>{ keys[e.key]=false; }, {passive:true});
 
-  // сенсор: ведём пальцем по экрану
   function onPointerDown(e){
+    unlockAudio(); // important for mobile audio
     if(state.phase!=="playing") return;
     touchActive = true;
     const r = scene.getBoundingClientRect();
