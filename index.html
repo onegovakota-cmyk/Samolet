@@ -28,12 +28,7 @@
       --size: 86px;
     }
 
-    html,body{
-      margin:0;height:100%;
-      background:var(--bg)!important;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      overflow:hidden;
-    }
+    html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
     #game{position:relative;width:100%;height:100%;}
 
     #topbar{
@@ -203,7 +198,6 @@
       text-shadow:0 10px 22px rgba(0,0,0,.5);
     }
 
-    /* OVERLAYS */
     .overlay{
       position:absolute; inset:0;
       display:none;
@@ -295,13 +289,12 @@
     </div>
   </div>
 
-  <!-- START -->
   <div id="startOverlay" class="overlay show">
     <div class="card">
       <h2>Задача игрока</h2>
       <p>
-        Лови <b>правильный ответ</b> на вопрос сверху.<br>
-        Если ошибся — теряешь жизнь, а вопрос вернётся позже.
+        Вопросы появляются <b>рандомно</b> из списка.<br>
+        Ошибка = минус жизнь, но вопрос остаётся в игре и может выпасть снова.
       </p>
 
       <div class="row">
@@ -317,7 +310,6 @@
     </div>
   </div>
 
-  <!-- FINAL -->
   <div id="finalOverlay" class="overlay">
     <div class="card">
       <h2 id="finalTitle">—</h2>
@@ -329,7 +321,7 @@
     </div>
   </div>
 
-  <div id="version">v17</div>
+  <div id="version">v18</div>
 </div>
 
 <script>
@@ -457,14 +449,17 @@ function showOverlay(el, on){
 
 function initState(){
   state = {
-    phase: "menu",     // menu | playing | ended
+    phase: "menu",
     locked: true,
 
     score: 0,
     lives: CFG.lives,
 
-    // ✅ очередь вопросов: массив индексов (например [0,1,2])
-    queue: [],
+    // ✅ пул нерешённых вопросов
+    remaining: [],
+
+    // текущий вопрос (индекс)
+    currentIdx: null,
 
     active: [],
     lastSpawnAt: performance.now(),
@@ -476,8 +471,7 @@ function initState(){
     minXGap: preset("easy").minXGap,
     maxOnScreen: preset("easy").maxOnScreen,
   };
-  // заполним очередь
-  state.queue = CFG.questions.map((_, i)=>i);
+  state.remaining = CFG.questions.map((_, i)=>i);
 }
 
 function applyDifficulty(level){
@@ -492,26 +486,27 @@ function applyDifficulty(level){
 
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
 
+function pickRandomQuestion(){
+  if(!state.remaining.length) return null;
+  const r = Math.floor(Math.random() * state.remaining.length);
+  return state.remaining[r];
+}
+
 function updateProgress(){
   const total = CFG.questions.length;
-  const done = total - state.queue.length;
+  const done = total - state.remaining.length;
   const current = Math.min(done + 1, total);
   const pct = total ? Math.round((done / total) * 100) : 0;
   progressFill.style.width = pct + "%";
   progressText.textContent = `Вопрос ${current} из ${total}`;
 }
 
-function currentQuestion(){
-  if(!state.queue.length) return null;
-  return CFG.questions[state.queue[0]];
-}
-
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
 
-  const cq = currentQuestion();
-  questionBox.textContent = cq ? cq.q : "";
+  const q = (state.currentIdx !== null) ? CFG.questions[state.currentIdx] : null;
+  questionBox.textContent = q ? q.q : "";
 
   updateProgress();
 }
@@ -581,11 +576,10 @@ function maybeSpawn(now){
   const nx = newestX();
   if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return;
 
-  const q = currentQuestion();
+  const q = (state.currentIdx !== null) ? CFG.questions[state.currentIdx] : null;
   if(!q) return;
 
   const pick = q.answers[randInt(0, q.answers.length-1)];
-
   const el = createOrb(pick);
   el.style.left = spawnX + "px";
   el.style.top = pickLaneY() + "px";
@@ -631,11 +625,17 @@ function endGame(win){
   showOverlay(finalOverlay, true);
 }
 
-function nextRoundSameOrNext(){
+function chooseNextQuestionRandom(){
+  // ✅ выбор нового вопроса рандомно из remaining
+  state.currentIdx = pickRandomQuestion();
+  if(state.currentIdx === null){
+    endGame(true);
+    return;
+  }
+  updateHUD();
   state.locked = false;
   clearAnswers();
   state.lastSpawnAt = performance.now();
-  updateHUD();
 }
 
 function handleHit(correct, hitX, hitY){
@@ -646,34 +646,30 @@ function handleHit(correct, hitX, hitY){
   clearPending();
 
   if(correct){
-    // ✅ правильный: убираем вопрос из очереди
     state.score += CFG.pointsPerCorrect;
     showPointsPop(hitX, hitY, CFG.pointsPerCorrect);
     showFeedback("Верно", true);
     soundOk();
 
-    // remove current
-    state.queue.shift();
+    // ✅ удаляем текущий из remaining
+    const idx = state.currentIdx;
+    state.remaining = state.remaining.filter(x => x !== idx);
 
     pendingTimer = setTimeout(()=> {
       pendingTimer = null;
-      if(state.queue.length === 0) endGame(true);
-      else nextRoundSameOrNext();
+      if(state.remaining.length === 0) endGame(true);
+      else chooseNextQuestionRandom();
     }, CFG.feedbackMs);
 
   } else {
-    // ✅ неправильный: -жизнь и переносим вопрос в конец очереди
     state.lives--;
     showFeedback("Неверно", false);
     soundBad();
 
-    const wrongIdx = state.queue.shift();
-    state.queue.push(wrongIdx);
-
     pendingTimer = setTimeout(()=> {
       pendingTimer = null;
       if(state.lives <= 0) endGame(false);
-      else nextRoundSameOrNext();
+      else chooseNextQuestionRandom(); // ✅ дальше рандомно, вопрос остаётся в remaining
     }, CFG.feedbackMs);
   }
 
@@ -701,13 +697,12 @@ function resetGameForPlay(){
 
   state.score = 0;
   state.lives = CFG.lives;
-
-  // ✅ заново очередь всех вопросов
-  state.queue = CFG.questions.map((_, i)=>i);
+  state.remaining = CFG.questions.map((_, i)=>i);
 
   state.phase = "playing";
   state.locked = false;
 
+  state.currentIdx = pickRandomQuestion();
   state.lastSpawnAt = performance.now();
   player.style.top = "50%";
   updateHUD();
@@ -734,6 +729,7 @@ function backToMenu(){
   clearAnswers();
   state.phase = "menu";
   state.locked = true;
+  state.currentIdx = null;
   showOverlay(finalOverlay, false);
   showOverlay(startOverlay, true);
   updateHUD();
@@ -741,14 +737,12 @@ function backToMenu(){
 
 function loop(now){
   if(state.phase === "playing"){
-    // player movement
     let y = player.offsetTop;
     if(keys.ArrowUp) y -= CFG.playerSpeed;
     if(keys.ArrowDown) y += CFG.playerSpeed;
     y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
     player.style.top = y + "px";
 
-    // spawn + move
     maybeSpawn(now);
 
     if(!state.locked){
@@ -759,7 +753,7 @@ function loop(now){
         checkCollision(obj);
         if(obj.el.isConnected){
           if(obj.el.offsetLeft >= leftLimit) next.push(obj);
-          else obj.el.remove(); // пропуск без штрафа
+          else obj.el.remove();
         }
       }
       state.active = next;
