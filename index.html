@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Answer v5</title>
+<title>Catch the Answer v6</title>
 
 <style>
   :root{
@@ -11,34 +11,28 @@
     --text: rgba(255,255,255,.92);
     --muted: rgba(255,255,255,.72);
 
-    --panel-bg: rgba(10,10,20,.55);
-    --panel-brd: rgba(255,255,255,.14);
-    --shadow: 0 14px 50px rgba(0,0,0,.35);
+    --panel-bg: rgba(10,10,20,.60);
+    --panel-brd: rgba(255,255,255,.18);
+    --shadow: 0 16px 60px rgba(0,0,0,.42);
 
-    --answer-bg: rgba(255,255,255,.16);
-    --answer-brd: rgba(255,255,255,.22);
-    --answer-text: rgba(255,255,255,.95);
+    --answer-bg: rgba(255,255,255,.18);
+    --answer-brd: rgba(255,255,255,.28);
+    --answer-text: rgba(255,255,255,.96);
 
     --good: #4cff9e;
     --bad:  #ff6b6b;
 
-    --size: 78px; /* игрок и ответы одного размера */
+    --size: 84px; /* игрок и ответы одного размера */
   }
 
-  html,body{
-    margin:0;height:100%;
-    background: var(--bg) !important;
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    color:var(--text);
-    overflow:hidden;
-  }
+  html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);overflow:hidden;}
   #game{position:relative;width:100%;height:100%;}
 
   /* HUD */
   #hud{
     position:absolute; top:12px; left:12px; right:12px;
     display:flex; align-items:flex-start; justify-content:space-between;
-    gap:12px; z-index:20; pointer-events:none;
+    gap:12px; z-index:60; pointer-events:none;
   }
   .pill{
     background: var(--panel-bg);
@@ -51,15 +45,14 @@
     display:flex; gap:10px; align-items:center;
     white-space:nowrap;
   }
-  .pill .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
+  .pill .label{font-size:12px;color:var(--muted);font-weight:900}
   .pill .value{font-size:16px;font-weight:1100}
 
-  /* Вопрос по центру в рамочке */
+  /* QUESTION */
   #questionWrap{
-    position:absolute; top:12px; left:50%;
-    transform:translateX(-50%);
-    z-index:21; pointer-events:none;
-    max-width:min(860px, calc(100% - 24px));
+    position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    z-index:61; pointer-events:none;
+    max-width:min(900px, calc(100% - 24px));
   }
   #questionBox{
     background: var(--panel-bg);
@@ -70,114 +63,108 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     text-align:center;
-    font-weight:1000;
+    font-weight:1100;
     font-size:14px;
-    letter-spacing:.2px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
 
-  /* Scene */
+  /* SCENE */
   #scene{position:absolute; inset:0; overflow:hidden;}
 
-  /* Player + Answers */
   .orb{
     position:absolute;
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex; align-items:center; justify-content:center;
     user-select:none;
   }
 
   #player{
-    left:84px;
-    top:50%;
+    left:92px; top:50%;
     transform:translate(-50%,-50%);
     background: rgba(120,90,255,.22);
-    border: 1px solid rgba(120,90,255,.35);
-    box-shadow: 0 12px 35px rgba(0,0,0,.25), 0 0 22px rgba(120,90,255,.25);
+    border: 1px solid rgba(120,90,255,.40);
+    box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
   }
   #player:before{
     content:"";
-    width: 18px; height: 18px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.85);
-    box-shadow: 0 0 12px rgba(255,255,255,.25);
+    width:18px;height:18px;border-radius:999px;
+    background: rgba(255,255,255,.88);
+    box-shadow:0 0 14px rgba(255,255,255,.25);
   }
 
+  /* ANSWER ORBS (одинаковые, одного цвета) */
   .answer{
     background: var(--answer-bg);
     border: 1px solid var(--answer-brd);
-    box-shadow: 0 14px 45px rgba(0,0,0,.28);
+    box-shadow: 0 16px 55px rgba(0,0,0,.35);
     color: var(--answer-text);
-    padding: 8px 9px;
+    padding: 8px 10px;
     box-sizing:border-box;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     text-align:center;
-    gap:4px;
+    gap:5px;
   }
   .answer .lab{
-    font-weight:1100;
+    font-weight:1200;
     font-size:18px;
     line-height:1;
     letter-spacing:.8px;
+    opacity:.95;
   }
+  /* ТЕКСТ ВАРИАНТА — делаем крупнее и без clamp */
   .answer .txt{
-    font-weight:900;
-    font-size:12px;
-    line-height:1.05;
+    font-weight:1000;
+    font-size:13px;
+    line-height:1.08;
     opacity:1;
-    max-width: 140px;
+    max-width: 160px;
     white-space:normal;
     word-break:break-word;
   }
 
-  /* +очки */
+  /* +points */
   .pop{
     position:absolute;
-    font-weight:1100;
+    font-weight:1200;
     font-size:18px;
     pointer-events:none;
     transform:translate(-50%,-50%);
-    text-shadow: 0 14px 30px rgba(0,0,0,.5);
+    text-shadow:0 16px 36px rgba(0,0,0,.55);
     animation: popUp .78s ease-out forwards;
-    z-index:30;
+    z-index:80;
   }
   @keyframes popUp{
-    0%   { opacity:0; transform:translate(-50%,-50%) scale(.9); }
-    15%  { opacity:1; transform:translate(-50%,-62%) scale(1.05); }
-    100% { opacity:0; transform:translate(-50%,-105%) scale(1.0); }
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.9);}
+    15%{opacity:1;transform:translate(-50%,-62%) scale(1.05);}
+    100%{opacity:0;transform:translate(-50%,-110%) scale(1);}
   }
 
   #feedback{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
-    font-size:30px; font-weight:1100;
+    font-size:30px; font-weight:1200;
     pointer-events:none;
     opacity:0; transition:.18s;
-    z-index:25;
+    z-index:70;
   }
-  #feedback.show{ opacity:1; }
+  #feedback.show{opacity:1;}
 
-  /* Прогресс-бар снизу */
+  /* ПРОГРЕСС-БАР СНИЗУ — максимально явный */
   #progressWrap{
     position:absolute;
     left:12px; right:12px; bottom:12px;
-    z-index:18;
-    pointer-events:none;
+    z-index:90; pointer-events:none;
   }
   #progressBar{
-    height: 16px;
+    height: 20px;
     border-radius: 999px;
-    background: rgba(255,255,255,.10);
-    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
     box-shadow: var(--shadow);
     overflow:hidden;
     position:relative;
@@ -187,21 +174,16 @@
   #progressFill{
     height:100%;
     width:0%;
-    background: rgba(120,90,255,.65);
-    border-radius: 999px;
+    background: rgba(120,90,255,.72);
+    border-radius:999px;
     transition: width .25s ease;
   }
   #progressText{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    font-weight:1000;
-    color: rgba(255,255,255,.92);
-    text-shadow: 0 8px 18px rgba(0,0,0,.45);
-    letter-spacing:.2px;
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:1200;
+    color: rgba(255,255,255,.96);
+    text-shadow:0 10px 22px rgba(0,0,0,.5);
   }
 
   #final{
@@ -209,48 +191,37 @@
     background: rgba(0,0,0,.78);
     display:none;
     align-items:center; justify-content:center;
-    flex-direction:column;
-    gap:14px;
-    z-index:40;
-    text-align:center;
-    padding:20px;
+    flex-direction:column; gap:14px;
+    z-index:120; text-align:center; padding:20px;
   }
-  #final.show{ display:flex; }
-  #final h1{ margin:0; font-size:30px; }
-  #final .small{ opacity:.8; max-width:560px; line-height:1.4; font-size:13px; }
+  #final.show{display:flex;}
+  #final h1{margin:0;font-size:30px;}
+  #final .small{opacity:.85;max-width:560px;line-height:1.4;font-size:13px;}
   #final button{
     pointer-events:auto;
-    padding:10px 16px;
-    border-radius:14px;
+    padding:10px 16px;border-radius:14px;
     border:1px solid rgba(255,255,255,.18);
-    background: rgba(255,255,255,.10);
-    color: rgba(255,255,255,.92);
-    font-weight:1000;
-    cursor:pointer;
+    background:rgba(255,255,255,.10);
+    color:rgba(255,255,255,.92);
+    font-weight:1100;cursor:pointer;
   }
 
+  /* Явный маркер версии */
   #version{
-    position:absolute; bottom:34px; right:12px;
-    font-size:12px; opacity:.45; pointer-events:none;
+    position:absolute; right:12px; bottom:40px;
+    font-size:12px; opacity:.55; pointer-events:none; z-index:200;
   }
 </style>
 </head>
 
 <body>
 <div id="game">
-
   <div id="hud">
-    <div class="pill">
-      <div class="label">Очки</div>
-      <div class="value" id="score">0</div>
-    </div>
-
+    <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
     <div class="pill" id="lives">❤️❤️❤️</div>
   </div>
 
-  <div id="questionWrap">
-    <div id="questionBox">—</div>
-  </div>
+  <div id="questionWrap"><div id="questionBox">—</div></div>
 
   <div id="scene">
     <div class="orb" id="player"></div>
@@ -271,11 +242,10 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v5</div>
+  <div id="version">v6</div>
 </div>
 
 <script>
-/* ================= CONFIG (под будущий редактор) ================= */
 const GAME_CONFIG = {
   lives: 3,
   speed: 3.0,
@@ -288,45 +258,32 @@ const GAME_CONFIG = {
     popText: (pts)=>`+${pts}`,
   },
 
-  sound: {
-    enabled: true,
-    ok:  { volume: 0.25 },
-    bad: { volume: 0.30 },
-  },
+  sound: { enabled:true, ok:{volume:0.25}, bad:{volume:0.30} },
 
-  progress: {
-    show: true,
-    text: (current,total)=>`Вопрос ${current} из ${total}`,
-  },
+  progress: { show:true, text:(cur,total)=>`Вопрос ${cur} из ${total}` },
 
   layout: {
-    paddingTop: 92,
-    paddingBottom: 70,   // ⬅️ оставляем место снизу под прогресс
-    minDistY: 90,
+    paddingTop: 96,
+    paddingBottom: 86,   // место под прогресс-бар
+    minDistY: 96,
     startX: 160,
     xSpreadMin: 160,
     xSpreadMax: 240,
   },
 
   questions: [
-    { q: "Столица Франции?", answers: [
-      { label:"A", text:"Париж",  correct:true  },
-      { label:"B", text:"Рим",    correct:false },
-      { label:"C", text:"Берлин", correct:false }
+    { q:"Столица Франции?", answers:[
+      {label:"A", text:"Париж",  correct:true},
+      {label:"B", text:"Рим",    correct:false},
+      {label:"C", text:"Берлин", correct:false},
     ]},
-    { q: "2 + 2 = ?", answers: [
-      { label:"A", text:"3", correct:false },
-      { label:"B", text:"4", correct:true  },
-      { label:"C", text:"5", correct:false }
-    ]},
-    { q: "Где больше: 7 или 9?", answers: [
-      { label:"A", text:"7", correct:false },
-      { label:"B", text:"9", correct:true  },
-      { label:"C", text:"равны", correct:false }
+    { q:"2 + 2 = ?", answers:[
+      {label:"A", text:"3", correct:false},
+      {label:"B", text:"4", correct:true},
+      {label:"C", text:"5", correct:false},
     ]},
   ],
 };
-/* ================================================================ */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -335,7 +292,6 @@ const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
 const feedback = document.getElementById("feedback");
 
-const progressWrap = document.getElementById("progressWrap");
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
 
@@ -347,10 +303,8 @@ let keys = {};
 let raf = null;
 let state = null;
 
-/* ---------- SOUND (WebAudio) ---------- */
-let audioCtx = null;
-let audioUnlocked = false;
-
+/* WebAudio */
+let audioCtx = null, audioUnlocked = false;
 function ensureAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
   if(audioCtx) return;
@@ -362,7 +316,7 @@ async function unlockAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
   ensureAudio();
   if(!audioCtx) return;
-  if(audioCtx.state === "suspended") { try{ await audioCtx.resume(); } catch(e){} }
+  if(audioCtx.state === "suspended") { try{ await audioCtx.resume(); }catch(e){} }
   audioUnlocked = true;
 }
 function beepOk(){
@@ -373,12 +327,12 @@ function beepOk(){
   const g = audioCtx.createGain();
   o.type="sine";
   o.frequency.setValueAtTime(660, now);
-  o.frequency.exponentialRampToValueAtTime(990, now + 0.12);
+  o.frequency.exponentialRampToValueAtTime(990, now+0.12);
   g.gain.setValueAtTime(0.0001, now);
-  g.gain.exponentialRampToValueAtTime(v, now + 0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+  g.gain.exponentialRampToValueAtTime(v, now+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, now+0.18);
   o.connect(g); g.connect(audioCtx.destination);
-  o.start(now); o.stop(now + 0.2);
+  o.start(now); o.stop(now+0.2);
 }
 function beepBad(){
   if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
@@ -387,33 +341,25 @@ function beepBad(){
   const o1 = audioCtx.createOscillator();
   const o2 = audioCtx.createOscillator();
   const g  = audioCtx.createGain();
-  o1.type="square";  o2.type="sawtooth";
+  o1.type="square"; o2.type="sawtooth";
   o1.frequency.setValueAtTime(220, now);
   o2.frequency.setValueAtTime(170, now);
   g.gain.setValueAtTime(0.0001, now);
-  g.gain.exponentialRampToValueAtTime(v, now + 0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+  g.gain.exponentialRampToValueAtTime(v, now+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, now+0.22);
   o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
   o1.start(now); o2.start(now);
-  o1.stop(now + 0.24); o2.stop(now + 0.24);
+  o1.stop(now+0.24); o2.stop(now+0.24);
 }
-/* ------------------------------------- */
 
 function initState(){
   state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
 }
-
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
 
 function updateProgress(){
   const total = GAME_CONFIG.questions.length;
   const current = Math.min(state.qIndex + 1, total);
-  if(!GAME_CONFIG.progress.show){
-    progressWrap.style.display = "none";
-    return;
-  }
-  progressWrap.style.display = "block";
-
   const pct = total ? Math.round(((current-1) / total) * 100) : 0;
   progressFill.style.width = pct + "%";
   progressText.textContent = GAME_CONFIG.progress.text(current, total);
@@ -468,7 +414,7 @@ function spawnAnswersForQuestion(){
 
     const txt = document.createElement("div");
     txt.className = "txt";
-    txt.textContent = a.text;
+    txt.textContent = a.text; // <-- ТЕКСТ ВАРИАНТА ТОЧНО ЕСТЬ
 
     el.appendChild(lab);
     el.appendChild(txt);
@@ -505,13 +451,11 @@ function endGame(win){
   state.locked = true;
   clearAnswers();
   updateHUD();
-
   final.classList.add("show");
   finalTitle.textContent = win ? "🎉 Отлично!" : "💀 Игра окончена";
   const total = GAME_CONFIG.questions.length;
   const answered = Math.min(state.qIndex, total);
   finalText.textContent = `Пройдено ${answered}/${total}. Очки: ${state.score}.`;
-
   if(raf) cancelAnimationFrame(raf);
   raf = null;
 }
@@ -537,7 +481,7 @@ function handleAnswer(correct, hitX, hitY){
     showPointsPop(hitX, hitY, pts);
     showFeedback("Верно", true);
     beepOk();
-  } else {
+  }else{
     state.lives--;
     updateHUD();
     showFeedback("Неверно", false);
@@ -556,19 +500,16 @@ function handleAnswer(correct, hitX, hitY){
 
 function checkCollision(obj){
   if(obj.hit || state.locked) return;
-
   const a = obj.el.getBoundingClientRect();
   const p = player.getBoundingClientRect();
-  const overlap = !(a.right < p.left || a.left > p.right || a.bottom < p.top || a.top > p.bottom);
-
+  const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
   if(overlap){
     obj.hit = true;
-    const sceneRect = scene.getBoundingClientRect();
-    const hitX = (a.left + a.right)/2 - sceneRect.left;
-    const hitY = (a.top + a.bottom)/2 - sceneRect.top;
-
+    const sr = scene.getBoundingClientRect();
+    const hitX = (a.left+a.right)/2 - sr.left;
+    const hitY = (a.top+a.bottom)/2 - sr.top;
     obj.el.remove();
-    handleAnswer(obj.data.correct === true, hitX, hitY);
+    handleAnswer(obj.data.correct===true, hitX, hitY);
   }
 }
 
@@ -595,7 +536,6 @@ function restart(){
   final.classList.remove("show");
   if(raf) cancelAnimationFrame(raf);
   raf = null;
-
   initState();
   updateHUD();
   player.style.top = "50%";
@@ -603,17 +543,13 @@ function restart(){
   loop();
 }
 
-// controls + unlock sound on first user action
 window.addEventListener("keydown", async (e)=>{
   keys[e.key]=true;
   if(!audioUnlocked) await unlockAudio();
 });
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
-window.addEventListener("pointerdown", async ()=>{
-  if(!audioUnlocked) await unlockAudio();
-}, {passive:true});
+window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true});
 
-// start
 initState();
 updateHUD();
 player.style.top = "50%";
