@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Игра + Редактор (одним файлом)</title>
+  <title>Игра + Редактор (one-file)</title>
   <link rel="icon" href="data:,">
   <style>
     :root{
@@ -17,7 +17,6 @@
     }
     html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:transparent;}
     body{overflow:hidden;}
-
     #editorApp{
       height:100%;
       display:flex;
@@ -37,11 +36,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-    #left{
-      width:min(760px, 60vw);
-      min-width:420px;
-      display:flex;flex-direction:column;overflow:hidden;
-    }
+    #left{width:min(780px, 62vw);min-width:420px;display:flex;flex-direction:column;overflow:hidden;}
     #right{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     .head{
       padding:14px 14px 10px;
@@ -90,13 +85,8 @@
     .hint{font-size:12px;color: var(--ui-sub);line-height:1.35;margin-top:6px;}
     .hr{height:1px;background:rgba(255,255,255,.10);margin:10px 0;}
     .badge{
-      font-size:11px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.85);
-      white-space:nowrap;
+      font-size:11px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);color: rgba(255,255,255,.85);white-space:nowrap;
     }
 
     .qitem{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px;background: rgba(0,0,0,.12);margin-bottom:10px;}
@@ -136,32 +126,16 @@
     }
     .checkItem input{width:18px;height:18px;}
 
-    /* inline preview blocks */
-    .sideBySide{
-      display:grid;
-      grid-template-columns: 1fr 260px;
-      gap:12px;
-      align-items:start;
-    }
+    .sideBySide{display:grid;grid-template-columns: 1fr 260px;gap:12px;align-items:start;}
     .previewCard{
-      width:260px;height:260px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
-      display:flex;align-items:center;justify-content:center;
-      position:relative;
-      overflow:hidden;
+      width:260px;height:260px;border-radius:16px;border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;
+      position:relative;overflow:hidden;
     }
     .previewCaption{
-      position:absolute; left:10px; top:10px;
-      font-size:11px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.25);
-      color: rgba(255,255,255,.85);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      position:absolute; left:10px; top:10px;font-size:11px;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);background: rgba(0,0,0,.25);color: rgba(255,255,255,.85);
+      backdrop-filter: blur(6px);-webkit-backdrop-filter: blur(6px);
     }
 
     #gameRoot{position:relative;width:100%;height:100%;overflow:hidden;background:transparent;}
@@ -174,9 +148,9 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">v34: предпросмотр игрока и ответа справа от их настроек • цвет обводки игрока • авто-предпросмотр игры.</div>
+        <div class="sub">v35: авто-предпросмотр • сенсор • парение/наклон • бесшовный фон • эффект попаданий • фразы финала.</div>
       </div>
-      <div class="badge">v34 • one-file</div>
+      <div class="badge">v35 • one-file</div>
     </div>
 
     <div class="content">
@@ -184,36 +158,18 @@
         <h3>Ссылка проекта (только для iframe)</h3>
         <label>Base URL (GitHub Pages / путь к .html)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/файл.html" />
-        <div class="hint">Предпросмотр справа всегда показывает этот текущий файл. Base URL нужен только для iframe в Genially.</div>
+        <div class="hint">Предпросмотр справа открывает этот же файл. Base URL нужен только для iframe.</div>
       </div>
 
       <div class="section">
         <h3>Цвета</h3>
         <div class="grid">
-          <div>
-            <label>Вопрос: цвет текста</label>
-            <input id="questionColor" type="color" value="#ffffff" />
-          </div>
-          <div>
-            <label>Вопрос: цвет фона</label>
-            <input id="questionBgColor" type="color" value="#0a0a14" />
-          </div>
-          <div>
-            <label>Вопрос: цвет рамки</label>
-            <input id="questionBorderColor" type="color" value="#ffffff" />
-          </div>
-          <div>
-            <label>Цвет иконок (старт/финиш)</label>
-            <input id="iconColor" type="color" value="#7a5aff" />
-          </div>
-          <div>
-            <label>Кнопки: цвет фона</label>
-            <input id="btnColor" type="color" value="#7a5aff" />
-          </div>
-          <div>
-            <label>Кнопки: цвет текста</label>
-            <input id="btnTextColor" type="color" value="#ffffff" />
-          </div>
+          <div><label>Вопрос: цвет текста</label><input id="questionColor" type="color" value="#ffffff" /></div>
+          <div><label>Вопрос: цвет фона</label><input id="questionBgColor" type="color" value="#0a0a14" /></div>
+          <div><label>Вопрос: цвет рамки</label><input id="questionBorderColor" type="color" value="#ffffff" /></div>
+          <div><label>Цвет иконок (старт/финиш)</label><input id="iconColor" type="color" value="#7a5aff" /></div>
+          <div><label>Кнопки: цвет фона</label><input id="btnColor" type="color" value="#7a5aff" /></div>
+          <div><label>Кнопки: цвет текста</label><input id="btnTextColor" type="color" value="#ffffff" /></div>
         </div>
       </div>
 
@@ -239,43 +195,24 @@
               <option value="500">Обычный</option>
             </select>
           </div>
-
-          <div>
-            <label>Размер вопроса (px)</label>
-            <input id="questionSize" type="number" min="12" max="70" value="24" />
-          </div>
-
-          <div>
-            <label>Размер очков (px)</label>
-            <input id="scoreSize" type="number" min="12" max="70" value="24" />
-          </div>
-          <div>
-            <label>Размер жизней (px)</label>
-            <input id="livesSize" type="number" min="12" max="70" value="24" />
-          </div>
-
-          <div>
-            <label>HUD: цвет текста</label>
-            <input id="hudTextColor" type="color" value="#ffffff" />
-          </div>
-          <div>
-            <label>HUD: цвет подложки</label>
-            <input id="hudPanelColor" type="color" value="#0f0f19" />
-          </div>
+          <div><label>Размер вопроса (px)</label><input id="questionSize" type="number" min="12" max="70" value="24" /></div>
+          <div><label>Размер очков (px)</label><input id="scoreSize" type="number" min="12" max="70" value="24" /></div>
+          <div><label>Размер жизней (px)</label><input id="livesSize" type="number" min="12" max="70" value="24" /></div>
+          <div><label>HUD: цвет текста</label><input id="hudTextColor" type="color" value="#ffffff" /></div>
+          <div><label>HUD: цвет подложки</label><input id="hudPanelColor" type="color" value="#0f0f19" /></div>
         </div>
       </div>
 
       <div class="section">
         <h3>Фразы обратной связи</h3>
         <div class="grid">
-          <div>
-            <label>За правильный</label>
-            <input id="feedbackCorrect" type="text" value="Верно!" />
-          </div>
-          <div>
-            <label>За неправильный</label>
-            <input id="feedbackWrong" type="text" value="Неверно!" />
-          </div>
+          <div><label>За правильный ответ</label><input id="feedbackCorrect" type="text" value="Верно!" /></div>
+          <div><label>За неправильный ответ</label><input id="feedbackWrong" type="text" value="Неверно!" /></div>
+        </div>
+        <div class="hr"></div>
+        <div class="grid">
+          <div><label>Финал (победа)</label><input id="finalWinText" type="text" value="Ты победил(а)! Отличная работа 👏" /></div>
+          <div><label>Финал (поражение)</label><input id="finalLoseText" type="text" value="Не получилось сейчас — попробуй ещё раз 💪" /></div>
         </div>
       </div>
 
@@ -287,7 +224,6 @@
           <div class="checkItem"><input id="fxStroke" type="checkbox" checked /> <span>Обводка</span></div>
           <div class="checkItem"><input id="fxStrokeNeon" type="checkbox" /> <span>Неоновая обводка</span></div>
         </div>
-
         <label>Применять эффекты к</label>
         <div class="checkGrid" style="margin-bottom:10px;">
           <div class="checkItem"><input id="fxToQuestion" type="checkbox" checked /> <span>Вопрос</span></div>
@@ -295,41 +231,21 @@
           <div class="checkItem"><input id="fxToAnswers" type="checkbox" checked /> <span>Ответы</span></div>
           <div class="checkItem"><input id="fxToPoints" type="checkbox" checked /> <span>“+очки”</span></div>
         </div>
-
         <div class="grid">
-          <div>
-            <label>Цвет эффекта</label>
-            <input id="fxColor" type="color" value="#ffd84a" />
-          </div>
-          <div>
-            <label>Сила эффекта (1–12)</label>
-            <input id="fxStrength" type="number" min="1" max="12" value="7" />
-          </div>
+          <div><label>Цвет эффекта</label><input id="fxColor" type="color" value="#ffd84a" /></div>
+          <div><label>Сила эффекта (1–12)</label><input id="fxStrength" type="number" min="1" max="12" value="7" /></div>
         </div>
-
         <div class="grid" style="margin-top:10px;">
-          <div>
-            <label>Толщина контура (px)</label>
-            <input id="strokeWidth" type="number" min="0" max="3" step="0.1" value="0.6" />
-          </div>
-          <div>
-            <label>Цвет контура</label>
-            <input id="strokeColor" type="color" value="#000000" />
-          </div>
+          <div><label>Толщина контура (px)</label><input id="strokeWidth" type="number" min="0" max="3" step="0.1" value="0.6" /></div>
+          <div><label>Цвет контура</label><input id="strokeColor" type="color" value="#000000" /></div>
         </div>
       </div>
 
       <div class="section">
         <h3>Прогресс-бар</h3>
         <div class="grid">
-          <div>
-            <label>Высота (px)</label>
-            <input id="progressHeight" type="number" min="14" max="70" value="30" />
-          </div>
-          <div>
-            <label>Цвет прогресса</label>
-            <input id="progressColor" type="color" value="#7a5aff" />
-          </div>
+          <div><label>Высота (px)</label><input id="progressHeight" type="number" min="14" max="70" value="30" /></div>
+          <div><label>Цвет прогресса</label><input id="progressColor" type="color" value="#7a5aff" /></div>
         </div>
       </div>
 
@@ -365,7 +281,6 @@
         </div>
       </div>
 
-      <!-- ✅ Игрок: настройки + предпросмотр справа -->
       <div class="section">
         <h3>Игрок: настройки</h3>
         <div class="sideBySide">
@@ -414,7 +329,7 @@
               </div>
             </div>
 
-            <div class="hint">Обводка делается через CSS filter: drop-shadow несколькими слоями (аккуратно по контуру картинки).</div>
+            <div class="hint">Игрок не круглый: используется только ваша картинка. Обводка/тень — через drop-shadow.</div>
           </div>
 
           <div class="previewCard" id="playerPreviewBox">
@@ -424,7 +339,6 @@
         </div>
       </div>
 
-      <!-- ✅ Ответ: настройки + предпросмотр справа -->
       <div class="section">
         <h3>Ответы: настройки</h3>
         <div class="sideBySide">
@@ -435,7 +349,7 @@
               <input id="answerSize" type="number" min="56" max="240" step="1" value="86" />
             </div>
 
-            <label style="margin-top:10px;">Масштаб контента</label>
+            <label style="margin-top:10px;">Масштаб текста/контента</label>
             <div class="rangeRow">
               <input id="answerContentScaleR" type="range" min="0.6" max="1.6" step="0.05" value="1" />
               <input id="answerContentScale" type="number" min="0.6" max="1.6" step="0.05" value="1" />
@@ -501,12 +415,7 @@
                 background-size:contain;
                 transform:scale(1);
               "></div>
-              <div id="answerPreviewLayer" style="
-                position:absolute; inset:0;
-                transform:scale(1);
-                transform-origin:50% 50%;
-                pointer-events:none;
-              ">
+              <div id="answerPreviewLayer" style="position:absolute; inset:0; transform:scale(1); transform-origin:50% 50%; pointer-events:none;">
                 <div id="answerPreviewText" style="
                   position:absolute; left:50%; top:64%;
                   transform:translate(-50%,-50%);
@@ -530,22 +439,10 @@
       <div class="section">
         <h3>Правила игры</h3>
         <div class="grid">
-          <div>
-            <label>Жизни</label>
-            <input id="livesCount" type="number" min="1" max="10" value="3" />
-          </div>
-          <div>
-            <label>Очки за правильный</label>
-            <input id="pointsPerCorrect" type="number" min="1" max="200" value="10" />
-          </div>
-          <div>
-            <label>Откат вопросов (cooldown)</label>
-            <input id="cooldownTurns" type="number" min="0" max="10" value="3" />
-          </div>
-          <div>
-            <label>Скорость игрока</label>
-            <input id="playerSpeed" type="number" min="3" max="18" value="7" />
-          </div>
+          <div><label>Жизни</label><input id="livesCount" type="number" min="1" max="10" value="3" /></div>
+          <div><label>Очки за правильный</label><input id="pointsPerCorrect" type="number" min="1" max="200" value="10" /></div>
+          <div><label>Откат вопросов (cooldown)</label><input id="cooldownTurns" type="number" min="0" max="10" value="3" /></div>
+          <div><label>Скорость игрока</label><input id="playerSpeed" type="number" min="3" max="18" value="7" /></div>
         </div>
       </div>
 
@@ -608,10 +505,7 @@ function hexToRgba(hex, alpha){
   const r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
-function pairSync(rangeEl, numberEl, v){
-  rangeEl.value = String(v);
-  numberEl.value = String(v);
-}
+function pairSync(rangeEl, numberEl, v){ rangeEl.value = String(v); numberEl.value = String(v); }
 function pairBind(rangeEl, numberEl, onChange){
   rangeEl.addEventListener("input", ()=>{ numberEl.value = rangeEl.value; onChange(); });
   numberEl.addEventListener("input", ()=>{ rangeEl.value = numberEl.value; onChange(); });
@@ -656,11 +550,9 @@ const DEFAULT_CFG = {
 
   playerImg: "",
   playerSize: 86,
-
   playerShadow: false,
   playerShadowBlur: 18,
   playerShadowAlpha: 0.35,
-
   playerOutlineOn: false,
   playerOutlineWidth: 2,
   playerOutlineColor: "#ffffff",
@@ -682,20 +574,27 @@ const DEFAULT_CFG = {
 
   feedbackCorrect: "Верно!",
   feedbackWrong: "Неверно!",
+  finalWinText: "Ты победил(а)! Отличная работа 👏",
+  finalLoseText: "Не получилось сейчас — попробуй ещё раз 💪",
 
   livesCount: 3,
   pointsPerCorrect: 10,
   cooldownTurns: 3,
   playerSpeed: 7,
 
+  // движения/эффекты
   playerTiltMax: 18,
   playerTiltSmooth: 0.22,
-
   bgScrollFactor: 0.35,
   bgParallaxY: 18,
-
   winConfetti: true,
   loseRedTint: 0.10,
+
+  difficulty: {
+    easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
+    medium: { speed: 3.2, spawnEveryMs:  900, minXGap: 200, maxOnScreen: 5 },
+    hard:   { speed: 4.1, spawnEveryMs:  760, minXGap: 180, maxOnScreen: 6 },
+  },
 
   questions: [
     { q:"Столица Франции?", answers:[
@@ -726,7 +625,6 @@ if(mode === "play"){
 function buildFxCss(cfg){
   const s = clampInt(cfg.fxStrength, 1, 12, 7);
   const c = cfg.fxColor || "#ffd84a";
-
   const shadowParts = [];
   if(cfg.fxShadow){
     const blur = 6 + s*2;
@@ -740,7 +638,6 @@ function buildFxCss(cfg){
     shadowParts.push(`0 0 ${b3}px ${hexToRgba(c,0.45)}`);
   }
   const textShadow = shadowParts.length ? `text-shadow:${shadowParts.join(",")};` : "";
-
   let stroke = "";
   if(cfg.fxStroke){
     const w = clampNum(cfg.strokeWidth, 0, 3, 0.6);
@@ -751,6 +648,30 @@ function buildFxCss(cfg){
     stroke += `-webkit-text-stroke:${w}px ${c};`;
   }
   return `${textShadow}${stroke}`;
+}
+
+function buildPlayerFilter(c){
+  const parts = [];
+  if(c.playerShadow){
+    const blur = clampInt(c.playerShadowBlur,0,40,18);
+    const a = clampNum(c.playerShadowAlpha,0,1,0.35);
+    parts.push(`drop-shadow(0 0 ${blur}px rgba(0,0,0,${a}))`);
+  }
+  if(c.playerOutlineOn){
+    const w = clampNum(c.playerOutlineWidth,0,10,2);
+    const col = c.playerOutlineColor || "#ffffff";
+    const a = 0.95;
+    const px = Math.max(0.5, w);
+    parts.push(`drop-shadow(${px}px 0 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(${-px}px 0 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(0 ${px}px 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(0 ${-px}px 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(${px}px ${px}px 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(${-px}px ${px}px 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(${px}px ${-px}px 0 ${hexToRgba(col,a)})`);
+    parts.push(`drop-shadow(${-px}px ${-px}px 0 ${hexToRgba(col,a)})`);
+  }
+  return parts.length ? parts.join(" ") : "none";
 }
 
 /* ================= EDITOR ================= */
@@ -777,6 +698,8 @@ function startEditorMode(){
 
     feedbackCorrect: document.getElementById("feedbackCorrect"),
     feedbackWrong: document.getElementById("feedbackWrong"),
+    finalWinText: document.getElementById("finalWinText"),
+    finalLoseText: document.getElementById("finalLoseText"),
 
     fxShadow: document.getElementById("fxShadow"),
     fxNeon: document.getElementById("fxNeon"),
@@ -811,12 +734,10 @@ function startEditorMode(){
     playerShadowBlur: document.getElementById("playerShadowBlur"),
     playerShadowAlphaR: document.getElementById("playerShadowAlphaR"),
     playerShadowAlpha: document.getElementById("playerShadowAlpha"),
-
     playerOutlineOn: document.getElementById("playerOutlineOn"),
     playerOutlineWidthR: document.getElementById("playerOutlineWidthR"),
     playerOutlineWidth: document.getElementById("playerOutlineWidth"),
     playerOutlineColor: document.getElementById("playerOutlineColor"),
-
     playerPreviewImg: document.getElementById("playerPreviewImg"),
 
     answerSizeR: document.getElementById("answerSizeR"),
@@ -836,7 +757,6 @@ function startEditorMode(){
     answerCardPosYR: document.getElementById("answerCardPosYR"),
     answerCardPosY: document.getElementById("answerCardPosY"),
     answerPreviewTextInput: document.getElementById("answerPreviewTextInput"),
-
     answerPreviewOrb: document.getElementById("answerPreviewOrb"),
     answerPreviewImg: document.getElementById("answerPreviewImg"),
     answerPreviewLayer: document.getElementById("answerPreviewLayer"),
@@ -877,13 +797,11 @@ function startEditorMode(){
     for(const c of base){ if(!used.has(c)) return c; }
     return "X";
   }
-
   function refreshAnswerImgStatus(){
     const has = !!cfgDraft.answerCardImg;
     const kind = has ? (cfgDraft.answerCardImg.startsWith("data:") ? "файл (dataURL)" : "URL") : "нет";
     els.answerImgStatus.textContent = `Статус: ${kind}`;
   }
-
   async function fileToDataUrl(file){
     return new Promise((res, rej)=>{
       const r = new FileReader();
@@ -913,6 +831,8 @@ function startEditorMode(){
 
     els.feedbackCorrect.value = cfgDraft.feedbackCorrect || "Верно!";
     els.feedbackWrong.value = cfgDraft.feedbackWrong || "Неверно!";
+    els.finalWinText.value = cfgDraft.finalWinText || "";
+    els.finalLoseText.value = cfgDraft.finalLoseText || "";
 
     els.fxShadow.checked = !!cfgDraft.fxShadow;
     els.fxNeon.checked = !!cfgDraft.fxNeon;
@@ -939,7 +859,6 @@ function startEditorMode(){
     els.playerShadow.checked = !!cfgDraft.playerShadow;
     pairSync(els.playerShadowBlurR, els.playerShadowBlur, cfgDraft.playerShadowBlur ?? 18);
     pairSync(els.playerShadowAlphaR, els.playerShadowAlpha, cfgDraft.playerShadowAlpha ?? 0.35);
-
     els.playerOutlineOn.checked = !!cfgDraft.playerOutlineOn;
     pairSync(els.playerOutlineWidthR, els.playerOutlineWidth, cfgDraft.playerOutlineWidth ?? 2);
     els.playerOutlineColor.value = cfgDraft.playerOutlineColor || "#ffffff";
@@ -984,7 +903,6 @@ function startEditorMode(){
         renderQuestions();
         scheduleAutoPreview();
       };
-
       top.appendChild(title); top.appendChild(delQ);
 
       const qInput = document.createElement("input");
@@ -1053,7 +971,6 @@ function startEditorMode(){
         renderQuestions();
         scheduleAutoPreview();
       };
-
       qButtons.appendChild(addA); qButtons.appendChild(delA);
 
       wrap.appendChild(top);
@@ -1086,17 +1003,17 @@ function startEditorMode(){
 
     cfgDraft.feedbackCorrect = els.feedbackCorrect.value || "Верно!";
     cfgDraft.feedbackWrong = els.feedbackWrong.value || "Неверно!";
+    cfgDraft.finalWinText = els.finalWinText.value || "";
+    cfgDraft.finalLoseText = els.finalLoseText.value || "";
 
     cfgDraft.fxShadow = els.fxShadow.checked;
     cfgDraft.fxNeon = els.fxNeon.checked;
     cfgDraft.fxStroke = els.fxStroke.checked;
     cfgDraft.fxStrokeNeon = els.fxStrokeNeon.checked;
-
     cfgDraft.fxToQuestion = els.fxToQuestion.checked;
     cfgDraft.fxToHud = els.fxToHud.checked;
     cfgDraft.fxToAnswers = els.fxToAnswers.checked;
     cfgDraft.fxToPoints = els.fxToPoints.checked;
-
     cfgDraft.fxColor = els.fxColor.value;
     cfgDraft.fxStrength = Number(els.fxStrength.value || 7);
     cfgDraft.strokeWidth = Number(els.strokeWidth.value || 0.6);
@@ -1111,7 +1028,6 @@ function startEditorMode(){
     cfgDraft.playerShadow = els.playerShadow.checked;
     cfgDraft.playerShadowBlur = Number(els.playerShadowBlur.value || 18);
     cfgDraft.playerShadowAlpha = Number(els.playerShadowAlpha.value || 0.35);
-
     cfgDraft.playerOutlineOn = els.playerOutlineOn.checked;
     cfgDraft.playerOutlineWidth = Number(els.playerOutlineWidth.value || 2);
     cfgDraft.playerOutlineColor = els.playerOutlineColor.value;
@@ -1137,54 +1053,6 @@ function startEditorMode(){
     if(els.bgImgUrl.value.trim().startsWith("http")) cfgDraft.bgImg = els.bgImgUrl.value.trim();
 
     refreshAnswerImgStatus();
-  }
-
-  function buildCfgParam(fromCfg){
-    const c = deepClone(fromCfg);
-    if(!c.questions?.length) c.questions = [makeEmptyQuestion()];
-    c.questions.forEach(q=>{
-      if(!q.answers?.length) q.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
-      if(!q.answers.some(a=>a.correct)) q.answers[0].correct = true;
-    });
-    return b64urlEncode(JSON.stringify(c));
-  }
-
-  function buildPlayUrlForPreview(fromCfg){
-    const base = location.origin + location.pathname;
-    const enc = buildCfgParam(fromCfg);
-    els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
-    return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
-  }
-  function buildPlayUrlForIframe(fromCfg){
-    const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
-    const enc = buildCfgParam(fromCfg);
-    els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
-    return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
-  }
-
-  function buildPlayerFilter(c){
-    const parts = [];
-    if(c.playerShadow){
-      const blur = clampInt(c.playerShadowBlur,0,40,18);
-      const a = clampNum(c.playerShadowAlpha,0,1,0.35);
-      parts.push(`drop-shadow(0 0 ${blur}px rgba(0,0,0,${a}))`);
-    }
-    if(c.playerOutlineOn){
-      const w = clampNum(c.playerOutlineWidth,0,10,2);
-      const col = c.playerOutlineColor || "#ffffff";
-      const a = 0.95;
-      // много слоёв для “обводки”
-      const px = Math.max(0.5, w);
-      parts.push(`drop-shadow(${px}px 0 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(${-px}px 0 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(0 ${px}px 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(0 ${-px}px 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(${px}px ${px}px 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(${-px}px ${px}px 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(${px}px ${-px}px 0 ${hexToRgba(col,a)})`);
-      parts.push(`drop-shadow(${-px}px ${-px}px 0 ${hexToRgba(col,a)})`);
-    }
-    return parts.length ? parts.join(" ") : "none";
   }
 
   function updatePlayerPreview(){
@@ -1244,7 +1112,28 @@ function startEditorMode(){
     updateAnswerPreview();
   }
 
-  // ===== авто-предпросмотр (debounce) =====
+  function buildCfgParam(fromCfg){
+    const c = deepClone(fromCfg);
+    if(!c.questions?.length) c.questions = [makeEmptyQuestion()];
+    c.questions.forEach(q=>{
+      if(!q.answers?.length) q.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
+      if(!q.answers.some(a=>a.correct)) q.answers[0].correct = true;
+    });
+    return b64urlEncode(JSON.stringify(c));
+  }
+  function buildPlayUrlForPreview(fromCfg){
+    const base = location.origin + location.pathname;
+    const enc = buildCfgParam(fromCfg);
+    document.getElementById("cfgSizeBadge").textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
+    return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
+  }
+  function buildPlayUrlForIframe(fromCfg){
+    const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
+    const enc = buildCfgParam(fromCfg);
+    document.getElementById("cfgSizeBadge").textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
+    return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
+  }
+
   let autoTimer = null;
   function scheduleAutoPreview(){
     updateSilent();
@@ -1259,14 +1148,13 @@ function startEditorMode(){
     requestAnimationFrame(()=>{ els.previewFrame.src = url; });
   }
 
-  // bindings
   const bindInputs = [
     els.baseUrl,
     els.fontFamily, els.fontWeight, els.questionSize,
     els.questionColor, els.questionBgColor, els.questionBorderColor,
     els.iconColor, els.btnColor, els.btnTextColor,
     els.hudTextColor, els.hudPanelColor, els.scoreSize, els.livesSize,
-    els.feedbackCorrect, els.feedbackWrong,
+    els.feedbackCorrect, els.feedbackWrong, els.finalWinText, els.finalLoseText,
     els.fxShadow, els.fxNeon, els.fxStroke, els.fxStrokeNeon,
     els.fxToQuestion, els.fxToHud, els.fxToAnswers, els.fxToPoints,
     els.fxColor, els.fxStrength, els.strokeWidth, els.strokeColor,
@@ -1359,23 +1247,943 @@ function startEditorMode(){
   applyPreviewNow();
 }
 
-/* ================= GAME =================
-   ⚠️ Здесь оставлен тот же движок, что и в предыдущей версии v33.
-   Чтобы ответ был полностью “целиком”, просто перенеси блок startGameMode() из твоего предыдущего кода v33 ниже сюда без изменений,
-   НО добавь поддержку playerOutlineOn/playerOutlineWidth/playerOutlineColor в фильтр игрока (как в buildPlayerFilter()).
+/* ================= GAME ================= */
+function normalizeCfg(cfg){
+  const out = deepClone(DEFAULT_CFG);
+  Object.assign(out, cfg || {});
 
-   Если хочешь — я могу вставить полностью startGameMode() прямо сюда (он большой), но чтобы не “взрывать” ответ,
-   я оставил только редакторные изменения, которые ты просил.
-*/
+  if(!Array.isArray(out.questions) || out.questions.length === 0) out.questions = deepClone(DEFAULT_CFG.questions);
+  out.questions = out.questions.map(q=>{
+    const qq = { q: String(q.q||""), answers: Array.isArray(q.answers)?q.answers:[] };
+    qq.answers = qq.answers.map(a=>({label:String(a.label||""), text:String(a.text||""), correct:!!a.correct}));
+    if(qq.answers.length < 2) qq.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
+    if(!qq.answers.some(a=>a.correct)) qq.answers[0].correct = true;
+    return qq;
+  });
+
+  out.livesCount = clampInt(out.livesCount, 1, 10, 3);
+  out.pointsPerCorrect = clampInt(out.pointsPerCorrect, 1, 200, 10);
+  out.cooldownTurns = clampInt(out.cooldownTurns, 0, 10, 3);
+  out.playerSpeed = clampInt(out.playerSpeed, 3, 18, 7);
+
+  out.playerSize = clampInt(out.playerSize, 56, 220, 86);
+  out.playerShadowBlur = clampInt(out.playerShadowBlur, 0, 40, 18);
+  out.playerShadowAlpha = clampNum(out.playerShadowAlpha, 0, 1, 0.35);
+  out.playerOutlineWidth = clampNum(out.playerOutlineWidth, 0, 10, 2);
+
+  out.answerSize = clampInt(out.answerSize, 56, 240, 86);
+  out.answerContentScale = clampNum(out.answerContentScale, 0.6, 1.6, 1);
+  out.answerTextX = clampNum(out.answerTextX, 0, 100, 50);
+  out.answerTextY = clampNum(out.answerTextY, 0, 100, 64);
+
+  out.answerCardScale = clampNum(out.answerCardScale, 0.6, 2, 1);
+  out.answerCardPosX = clampNum(out.answerCardPosX, 0, 100, 50);
+  out.answerCardPosY = clampNum(out.answerCardPosY, 0, 100, 50);
+  out.answerCardFit = ["cover","contain"].includes(out.answerCardFit) ? out.answerCardFit : "contain";
+
+  out.fxStrength = clampInt(out.fxStrength, 1, 12, 7);
+  out.strokeWidth = clampNum(out.strokeWidth, 0, 3, 0.6);
+
+  out.loseRedTint = clampNum(out.loseRedTint, 0, 0.35, 0.10);
+  out.bgScrollFactor = clampNum(out.bgScrollFactor, 0.05, 2, 0.35);
+  out.bgParallaxY = clampNum(out.bgParallaxY, 0, 60, 18);
+
+  out.lives = out.livesCount;
+  return out;
+}
+
 function startGameMode(){
-  // Чтобы у тебя было "целиком": вставь сюда startGameMode из твоего последнего файла (v33),
-  // и внутри сделай фильтр игрока через такой же buildPlayerFilter(CFG).
-  document.getElementById("gameRoot").innerHTML = `
-    <div style="padding:18px;color:white;font-family:system-ui">
-      В этой версии ответом я обновил редактор: предпросмотр игрока/ответа справа + цвет обводки.
-      Вставь сюда startGameMode из v33 (без изменений), добавив фильтр обводки игрока.
+  const root = document.getElementById("gameRoot");
+
+  let cfg = deepClone(DEFAULT_CFG);
+  const cfgParam = params.get("cfg");
+  if(cfgParam){
+    try{ cfg = Object.assign(cfg, JSON.parse(b64urlDecode(cfgParam))); }catch(e){}
+  }
+  const CFG = normalizeCfg(cfg);
+
+  const fxCSS = buildFxCss(CFG);
+  const fxQ = CFG.fxToQuestion ? fxCSS : "";
+  const fxHud = CFG.fxToHud ? fxCSS : "";
+  const fxAns = CFG.fxToAnswers ? fxCSS : "";
+  const fxPts = CFG.fxToPoints ? fxCSS : "";
+
+  const playerFilter = buildPlayerFilter(CFG);
+
+  root.innerHTML = `
+  <style>
+    html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;}
+    #wrap{position:relative;width:100%;height:100%;background:transparent;}
+    #game{position:absolute; inset:0; z-index:2; font-family:${escapeCss(CFG.fontFamily)};}
+
+    /* бесшовный бесконечный фон: два слоя с repeat-x + translate */
+    #bgWrap{
+      position:absolute; inset:0; z-index:0;
+      overflow:hidden;
+      background: ${CFG.transparentBg ? "transparent" : "transparent"};
+    }
+    #bgStrip{
+      position:absolute; left:0; top:0; height:100%;
+      width:200%;
+      background-image: ${(!CFG.transparentBg && CFG.bgImg) ? `url('${cssUrl(CFG.bgImg)}')` : "none"};
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      background-position: 0 50%;
+      will-change: transform;
+      filter: none;
+      opacity: ${(!CFG.transparentBg && CFG.bgImg) ? 1 : 0};
+    }
+
+    #topbar{
+      position:absolute; top:14px; left:14px; right:14px;
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; z-index:120; pointer-events:none;
+    }
+    .pill{
+      background: ${hexToRgba(CFG.hudPanelColor, 0.70)};
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      padding: 14px 16px;
+      box-shadow: 0 16px 60px rgba(0,0,0,.42);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:flex; gap:12px; align-items:center;
+      white-space:nowrap;
+      color: ${CFG.hudTextColor};
+      ${fxHud}
+    }
+    .pill .label{font-size:14px;color:${hexToRgba(CFG.hudTextColor, 0.75)};font-weight:${CFG.fontWeight};}
+    .pill .value{font-size:${CFG.scoreSize}px;font-weight:${CFG.fontWeight};}
+    #lives{font-size:${CFG.livesSize}px;letter-spacing:1px;color:${CFG.hudTextColor};}
+
+    #questionWrap{
+      position:absolute; top:78px; left:50%; transform:translateX(-50%);
+      z-index:110; pointer-events:none;
+      max-width:min(980px, calc(100% - 28px));
+    }
+    #questionBox{
+      background: ${hexToRgba(CFG.questionBgColor, 0.62)};
+      border: 1px solid ${hexToRgba(CFG.questionBorderColor, 0.55)};
+      border-radius: 999px;
+      padding: 16px 20px;
+      box-shadow: 0 16px 60px rgba(0,0,0,.42);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align:center;
+      font-weight:${CFG.fontWeight};
+      font-size:${CFG.questionSize}px;
+      color: ${CFG.questionColor};
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      ${fxQ}
+    }
+
+    #scene{position:absolute; inset:0; overflow:hidden; z-index:3;}
+    .orb{
+      position:absolute;
+      width: var(--orbSize);
+      height: var(--orbSize);
+      display:flex; align-items:center; justify-content:center;
+      user-select:none;
+      transform: translate(-50%,-50%);
+      will-change: transform, left, top, filter, opacity;
+    }
+
+    /* Игрок: только картинка, без круга */
+    #player{
+      left:92px; top:50%;
+      width: ${CFG.playerSize}px;
+      height: ${CFG.playerSize}px;
+      background: transparent;
+      border: none;
+      box-shadow:none;
+      overflow: visible;
+      transform: translate(-50%,-50%) rotate(0deg) translateZ(0);
+      transform-origin: 50% 50%;
+    }
+    #player img{
+      width:100%; height:100%;
+      object-fit: contain;
+      display:block;
+      filter: ${playerFilter};
+      transform: translateZ(0);
+      user-select:none; -webkit-user-drag:none;
+      animation: hoverFloat 1.9s ease-in-out infinite;
+    }
+    @keyframes hoverFloat{
+      0%,100%{ transform: translateY(0px); }
+      50%{ transform: translateY(-8px); }
+    }
+
+    /* Ответ: НЕТ подложки, только картинка */
+    .answer{
+      width: ${CFG.answerSize}px;
+      height: ${CFG.answerSize}px;
+      background: transparent;
+      border: none;
+      box-shadow:none;
+      overflow: visible;
+      transform: translate(-50%,-50%) scale(1);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .answer .card{
+      position:absolute; inset:0;
+      background-image: ${CFG.answerCardImg ? `url('${cssUrl(CFG.answerCardImg)}')` : "none"};
+      background-repeat:no-repeat;
+      background-size:${CFG.answerCardFit};
+      background-position:${CFG.answerCardPosX}% ${CFG.answerCardPosY}%;
+      transform: scale(${CFG.answerCardScale});
+      transform-origin: 50% 50%;
+    }
+    .answer .content{
+      position:absolute; inset:0;
+      transform: scale(${CFG.answerContentScale});
+      transform-origin: 50% 50%;
+      pointer-events:none;
+    }
+    .answer .txt{
+      position:absolute;
+      left:${CFG.answerTextX}%;
+      top:${CFG.answerTextY}%;
+      transform:translate(-50%,-50%);
+      font-weight:${Math.max(500, Math.min(900, CFG.fontWeight))};
+      font-size:13px;
+      line-height:1.12;
+      max-width: 240px;
+      white-space:normal;
+      word-break:break-word;
+      color: rgba(255,255,255,.98);
+      text-shadow: 0 10px 22px rgba(0,0,0,.55);
+      ${fxAns}
+      ${CFG.answerTextBgOn ? `
+        padding: 4px 8px;
+        border-radius: 10px;
+        background: rgba(0,0,0,.18);
+        border: 1px solid rgba(255,255,255,.10);
+      ` : `
+        padding: 0;
+        background: transparent;
+        border: none;
+      `}
+    }
+
+    .answer.hitOk{ transform: translate(-50%,-50%) scale(1.08); }
+    .answer.hitBad{ animation: badBlink .36s ease-in-out 1; }
+    @keyframes badBlink{
+      0%,100%{ filter:none; }
+      20%{ filter: drop-shadow(0 0 14px rgba(255,107,107,.85)); }
+      40%{ filter:none; }
+      60%{ filter: drop-shadow(0 0 14px rgba(255,107,107,.85)); }
+      80%{ filter:none; }
+    }
+
+    .pop{
+      position:absolute;
+      font-weight:${CFG.fontWeight};
+      font-size:24px;
+      pointer-events:none;
+      transform:translate(-50%,-50%);
+      color: #ffd84a;
+      text-shadow:
+        0 0 10px rgba(255,216,74,.90),
+        0 0 24px rgba(255,216,74,.70),
+        0 16px 36px rgba(0,0,0,.55);
+      animation: popUp .78s ease-out forwards;
+      z-index:140;
+      ${fxPts}
+    }
+    @keyframes popUp{
+      0%{opacity:0;transform:translate(-50%,-50%) scale(.9);}
+      15%{opacity:1;transform:translate(-50%,-62%) scale(1.05);}
+      100%{opacity:0;transform:translate(-50%,-112%) scale(1);}
+    }
+
+    #feedback{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:34px;font-weight:${CFG.fontWeight};
+      pointer-events:none;
+      opacity:0; transition:.18s;
+      z-index:130;
+      text-shadow: 0 16px 36px rgba(0,0,0,.55);
+      color: rgba(255,255,255,.92);
+    }
+    #feedback.show{opacity:1;}
+
+    #progressWrap{
+      position:absolute; left:14px; right:14px; bottom:14px;
+      z-index:115; pointer-events:none;
+    }
+    #progressBar{
+      height: ${CFG.progressHeight}px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 16px 60px rgba(0,0,0,.42);
+      overflow:hidden;
+      position:relative;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    #progressFill{
+      height:100%; width:0%;
+      background: ${CFG.progressColor};
+      border-radius:999px;
+      transition: width .25s ease;
+    }
+    #progressText{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; font-weight:${CFG.fontWeight};
+      color: rgba(255,255,255,.96);
+      text-shadow:0 10px 22px rgba(0,0,0,.5);
+      ${fxHud}
+    }
+
+    .overlay{
+      position:absolute; inset:0;
+      display:none;
+      align-items:center; justify-content:center;
+      z-index:300;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      pointer-events:auto;
+    }
+    .overlay.show{display:flex;}
+    .cardModal{
+      width:min(640px, calc(100% - 28px));
+      background: rgba(20,18,34,.78);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 22px;
+      box-shadow: 0 16px 60px rgba(0,0,0,.42);
+      padding: 18px 18px 16px;
+      color: rgba(255,255,255,.92);
+    }
+    .cardModal h2{margin:0 0 8px;font-size:22px;font-weight:${CFG.fontWeight};display:flex;gap:10px;align-items:center;}
+    .cardModal p{margin:0 0 12px;font-size:14px;line-height:1.35;opacity:.9;}
+    .row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;}
+    .chipBtn{
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight:${CFG.fontWeight};
+      font-size:13px;
+      color: rgba(255,255,255,.92);
+      cursor:pointer;
+      user-select:none;
+    }
+    .chipBtn.active{
+      background: ${hexToRgba(CFG.btnColor, 0.30)};
+      border-color: ${hexToRgba(CFG.btnColor, 0.55)};
+    }
+    .btn2{
+      background: ${hexToRgba(CFG.btnColor, 0.55)};
+      border: 1px solid ${hexToRgba(CFG.btnColor, 0.70)};
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight:${CFG.fontWeight};
+      color: ${CFG.btnTextColor};
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+      font-size:14px;
+    }
+
+    .iconDot{
+      width:34px;height:34px;border-radius:999px;
+      border:1px solid ${hexToRgba(CFG.iconColor,0.65)};
+      background:${hexToRgba(CFG.iconColor,0.20)};
+      box-shadow: 0 0 22px ${hexToRgba(CFG.iconColor,0.35)};
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size:18px; color:${CFG.iconColor};
+    }
+
+    /* краснение при проигрыше */
+    #loseTint{
+      position:absolute; inset:0; z-index:260;
+      pointer-events:none;
+      background: rgba(255,0,0,${CFG.loseRedTint});
+      opacity:0;
+      transition: opacity .25s ease;
+    }
+    #loseTint.show{opacity:1;}
+
+    /* конфетти */
+    #confetti{
+      position:absolute; inset:0; z-index:260;
+      pointer-events:none;
+      overflow:hidden;
+      display:none;
+    }
+    #confetti.show{display:block;}
+    .conf{
+      position:absolute;
+      width:10px;height:16px;
+      border-radius:3px;
+      opacity:.95;
+      animation: confFall 1.4s linear forwards;
+      will-change: transform, top, left, opacity;
+    }
+    @keyframes confFall{
+      0%{ transform: translateY(-40px) rotate(0deg); opacity:0; }
+      10%{ opacity:1; }
+      100%{ transform: translateY(calc(100vh + 60px)) rotate(360deg); opacity:0.95; }
+    }
+  </style>
+
+  <div id="wrap">
+    <div id="bgWrap"><div id="bgStrip"></div></div>
+
+    <div id="game">
+      <div id="topbar">
+        <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
+        <div class="pill" id="lives">❤️❤️❤️</div>
+      </div>
+
+      <div id="questionWrap"><div id="questionBox">—</div></div>
+
+      <div id="scene">
+        <div class="orb" id="player" style="--orbSize:${CFG.playerSize}px">
+          <img id="playerImg" alt="player" />
+        </div>
+      </div>
+
+      <div id="feedback"></div>
+
+      <div id="progressWrap">
+        <div id="progressBar">
+          <div id="progressFill"></div>
+          <div id="progressText">Вопрос 1 из 1</div>
+        </div>
+      </div>
+
+      <div id="startOverlay" class="overlay show">
+        <div class="cardModal">
+          <h2><span class="iconDot">▶</span> Задача игрока</h2>
+          <p>Лови <b>правильный ответ</b> на вопрос сверху. Управление: <b>↑</b>/<b>↓</b> или <b>палец</b> на экране (перетаскивай вверх/вниз).</p>
+          <div class="row2">
+            <div class="chips">
+              <div class="chipBtn active" data-level="easy">Лёгкий</div>
+              <div class="chipBtn" data-level="medium">Средний</div>
+              <div class="chipBtn" data-level="hard">Сложный</div>
+            </div>
+            <button class="btn2" id="startBtn">Начать игру</button>
+          </div>
+          <div class="hint">Можно пропускать ответы — это не ошибка.</div>
+        </div>
+      </div>
+
+      <div id="finalOverlay" class="overlay">
+        <div class="cardModal">
+          <h2 id="finalTitle"><span class="iconDot">★</span> —</h2>
+          <p id="finalText">—</p>
+          <div class="row2" style="justify-content:flex-end;">
+            <button class="btn2" id="playAgainBtn">Играть ещё</button>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div id="loseTint"></div>
+    <div id="confetti"></div>
+  </div>
   `;
+
+  const scene = root.querySelector("#scene");
+  const player = root.querySelector("#player");
+  const playerImg = root.querySelector("#playerImg");
+
+  const bgStrip = root.querySelector("#bgStrip");
+  const questionBox = root.querySelector("#questionBox");
+  const scoreEl = root.querySelector("#score");
+  const livesEl = root.querySelector("#lives");
+  const feedback = root.querySelector("#feedback");
+  const progressFill = root.querySelector("#progressFill");
+  const progressText = root.querySelector("#progressText");
+
+  const startOverlay = root.querySelector("#startOverlay");
+  const startBtn = root.querySelector("#startBtn");
+  const diffBtns = Array.from(root.querySelectorAll(".chipBtn"));
+
+  const finalOverlay = root.querySelector("#finalOverlay");
+  const finalTitle = root.querySelector("#finalTitle");
+  const finalText = root.querySelector("#finalText");
+  const playAgainBtn = root.querySelector("#playAgainBtn");
+
+  const loseTint = root.querySelector("#loseTint");
+  const confetti = root.querySelector("#confetti");
+
+  // set player img
+  if(CFG.playerImg){
+    playerImg.src = CFG.playerImg;
+  }else{
+    playerImg.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+        <rect width="256" height="256" fill="rgba(0,0,0,0)"/>
+        <path d="M128 20l18 46h50l-40 30 14 52-42-30-42 30 14-52-40-30h50z" fill="rgba(255,255,255,0.65)"/>
+      </svg>`
+    );
+  }
+
+  let keys = {};
+  let state = null;
+  let pendingTimer = null;
+
+  // touch control
+  let touchActive = false;
+  let touchOffsetY = 0;
+
+  // player tilt
+  let targetTilt = 0;
+  let currentTilt = 0;
+
+  // background scroll
+  let bgX = 0;
+
+  // audio
+  let audioCtx = null, unlocked = false;
+  function ensureAudio(){ if(audioCtx) return; const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return; audioCtx = new Ctx(); }
+  async function unlockAudio(){ ensureAudio(); if(!audioCtx) return; if(audioCtx.state==="suspended"){ try{await audioCtx.resume();}catch(e){} } unlocked = true; }
+  function tone(freq, dur=0.16, type="sine", vol=0.28){
+    if(!unlocked || !audioCtx) return;
+    const now = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, now);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(vol, now + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(now); o.stop(now + dur + 0.03);
+  }
+  function soundStart(){ tone(523.25,0.10,"sine"); setTimeout(()=>tone(659.25,0.10,"sine"),110); setTimeout(()=>tone(783.99,0.14,"sine"),230); }
+  function soundOk(){ tone(660,0.10,"sine"); setTimeout(()=>tone(990,0.12,"sine"),90); }
+  function soundBad(){ tone(220,0.14,"square"); setTimeout(()=>tone(180,0.16,"sawtooth"),90); }
+  function soundWin(){ [523,659,784,988,784,988,1175].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"sine"), i*120)); }
+  function soundLose(){ [392,330,294,262].forEach((f,i)=>setTimeout(()=>tone(f,0.18,"triangle"), i*160)); }
+
+  function clearPending(){ if(pendingTimer!==null){ clearTimeout(pendingTimer); pendingTimer=null; } }
+  function showOverlay(el, on){ if(on) el.classList.add("show"); else el.classList.remove("show"); }
+  function preset(level){ return CFG.difficulty[level] || CFG.difficulty.easy; }
+  function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
+
+  function initState(){
+    state = {
+      phase:"menu", locked:true,
+      score:0, lives:CFG.lives,
+      remaining: CFG.questions.map((_,i)=>i),
+      currentIdx:null, recent:[],
+      active:[], lastSpawnAt:performance.now(), lastLaneY:null,
+      difficulty:"easy",
+      speed:preset("easy").speed,
+      spawnEveryMs:preset("easy").spawnEveryMs,
+      minXGap:preset("easy").minXGap,
+      maxOnScreen:preset("easy").maxOnScreen,
+    };
+  }
+  function applyDifficulty(level){
+    const p = preset(level);
+    state.difficulty = level;
+    state.speed = p.speed;
+    state.spawnEveryMs = p.spawnEveryMs;
+    state.minXGap = p.minXGap;
+    state.maxOnScreen = p.maxOnScreen;
+    diffBtns.forEach(b=>b.classList.toggle("active", b.dataset.level===level));
+  }
+
+  function updateProgress(){
+    const total = CFG.questions.length;
+    const done = total - state.remaining.length;
+    const current = Math.min(done + 1, total);
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    progressFill.style.width = pct + "%";
+    progressText.textContent = `Вопрос ${current} из ${total}`;
+  }
+  function updateHUD(){
+    scoreEl.textContent = String(state.score);
+    livesEl.textContent = hearts(state.lives);
+    const q = (state.currentIdx!==null) ? CFG.questions[state.currentIdx] : null;
+    questionBox.textContent = q ? q.q : "";
+    updateProgress();
+  }
+
+  function clearAnswers(){
+    state.active.forEach(o=>o.el.remove());
+    state.active = [];
+    state.lastLaneY = null;
+  }
+
+  function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
+  function buildLanes(){
+    const minY = 150;
+    const maxY = scene.clientHeight - 100;
+    const step = Math.max(88, CFG.answerSize + 22);
+    const lanes=[];
+    for(let y=minY; y<=maxY; y+=step) lanes.push(y);
+    return lanes.length ? lanes : [Math.round((minY+maxY)/2)];
+  }
+  function pickLaneY(){
+    const lanes = buildLanes();
+    let y = lanes[randInt(0, lanes.length-1)];
+    if(state.lastLaneY!==null && lanes.length>1){
+      let tries=0;
+      while(y===state.lastLaneY && tries<10){
+        y = lanes[randInt(0, lanes.length-1)];
+        tries++;
+      }
+    }
+    state.lastLaneY = y;
+    return y;
+  }
+
+  function createOrb(answer){
+    const el = document.createElement("div");
+    el.className = "orb answer";
+    el.dataset.correct = answer.correct ? "1" : "0";
+    el.style.setProperty("--orbSize", CFG.answerSize + "px");
+
+    const card = document.createElement("div");
+    card.className = "card";
+    el.appendChild(card);
+
+    const content = document.createElement("div");
+    content.className = "content";
+    const txt = document.createElement("div");
+    txt.className = "txt";
+    txt.textContent = answer.text;
+    content.appendChild(txt);
+    el.appendChild(content);
+
+    return el;
+  }
+
+  function rightEdgeX(){ return scene.clientWidth + 60; }
+  function newestX(){
+    let maxX = -Infinity;
+    for(const o of state.active) maxX = Math.max(maxX, o.el.offsetLeft);
+    return maxX;
+  }
+
+  function maybeSpawn(now){
+    if(state.phase!=="playing" || state.locked) return;
+    if(state.active.length >= state.maxOnScreen) return;
+    if(now - state.lastSpawnAt < state.spawnEveryMs) return;
+
+    const spawnX = rightEdgeX();
+    const nx = newestX();
+    if(nx!==-Infinity && nx > (spawnX - state.minXGap)) return;
+
+    const q = (state.currentIdx!==null) ? CFG.questions[state.currentIdx] : null;
+    if(!q) return;
+
+    const pick = q.answers[randInt(0, q.answers.length-1)];
+    const el = createOrb(pick);
+    el.style.left = spawnX + "px";
+    el.style.top = pickLaneY() + "px";
+
+    scene.appendChild(el);
+    state.active.push({ el, data: pick, hit:false });
+    state.lastSpawnAt = now;
+  }
+
+  function showFeedback(text, ok){
+    feedback.textContent = text;
+    feedback.style.color = ok ? "#4cff9e" : "#ff6b6b";
+    feedback.classList.add("show");
+    setTimeout(()=>feedback.classList.remove("show"), 340);
+  }
+  function showPointsPop(x,y,points){
+    const pop = document.createElement("div");
+    pop.className = "pop";
+    pop.textContent = `+${points}`;
+    pop.style.left = x + "px";
+    pop.style.top = y + "px";
+    scene.appendChild(pop);
+    setTimeout(()=>pop.remove(), 900);
+  }
+
+  function spawnConfettiBurst(count=42){
+    if(!CFG.winConfetti) return;
+    confetti.innerHTML = "";
+    confetti.classList.add("show");
+    const w = window.innerWidth, h = window.innerHeight;
+    for(let i=0;i<count;i++){
+      const d = document.createElement("div");
+      d.className = "conf";
+      d.style.left = (Math.random()*w) + "px";
+      d.style.top = (-20 - Math.random()*80) + "px";
+      d.style.animationDuration = (1.05 + Math.random()*0.9) + "s";
+      d.style.transform = `translateY(-40px) rotate(${Math.random()*180}deg)`;
+      const hue = Math.floor(Math.random()*360);
+      d.style.background = `hsl(${hue} 90% 60%)`;
+      confetti.appendChild(d);
+    }
+    setTimeout(()=>{ confetti.classList.remove("show"); confetti.innerHTML=""; }, 1600);
+  }
+
+  function endGame(win){
+    clearPending();
+    state.phase="ended";
+    state.locked=true;
+    clearAnswers();
+    updateHUD();
+
+    if(win){
+      loseTint.classList.remove("show");
+      spawnConfettiBurst(48);
+      soundWin();
+      finalTitle.innerHTML = `<span class="iconDot">🏆</span> Победа!`;
+      finalText.textContent = (CFG.finalWinText && CFG.finalWinText.trim())
+        ? CFG.finalWinText.trim()
+        : `Ты ответил(а) на все вопросы! Очки: ${state.score}.`;
+    }else{
+      loseTint.classList.add("show");
+      soundLose();
+      finalTitle.innerHTML = `<span class="iconDot">⟲</span> Поражение`;
+      finalText.textContent = (CFG.finalLoseText && CFG.finalLoseText.trim())
+        ? CFG.finalLoseText.trim()
+        : `Жизни закончились. Очки: ${state.score}.`;
+    }
+    showOverlay(finalOverlay, true);
+  }
+
+  function pushRecent(idx){
+    if(idx===null) return;
+    state.recent.push(idx);
+    const maxLen = Math.max(0, CFG.cooldownTurns + 1);
+    while(state.recent.length > maxLen) state.recent.shift();
+  }
+  function pickNextQuestionWithCooldown(){
+    if(!state.remaining.length) return null;
+    if(state.remaining.length===1) return state.remaining[0];
+    const banned = new Set(state.recent);
+    const candidates = state.remaining.filter(i => !banned.has(i));
+    let pool = candidates.length ? candidates : state.remaining.filter(i => i!==state.currentIdx);
+    if(!pool.length) pool = state.remaining.slice();
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  function chooseNextQuestion(){
+    pushRecent(state.currentIdx);
+    state.currentIdx = pickNextQuestionWithCooldown();
+    if(state.currentIdx===null){ endGame(true); return; }
+    updateHUD();
+    state.locked=false;
+    clearAnswers();
+    state.lastSpawnAt = performance.now();
+  }
+
+  function handleHit(correct, hitX, hitY, hitEl){
+    if(state.locked || state.phase!=="playing") return;
+    state.locked = true;
+    clearPending();
+
+    // визуальные эффекты попадания
+    if(hitEl){
+      if(correct){
+        hitEl.classList.add("hitOk");
+        setTimeout(()=>hitEl?.remove(), 140);
+      }else{
+        hitEl.classList.add("hitBad");
+        setTimeout(()=>hitEl?.remove(), 220);
+      }
+    }
+
+    // удаляем остальные ответы чуть позже, чтобы эффект было видно
+    setTimeout(()=>{ clearAnswers(); }, 180);
+
+    if(correct){
+      state.score += CFG.pointsPerCorrect;
+      showPointsPop(hitX, hitY, CFG.pointsPerCorrect);
+      showFeedback(CFG.feedbackCorrect || "Верно!", true);
+      soundOk();
+
+      const idx = state.currentIdx;
+      state.remaining = state.remaining.filter(x => x!==idx);
+
+      pendingTimer = setTimeout(()=>{
+        pendingTimer=null;
+        state.remaining.length===0 ? endGame(true) : chooseNextQuestion();
+      }, 520);
+    }else{
+      state.lives--;
+      showFeedback(CFG.feedbackWrong || "Неверно!", false);
+      soundBad();
+      pendingTimer = setTimeout(()=>{
+        pendingTimer=null;
+        state.lives<=0 ? endGame(false) : chooseNextQuestion();
+      }, 520);
+    }
+    updateHUD();
+  }
+
+  function checkCollision(obj){
+    if(obj.hit || state.locked || state.phase!=="playing") return;
+    const a = obj.el.getBoundingClientRect();
+    const p = player.getBoundingClientRect();
+    const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
+    if(overlap){
+      obj.hit = true;
+      const sr = scene.getBoundingClientRect();
+      const hitX = (a.left+a.right)/2 - sr.left;
+      const hitY = (a.top+a.bottom)/2 - sr.top;
+      const elRef = obj.el;
+      handleHit(obj.data.correct===true, hitX, hitY, elRef);
+    }
+  }
+
+  function resetGameForPlay(){
+    clearPending();
+    clearAnswers();
+    loseTint.classList.remove("show");
+    confetti.classList.remove("show");
+    confetti.innerHTML="";
+
+    state.score=0;
+    state.lives=CFG.lives;
+    state.remaining = CFG.questions.map((_,i)=>i);
+    state.recent=[];
+    state.phase="playing";
+    state.locked=false;
+    state.currentIdx = pickNextQuestionWithCooldown();
+    state.lastSpawnAt = performance.now();
+    player.style.top="50%";
+    targetTilt = 0; currentTilt = 0;
+    updateHUD();
+  }
+
+  async function startGame(){
+    await unlockAudio();
+    soundStart();
+    showOverlay(startOverlay,false);
+    showOverlay(finalOverlay,false);
+    resetGameForPlay();
+  }
+  async function playAgain(){
+    await unlockAudio();
+    soundStart();
+    showOverlay(finalOverlay,false);
+    showOverlay(startOverlay,false);
+    resetGameForPlay();
+  }
+
+  // сенсор: перетаскивание игрока вверх/вниз
+  function clampPlayerY(y){
+    const min = 0;
+    const max = scene.clientHeight - player.clientHeight;
+    return Math.max(min, Math.min(max, y));
+  }
+  function pointerDown(e){
+    if(state.phase==="menu") return;
+    touchActive = true;
+    const py = player.offsetTop;
+    touchOffsetY = e.clientY - py;
+  }
+  function pointerMove(e){
+    if(!touchActive) return;
+    const y = clampPlayerY(e.clientY - touchOffsetY);
+    player.style.top = y + "px";
+  }
+  function pointerUp(){
+    touchActive = false;
+  }
+
+  // background seamless scrolling
+  function updateBackground(){
+    if(!CFG.bgImg || CFG.transparentBg) return;
+    // скорость зависит от сложности
+    const s = (state?.speed || 3.2) * CFG.bgScrollFactor;
+    bgX -= s;
+    // делаем большое число безопасным
+    if(bgX < -100000) bgX = 0;
+    // двигаем repeat-x
+    // translateX по bgX, без “стыка” (repeat-x)
+    bgStrip.style.transform = `translateX(${bgX}px) translateY(${Math.sin(performance.now()/900)*CFG.bgParallaxY}px)`;
+  }
+
+  function loop(now){
+    if(state.phase==="playing"){
+      // keyboard move
+      if(!touchActive){
+        let y = player.offsetTop;
+        if(keys.ArrowUp) y -= CFG.playerSpeed;
+        if(keys.ArrowDown) y += CFG.playerSpeed;
+        y = clampPlayerY(y);
+        player.style.top = y + "px";
+      }
+
+      // tilt target (визуально: вверх/вниз)
+      const goingUp = keys.ArrowUp && !keys.ArrowDown;
+      const goingDown = keys.ArrowDown && !keys.ArrowUp;
+      if(touchActive){
+        // вычислим "скорость" по последней разнице в pointerMove не храним — сделаем проще:
+        // наклон по текущей позиции относительно центра
+        const center = scene.clientHeight/2;
+        const dy = (player.offsetTop - center) / center; // -1..1
+        targetTilt = clampNum(dy * (CFG.playerTiltMax||18), - (CFG.playerTiltMax||18), (CFG.playerTiltMax||18), 0);
+      }else{
+        if(goingUp) targetTilt = -(CFG.playerTiltMax||18);
+        else if(goingDown) targetTilt = (CFG.playerTiltMax||18);
+        else targetTilt = 0;
+      }
+      const smooth = clampNum(CFG.playerTiltSmooth, 0.05, 0.7, 0.22);
+      currentTilt += (targetTilt - currentTilt) * smooth;
+      player.style.transform = `translate(-50%,-50%) rotate(${currentTilt}deg) translateZ(0)`;
+
+      maybeSpawn(now);
+
+      if(!state.locked){
+        const leftLimit = -180;
+        const next=[];
+        for(const obj of state.active){
+          obj.el.style.left = (obj.el.offsetLeft - state.speed) + "px";
+          checkCollision(obj);
+          if(obj.el.isConnected){
+            if(obj.el.offsetLeft >= leftLimit) next.push(obj);
+            else obj.el.remove();
+          }
+        }
+        state.active = next;
+      }
+    }
+
+    updateBackground();
+    requestAnimationFrame(loop);
+  }
+
+  diffBtns.forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      await unlockAudio();
+      applyDifficulty(btn.dataset.level);
+    });
+  });
+  startBtn.addEventListener("click", startGame);
+  playAgainBtn.addEventListener("click", playAgain);
+
+  window.addEventListener("keydown", async (e)=>{ keys[e.key]=true; await unlockAudio(); });
+  window.addEventListener("keyup",(e)=>{ keys[e.key]=false; });
+  window.addEventListener("pointerdown", async (e)=>{ await unlockAudio(); pointerDown(e); }, {passive:true});
+  window.addEventListener("pointermove", (e)=>{ pointerMove(e); }, {passive:true});
+  window.addEventListener("pointerup", ()=>{ pointerUp(); }, {passive:true});
+  window.addEventListener("pointercancel", ()=>{ pointerUp(); }, {passive:true});
+
+  // prevent scrolling on touch
+  document.addEventListener("touchmove", (e)=>{ if(state?.phase==="playing") e.preventDefault(); }, {passive:false});
+
+  initState();
+  applyDifficulty("easy");
+  updateHUD();
+  player.style.top="50%";
+  showOverlay(startOverlay,true);
+  showOverlay(finalOverlay,false);
+
+  // if bg is used, show strip
+  if(!CFG.transparentBg && CFG.bgImg){
+    bgStrip.style.opacity = "1";
+  }
+
+  loop(performance.now());
 }
 </script>
 </body>
