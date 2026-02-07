@@ -7,136 +7,102 @@
 
 <style>
 html,body{
-  margin:0;
-  height:100%;
+  margin:0;height:100%;
   background:#0b0b14;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:#fff;
-  overflow:hidden;
+  color:#fff;overflow:hidden;
 }
-#game{
-  position:relative;
-  width:100%;
-  height:100%;
-}
+#game{position:relative;width:100%;height:100%;}
 #hud{
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  padding:12px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  z-index:10;
-  background:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
+  position:absolute;top:0;left:0;right:0;
+  padding:12px 16px;display:flex;justify-content:space-between;align-items:center;
+  z-index:10;background:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
 }
-#question{
-  font-weight:800;
+#question{font-weight:900;}
+#stats{font-size:14px;opacity:.85;display:flex;gap:12px;align-items:center;}
+#barWrap{
+  width:180px;height:10px;border-radius:999px;
+  background:rgba(255,255,255,.12);overflow:hidden;
 }
-#stats{
-  font-size:14px;
-  opacity:.85;
-}
-#scene{
-  position:absolute;
-  inset:0;
-  overflow:hidden;
-}
+#bar{height:100%;width:0%;background:rgba(120,90,255,.95);}
+#scene{position:absolute;inset:0;overflow:hidden;}
 .player{
-  position:absolute;
-  left:60px;
-  top:50%;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:#7b4dff;
-  transform:translateY(-50%);
+  position:absolute;left:60px;top:50%;
+  width:44px;height:44px;border-radius:50%;
+  background:#7b4dff;transform:translateY(-50%);
+  box-shadow:0 0 18px rgba(123,77,255,.5);
 }
 .answer{
-  position:absolute;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  font-size:20px;
-  color:#000;
+  position:absolute;width:72px;height:72px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:900;font-size:20px;color:#000;
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+  user-select:none;
 }
+.answer .t{font-size:11px;font-weight:800;opacity:.8;margin-top:2px}
 .answer.correct{ background:#4cff9e; }
 .answer.wrong{ background:#ff6b6b; }
 
 #feedback{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:36px;
-  font-weight:900;
-  pointer-events:none;
-  opacity:0;
-  transition:.3s;
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:36px;font-weight:1000;pointer-events:none;opacity:0;
+  transition:.22s;
 }
 #feedback.show{ opacity:1; }
 
 #final{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:16px;
-  z-index:20;
+  position:absolute;inset:0;background:rgba(0,0,0,.82);
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+  gap:16px;z-index:20;text-align:center;padding:20px;
 }
 #final.show{ display:flex; }
 button{
-  padding:10px 16px;
-  border-radius:12px;
-  border:none;
-  font-weight:800;
-  cursor:pointer;
+  padding:10px 16px;border-radius:12px;border:none;
+  font-weight:900;cursor:pointer;
 }
+.small{font-size:12px;opacity:.75;max-width:560px;line-height:1.4}
 </style>
 </head>
 
 <body>
 <div id="game">
-
   <div id="hud">
     <div id="question"></div>
-    <div id="stats"></div>
+    <div id="stats">
+      <div id="count"></div>
+      <div id="lives"></div>
+      <div id="barWrap"><div id="bar"></div></div>
+    </div>
   </div>
 
   <div id="scene">
-    <div class="player" id="player"></div>
+    <div class="player" id="player" title="⬆/⬇"></div>
   </div>
 
   <div id="feedback"></div>
 
   <div id="final">
     <h1 id="finalText"></h1>
+    <div class="small" id="finalSub"></div>
     <button onclick="restart()">Играть ещё</button>
   </div>
-
 </div>
 
 <script>
-// ================= CONFIG (для будущего редактора) =================
+// ================= CONFIG (под будущий редактор) =================
 const GAME_CONFIG = {
   lives: 3,
-  speed: 2.5,
-  playerSpeed: 6,
+  speed: 2.7,         // скорость движения ответов влево
+  playerSpeed: 7,     // скорость игрока вверх/вниз
+  gapAfterHitMs: 550, // пауза после попадания (фидбек)
+
+  // вопросы: сверху текст, ответы A/B/C — как снитчи
   questions: [
     {
       q: "Столица Франции?",
       answers: [
-        { label:"A", text:"Париж", correct:true },
-        { label:"B", text:"Рим", correct:false },
+        { label:"A", text:"Париж",  correct:true  },
+        { label:"B", text:"Рим",    correct:false },
         { label:"C", text:"Берлин", correct:false }
       ]
     },
@@ -144,118 +110,226 @@ const GAME_CONFIG = {
       q: "2 + 2 = ?",
       answers: [
         { label:"A", text:"3", correct:false },
-        { label:"B", text:"4", correct:true },
+        { label:"B", text:"4", correct:true  },
         { label:"C", text:"5", correct:false }
       ]
-    }
-  ]
+    },
+    {
+      q: "Где больше: 7 или 9?",
+      answers: [
+        { label:"A", text:"7", correct:false },
+        { label:"B", text:"9", correct:true  },
+        { label:"C", text:"равны", correct:false }
+      ]
+    },
+  ],
 };
-// ==================================================================
-
-let state, keys={};
+// =================================================================
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
 const questionEl = document.getElementById("question");
-const statsEl = document.getElementById("stats");
+const countEl = document.getElementById("count");
+const livesEl = document.getElementById("lives");
+const barEl = document.getElementById("bar");
 const feedback = document.getElementById("feedback");
 const final = document.getElementById("final");
 const finalText = document.getElementById("finalText");
+const finalSub = document.getElementById("finalSub");
 
-function start(){
+let keys = {};
+let raf = null;
+
+// game state
+let state = null;
+
+function initState(){
   state = {
-    qIndex:0,
-    lives:GAME_CONFIG.lives,
-    score:0,
-    answers:[]
+    qIndex: 0,
+    lives: GAME_CONFIG.lives,
+    score: 0,
+    active: [],      // текущие летящие варианты
+    locked: false,   // блокируем коллизии во время фидбека/перехода
   };
-  nextQuestion();
-  loop();
+}
+
+function hearts(n){
+  return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : "");
+}
+
+function updateHUD(){
+  const total = GAME_CONFIG.questions.length;
+  const current = Math.min(state.qIndex + 1, total);
+  questionEl.textContent = (state.qIndex < total) ? GAME_CONFIG.questions[state.qIndex].q : "";
+  countEl.textContent = `${Math.min(state.qIndex, total)}/${total} ✅ ${state.score}`;
+  livesEl.textContent = `Жизни: ${hearts(state.lives)}`;
+  const pct = total ? Math.round((Math.min(state.qIndex, total) / total) * 100) : 0;
+  barEl.style.width = pct + "%";
+}
+
+function clearAnswers(){
+  state.active.forEach(o => o.el.remove());
+  state.active = [];
+}
+
+function spawnAnswersForQuestion(){
+  clearAnswers();
+
+  const q = GAME_CONFIG.questions[state.qIndex];
+  // создаём 3 “снитча” на разных дорожках по вертикали
+  q.answers.forEach((a,i)=>{
+    const el = document.createElement("div");
+    el.className = "answer " + (a.correct ? "correct" : "wrong");
+
+    const lab = document.createElement("div");
+    lab.textContent = a.label;
+
+    const t = document.createElement("div");
+    t.className = "t";
+    t.textContent = a.text;
+
+    el.appendChild(lab);
+    el.appendChild(t);
+
+    el.dataset.correct = a.correct ? "1" : "0";
+    el.style.left = (scene.clientWidth + 40) + "px";
+    // 3 полосы: 30%, 50%, 70% (можно потом сделать рандом/паттерны)
+    const lanes = [0.30, 0.50, 0.70];
+    el.style.top = Math.round(scene.clientHeight * lanes[i % lanes.length]) + "px";
+    el.style.transform = "translate(-50%,-50%)";
+    scene.appendChild(el);
+
+    state.active.push({ el, data:a, hit:false });
+  });
 }
 
 function nextQuestion(){
-  scene.querySelectorAll(".answer").forEach(a=>a.remove());
+  // конец по вопросам
   if(state.qIndex >= GAME_CONFIG.questions.length){
     endGame(true);
     return;
   }
-  const q = GAME_CONFIG.questions[state.qIndex];
-  questionEl.textContent = q.q;
-  statsEl.textContent = `${state.qIndex+1}/${GAME_CONFIG.questions.length} | ❤️ ${state.lives}`;
+  updateHUD();
+  spawnAnswersForQuestion();
+}
 
-  q.answers.forEach((a,i)=>{
-    const el = document.createElement("div");
-    el.className = "answer " + (a.correct?"correct":"wrong");
-    el.textContent = a.label;
-    el.dataset.correct = a.correct;
-    el.style.left = "100%";
-    el.style.top = (30 + i*25) + "%";
-    scene.appendChild(el);
-    state.answers.push({el, data:a});
-  });
+function showFeedback(text, ok){
+  feedback.textContent = text;
+  feedback.style.color = ok ? "#4cff9e" : "#ff6b6b";
+  feedback.classList.add("show");
+  setTimeout(()=>feedback.classList.remove("show"), GAME_CONFIG.gapAfterHitMs - 60);
+}
+
+function handleAnswer(correct){
+  if(state.locked) return;
+  state.locked = true;
+
+  if(correct){
+    state.score++;
+    showFeedback("Супер!", true);
+  }else{
+    state.lives--;
+    // визуальный “шок”
+    scene.animate([{filter:"brightness(1)"},{filter:"brightness(.7)"},{filter:"brightness(1)"}], {duration:220});
+    player.animate([{transform:"translateY(-50%)"},{transform:"translateY(-50%) translateX(-4px)"},{transform:"translateY(-50%)"}], {duration:220});
+    showFeedback("Ошибка", false);
+  }
+
+  // сразу же переходим к следующему вопросу (как в твоём требовании)
+  // но делаем короткую паузу, чтобы игрок увидел фидбек
+  setTimeout(()=>{
+    clearAnswers();
+    if(state.lives <= 0){
+      endGame(false);
+      return;
+    }
+    state.qIndex++;
+    state.locked = false;
+    nextQuestion();
+  }, GAME_CONFIG.gapAfterHitMs);
+}
+
+function checkCollision(obj){
+  if(obj.hit || state.locked) return;
+
+  const a = obj.el.getBoundingClientRect();
+  const p = player.getBoundingClientRect();
+  const overlap = !(a.right < p.left || a.left > p.right || a.bottom < p.top || a.top > p.bottom);
+
+  if(overlap){
+    obj.hit = true;
+    obj.el.remove();
+    const correct = obj.data.correct === true;
+    handleAnswer(correct);
+  }
 }
 
 function loop(){
   if(!state) return;
 
-  // player move
+  // движение игрока
   let top = player.offsetTop;
   if(keys.ArrowUp) top -= GAME_CONFIG.playerSpeed;
   if(keys.ArrowDown) top += GAME_CONFIG.playerSpeed;
   top = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, top));
   player.style.top = top + "px";
 
-  // answers move
-  state.answers.forEach(obj=>{
-    obj.el.style.left = (obj.el.offsetLeft - GAME_CONFIG.speed) + "px";
+  // движение ответов справа налево
+  state.active.forEach(obj=>{
+    const x = obj.el.offsetLeft - GAME_CONFIG.speed;
+    obj.el.style.left = x + "px";
+
+    // если улетели за экран — считаем, что игрок “пропустил” (по умолчанию без наказания)
+    if(x < -120 && !obj.hit){
+      obj.hit = true;
+      obj.el.remove();
+
+      // опционально: можно потом сделать настройку “пропуск = ошибка”
+      // Сейчас — просто ждём, пока игрок поймает один из вариантов.
+    }
+
     checkCollision(obj);
   });
 
-  requestAnimationFrame(loop);
-}
-
-function checkCollision(obj){
-  if(obj.hit) return;
-  const a = obj.el.getBoundingClientRect();
-  const p = player.getBoundingClientRect();
-  if(!(a.right<p.left||a.left>p.right||a.bottom<p.top||a.top>p.bottom)){
-    obj.hit = true;
-    obj.el.remove();
-    if(obj.data.correct){
-      state.score++;
-      showFeedback("Супер!", true);
-      state.qIndex++;
-      state.answers=[];
-      setTimeout(nextQuestion,600);
-    }else{
-      state.lives--;
-      showFeedback("Ошибка", false);
-      if(state.lives<=0) endGame(false);
-    }
-  }
-}
-
-function showFeedback(text, ok){
-  feedback.textContent = text;
-  feedback.style.color = ok?"#4cff9e":"#ff6b6b";
-  feedback.classList.add("show");
-  setTimeout(()=>feedback.classList.remove("show"),500);
+  raf = requestAnimationFrame(loop);
 }
 
 function endGame(win){
+  state.locked = true;
+  clearAnswers();
+  updateHUD();
+
   final.classList.add("show");
-  finalText.textContent = win ? "🎉 Победа!" : "💀 Игра окончена";
+  finalText.textContent = win ? "🎉 Победа!" : "💀 Жизни закончились";
+  finalSub.textContent =
+    `Результат: ${state.score}/${GAME_CONFIG.questions.length} правильных.`;
+
+  if(raf) cancelAnimationFrame(raf);
+  raf = null;
 }
 
 function restart(){
   final.classList.remove("show");
-  start();
+  if(raf) cancelAnimationFrame(raf);
+  raf = null;
+
+  initState();
+  // поставим игрока в середину
+  player.style.top = Math.round(scene.clientHeight/2) + "px";
+  nextQuestion();
+  loop();
 }
 
-window.addEventListener("keydown",e=>keys[e.key]=true);
-window.addEventListener("keyup",e=>keys[e.key]=false);
+// input
+window.addEventListener("keydown", (e)=>{ keys[e.key]=true; });
+window.addEventListener("keyup", (e)=>{ keys[e.key]=false; });
 
-start();
+// start
+initState();
+player.style.top = "50%";
+updateHUD();
+nextQuestion();
+loop();
 </script>
 </body>
 </html>
