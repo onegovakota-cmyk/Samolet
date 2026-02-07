@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Catch the Right Answer</title>
+
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#0b0b14;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:#fff;
+  overflow:hidden;
+}
+#game{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+#hud{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:10;
+  background:linear-gradient(to bottom, rgba(0,0,0,.6), transparent);
+}
+#question{
+  font-weight:800;
+}
+#stats{
+  font-size:14px;
+  opacity:.85;
+}
+#scene{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+}
+.player{
+  position:absolute;
+  left:60px;
+  top:50%;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:#7b4dff;
+  transform:translateY(-50%);
+}
+.answer{
+  position:absolute;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:20px;
+  color:#000;
+}
+.answer.correct{ background:#4cff9e; }
+.answer.wrong{ background:#ff6b6b; }
+
+#feedback{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:36px;
+  font-weight:900;
+  pointer-events:none;
+  opacity:0;
+  transition:.3s;
+}
+#feedback.show{ opacity:1; }
+
+#final{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:16px;
+  z-index:20;
+}
+#final.show{ display:flex; }
+button{
+  padding:10px 16px;
+  border-radius:12px;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div id="game">
+
+  <div id="hud">
+    <div id="question"></div>
+    <div id="stats"></div>
+  </div>
+
+  <div id="scene">
+    <div class="player" id="player"></div>
+  </div>
+
+  <div id="feedback"></div>
+
+  <div id="final">
+    <h1 id="finalText"></h1>
+    <button onclick="restart()">Играть ещё</button>
+  </div>
+
+</div>
+
+<script>
+// ================= CONFIG (для будущего редактора) =================
+const GAME_CONFIG = {
+  lives: 3,
+  speed: 2.5,
+  playerSpeed: 6,
+  questions: [
+    {
+      q: "Столица Франции?",
+      answers: [
+        { label:"A", text:"Париж", correct:true },
+        { label:"B", text:"Рим", correct:false },
+        { label:"C", text:"Берлин", correct:false }
+      ]
+    },
+    {
+      q: "2 + 2 = ?",
+      answers: [
+        { label:"A", text:"3", correct:false },
+        { label:"B", text:"4", correct:true },
+        { label:"C", text:"5", correct:false }
+      ]
+    }
+  ]
+};
+// ==================================================================
+
+let state, keys={};
+
+const scene = document.getElementById("scene");
+const player = document.getElementById("player");
+const questionEl = document.getElementById("question");
+const statsEl = document.getElementById("stats");
+const feedback = document.getElementById("feedback");
+const final = document.getElementById("final");
+const finalText = document.getElementById("finalText");
+
+function start(){
+  state = {
+    qIndex:0,
+    lives:GAME_CONFIG.lives,
+    score:0,
+    answers:[]
+  };
+  nextQuestion();
+  loop();
+}
+
+function nextQuestion(){
+  scene.querySelectorAll(".answer").forEach(a=>a.remove());
+  if(state.qIndex >= GAME_CONFIG.questions.length){
+    endGame(true);
+    return;
+  }
+  const q = GAME_CONFIG.questions[state.qIndex];
+  questionEl.textContent = q.q;
+  statsEl.textContent = `${state.qIndex+1}/${GAME_CONFIG.questions.length} | ❤️ ${state.lives}`;
+
+  q.answers.forEach((a,i)=>{
+    const el = document.createElement("div");
+    el.className = "answer " + (a.correct?"correct":"wrong");
+    el.textContent = a.label;
+    el.dataset.correct = a.correct;
+    el.style.left = "100%";
+    el.style.top = (30 + i*25) + "%";
+    scene.appendChild(el);
+    state.answers.push({el, data:a});
+  });
+}
+
+function loop(){
+  if(!state) return;
+
+  // player move
+  let top = player.offsetTop;
+  if(keys.ArrowUp) top -= GAME_CONFIG.playerSpeed;
+  if(keys.ArrowDown) top += GAME_CONFIG.playerSpeed;
+  top = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, top));
+  player.style.top = top + "px";
+
+  // answers move
+  state.answers.forEach(obj=>{
+    obj.el.style.left = (obj.el.offsetLeft - GAME_CONFIG.speed) + "px";
+    checkCollision(obj);
+  });
+
+  requestAnimationFrame(loop);
+}
+
+function checkCollision(obj){
+  if(obj.hit) return;
+  const a = obj.el.getBoundingClientRect();
+  const p = player.getBoundingClientRect();
+  if(!(a.right<p.left||a.left>p.right||a.bottom<p.top||a.top>p.bottom)){
+    obj.hit = true;
+    obj.el.remove();
+    if(obj.data.correct){
+      state.score++;
+      showFeedback("Супер!", true);
+      state.qIndex++;
+      state.answers=[];
+      setTimeout(nextQuestion,600);
+    }else{
+      state.lives--;
+      showFeedback("Ошибка", false);
+      if(state.lives<=0) endGame(false);
+    }
+  }
+}
+
+function showFeedback(text, ok){
+  feedback.textContent = text;
+  feedback.style.color = ok?"#4cff9e":"#ff6b6b";
+  feedback.classList.add("show");
+  setTimeout(()=>feedback.classList.remove("show"),500);
+}
+
+function endGame(win){
+  final.classList.add("show");
+  finalText.textContent = win ? "🎉 Победа!" : "💀 Игра окончена";
+}
+
+function restart(){
+  final.classList.remove("show");
+  start();
+}
+
+window.addEventListener("keydown",e=>keys[e.key]=true);
+window.addEventListener("keyup",e=>keys[e.key]=false);
+
+start();
+</script>
+</body>
+</html>
