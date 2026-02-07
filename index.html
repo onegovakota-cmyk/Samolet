@@ -10,27 +10,24 @@
     :root{
       --bg: transparent;
 
-      /* панели */
       --panel-bg: rgba(10,10,20,.60);
       --panel-brd: rgba(255,255,255,.18);
       --shadow: 0 16px 60px rgba(0,0,0,.42);
 
-      /* ОТВЕТЫ: делаем темнее, чтобы текст был виден даже на белом фоне */
-      --answer-bg: rgba(25, 25, 40, .62);
+      /* ВАЖНО: ответы тёмные => текст точно виден на белом фоне */
+      --answer-bg: rgba(20, 18, 34, .82);
       --answer-brd: rgba(255,255,255,.22);
-      --answer-text: rgba(255,255,255,.96);
+      --answer-text: rgba(255,255,255,.98);
 
-      /* игрок */
       --player-bg: rgba(120,90,255,.22);
       --player-brd: rgba(120,90,255,.40);
-
-      /* неон желтый для очков */
-      --neon-yellow: #ffd84a;
 
       --good: #4cff9e;
       --bad:  #ff6b6b;
 
-      --size: 84px; /* игрок и ответы одного размера */
+      --neon-yellow: #ffd84a;
+
+      --size: 86px; /* игрок и ответы одного размера */
     }
 
     html,body{
@@ -115,14 +112,14 @@
       border: 1px solid var(--answer-brd);
       box-shadow: 0 16px 55px rgba(0,0,0,.35);
       color: var(--answer-text);
-      padding: 8px 10px;
+      padding: 10px 10px;
       box-sizing:border-box;
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
       text-align:center;
-      gap:5px;
+      gap:6px;
     }
     .answer .lab{
       font-weight:1200;
@@ -131,16 +128,25 @@
       letter-spacing:.8px;
       opacity:.98;
       text-shadow: 0 10px 22px rgba(0,0,0,.55);
+      -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
+    /* Текст варианта — делаем "как бейдж" чтобы точно был виден */
     .answer .txt{
-      font-weight:1000;
+      font-weight:1100;
       font-size:13px;
-      line-height:1.08;
+      line-height:1.12;
       opacity:1;
-      max-width: 160px;
+      max-width: 180px;
       white-space:normal;
       word-break:break-word;
+
+      padding: 4px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+
       text-shadow: 0 10px 22px rgba(0,0,0,.55);
+      -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
 
     /* +points (жёлтый неон) */
@@ -152,8 +158,8 @@
       transform:translate(-50%,-50%);
       color: var(--neon-yellow);
       text-shadow:
-        0 0 10px rgba(255,216,74,.85),
-        0 0 22px rgba(255,216,74,.65),
+        0 0 10px rgba(255,216,74,.90),
+        0 0 24px rgba(255,216,74,.70),
         0 16px 36px rgba(0,0,0,.55);
       animation: popUp .78s ease-out forwards;
       z-index:80;
@@ -172,6 +178,7 @@
       opacity:0; transition:.18s;
       z-index:70;
       text-shadow: 0 16px 36px rgba(0,0,0,.55);
+      color: rgba(255,255,255,.92);
     }
     #feedback.show{opacity:1;}
 
@@ -183,7 +190,7 @@
     #progressBar{
       height: 20px;
       border-radius: 999px;
-      background: rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
       border: 1px solid rgba(255,255,255,.22);
       box-shadow: var(--shadow);
       overflow:hidden;
@@ -263,7 +270,7 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v7</div>
+  <div id="version">v8</div>
 </div>
 
 <script>
@@ -273,22 +280,22 @@ const GAME_CONFIG = {
   playerSpeed: 7,
   feedbackMs: 420,
 
-  scoring: {
-    pointsPerCorrect: 10,
-    popText: (pts)=>`+${pts}`,
-  },
+  scoring: { pointsPerCorrect: 10, popText: (pts)=>`+${pts}` },
 
   sound: { enabled:true, ok:{volume:0.25}, bad:{volume:0.30} },
 
   progress: { show:true, text:(cur,total)=>`Вопрос ${cur} из ${total}` },
 
+  // ✅ если ответы улетели и игрок их "пропустил" — это ошибка
+  missCountsAsWrong: true,
+
   layout: {
     paddingTop: 96,
     paddingBottom: 86,
     minDistY: 96,
-    startX: 160,
-    xSpreadMin: 160,
-    xSpreadMax: 240,
+    startX: 180,
+    xSpreadMin: 170,
+    xSpreadMax: 260,
   },
 
   questions: [
@@ -324,9 +331,10 @@ const finalText = document.getElementById("finalText");
 
 let keys = {};
 let raf = null;
+
 let state = null;
 
-/* WebAudio */
+/* ---------- SOUND (WebAudio) ---------- */
 let audioCtx = null, audioUnlocked = false;
 function ensureAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
@@ -374,11 +382,24 @@ function beepBad(){
   o1.start(now); o2.start(now);
   o1.stop(now+0.24); o2.stop(now+0.24);
 }
+/* ------------------------------------- */
 
-/* game */
 function initState(){
-  state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
+  state = {
+    qIndex: 0,
+    lives: GAME_CONFIG.lives,
+    score: 0,
+    locked: false,
+
+    // ✅ важно: чтобы не было дублей
+    setId: 0,
+    active: [],
+
+    // чтобы не было второго loop()
+    running: true,
+  };
 }
+
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
 
 function updateProgress(){
@@ -386,7 +407,7 @@ function updateProgress(){
   const current = Math.min(state.qIndex + 1, total);
   const pct = total ? Math.round(((current-1) / total) * 100) : 0;
   progressFill.style.width = pct + "%";
-  progressText.textContent = GAME_CONFIG.progress.text(current, total);
+  progressText.textContent = `Вопрос ${current} из ${total}`;
 }
 
 function updateHUD(){
@@ -404,9 +425,14 @@ function clearAnswers(){
 function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
 
 function spawnAnswersForQuestion(){
-  clearAnswers();
+  // ✅ стоп: если уже есть ответы — не создаём новую пачку
+  if(state.active.length) return;
+
   const q = GAME_CONFIG.questions[state.qIndex];
   const L = GAME_CONFIG.layout;
+
+  state.setId++;
+  const mySetId = state.setId;
 
   const usedY = [];
   const startX = scene.clientWidth + L.startX;
@@ -414,7 +440,7 @@ function spawnAnswersForQuestion(){
   function pickY(){
     const minY = L.paddingTop;
     const maxY = scene.clientHeight - L.paddingBottom;
-    for(let attempt=0; attempt<60; attempt++){
+    for(let attempt=0; attempt<80; attempt++){
       const y = randInt(minY, maxY);
       if(usedY.every(prev => Math.abs(prev-y) >= L.minDistY)){
         usedY.push(y); return y;
@@ -431,6 +457,7 @@ function spawnAnswersForQuestion(){
     const el = document.createElement("div");
     el.className = "orb answer";
     el.dataset.correct = a.correct ? "1":"0";
+    el.dataset.setid = String(mySetId);
 
     const lab = document.createElement("div");
     lab.className = "lab";
@@ -438,7 +465,7 @@ function spawnAnswersForQuestion(){
 
     const txt = document.createElement("div");
     txt.className = "txt";
-    txt.textContent = a.text;   // <-- ВАРИАНТ ОТВЕТА
+    txt.textContent = a.text;  // ✅ текст варианта
 
     el.appendChild(lab);
     el.appendChild(txt);
@@ -449,7 +476,7 @@ function spawnAnswersForQuestion(){
     el.style.transform = "translate(-50%,-50%)";
 
     scene.appendChild(el);
-    state.active.push({ el, data:a, hit:false });
+    state.active.push({ el, data:a, hit:false, setId: mySetId });
   });
 }
 
@@ -472,6 +499,7 @@ function showPointsPop(x,y,points){
 
 function endGame(win){
   state.locked = true;
+  state.running = false;
   clearAnswers();
   updateHUD();
   final.classList.add("show");
@@ -485,16 +513,35 @@ function endGame(win){
 
 function goNextQuestion(){
   state.qIndex++;
+  state.locked = false;
+  clearAnswers();
+
   if(state.lives <= 0){ endGame(false); return; }
   if(state.qIndex >= GAME_CONFIG.questions.length){ endGame(true); return; }
-  state.locked = false;
+
   updateHUD();
   spawnAnswersForQuestion();
+}
+
+function applyWrong(reasonText){
+  state.lives--;
+  updateHUD();
+  showFeedback(reasonText || "Неверно", false);
+  beepBad();
+  player.animate(
+    [{transform:"translate(-50%,-50%)"},
+     {transform:"translate(-50%,-50%) translateX(-4px)"},
+     {transform:"translate(-50%,-50%) translateX(4px)"},
+     {transform:"translate(-50%,-50%)"}],
+    {duration:220}
+  );
 }
 
 function handleAnswer(correct, hitX, hitY){
   if(state.locked) return;
   state.locked = true;
+
+  // убрать остальные, чтобы не было вторичных попаданий
   clearAnswers();
 
   if(correct){
@@ -505,17 +552,7 @@ function handleAnswer(correct, hitX, hitY){
     showFeedback("Верно", true);
     beepOk();
   }else{
-    state.lives--;
-    updateHUD();
-    showFeedback("Неверно", false);
-    beepBad();
-    player.animate(
-      [{transform:"translate(-50%,-50%)"},
-       {transform:"translate(-50%,-50%) translateX(-4px)"},
-       {transform:"translate(-50%,-50%) translateX(4px)"},
-       {transform:"translate(-50%,-50%)"}],
-      {duration:220}
-    );
+    applyWrong("Неверно");
   }
 
   setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
@@ -523,33 +560,67 @@ function handleAnswer(correct, hitX, hitY){
 
 function checkCollision(obj){
   if(obj.hit || state.locked) return;
+
   const a = obj.el.getBoundingClientRect();
   const p = player.getBoundingClientRect();
   const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
+
   if(overlap){
     obj.hit = true;
     const sr = scene.getBoundingClientRect();
     const hitX = (a.left+a.right)/2 - sr.left;
     const hitY = (a.top+a.bottom)/2 - sr.top;
+
     obj.el.remove();
     handleAnswer(obj.data.correct===true, hitX, hitY);
   }
 }
 
 function loop(){
-  if(!state) return;
+  if(!state || !state.running) return;
 
+  // движение игрока
   let y = player.offsetTop;
   if(keys.ArrowUp) y -= GAME_CONFIG.playerSpeed;
   if(keys.ArrowDown) y += GAME_CONFIG.playerSpeed;
   y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
   player.style.top = y + "px";
 
+  // гарантируем, что есть ответы
+  if(!state.locked) spawnAnswersForQuestion();
+
+  // движение ответов + удаление ушедших за экран
   if(!state.locked){
-    state.active.forEach(obj=>{
-      obj.el.style.left = (obj.el.offsetLeft - GAME_CONFIG.speed) + "px";
+    const leftLimit = -120; // ушёл далеко
+    for(const obj of state.active){
+      const x = obj.el.offsetLeft - GAME_CONFIG.speed;
+      obj.el.style.left = x + "px";
       checkCollision(obj);
+    }
+
+    // если все ответы ушли за экран — это "пропуск"
+    const stillOnScreen = state.active.filter(o=>{
+      const x = o.el.offsetLeft;
+      if(x < leftLimit){
+        o.el.remove();
+        return false;
+      }
+      return true;
     });
+    const removedCount = state.active.length - stillOnScreen.length;
+    state.active = stillOnScreen;
+
+    if(removedCount > 0 && state.active.length === 0 && !state.locked){
+      // ✅ пропустили все варианты -> считаем ошибкой и идём дальше
+      if(GAME_CONFIG.missCountsAsWrong){
+        state.locked = true;
+        applyWrong("Пропуск");
+        clearAnswers();
+        setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
+      } else {
+        goNextQuestion();
+      }
+    }
   }
 
   raf = requestAnimationFrame(loop);
@@ -559,9 +630,11 @@ function restart(){
   final.classList.remove("show");
   if(raf) cancelAnimationFrame(raf);
   raf = null;
+
   initState();
   updateHUD();
   player.style.top = "50%";
+  clearAnswers();
   spawnAnswersForQuestion();
   loop();
 }
@@ -573,6 +646,7 @@ window.addEventListener("keydown", async (e)=>{
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
 window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true});
 
+// start
 initState();
 updateHUD();
 player.style.top = "50%";
