@@ -28,7 +28,12 @@
       --size: 86px;
     }
 
-    html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
+    html,body{
+      margin:0;height:100%;
+      background:var(--bg)!important;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      overflow:hidden;
+    }
     #game{position:relative;width:100%;height:100%;}
 
     #topbar{
@@ -88,8 +93,8 @@
     #player{
       left:92px; top:50%;
       transform:translate(-50%,-50%);
-      background: rgba(120,90,255,.22);
-      border: 1px solid rgba(120,90,255,.40);
+      background: var(--player-bg);
+      border: 1px solid var(--player-brd);
       box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
     }
     #player:before{
@@ -199,17 +204,17 @@
     }
 
     /* OVERLAYS */
-    #startOverlay,#finalOverlay{
+    .overlay{
       position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
+      display:none;
+      align-items:center; justify-content:center;
       z-index:300;
       background: rgba(0,0,0,.55);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      pointer-events:auto;
     }
-    #finalOverlay{display:none;}
-    #finalOverlay.show{display:flex;}
-    #startOverlay.hide{display:none;}
+    .overlay.show{display:flex;}
 
     .card{
       width:min(560px, calc(100% - 28px));
@@ -290,7 +295,8 @@
     </div>
   </div>
 
-  <div id="startOverlay">
+  <!-- START -->
+  <div id="startOverlay" class="overlay show">
     <div class="card">
       <h2>Задача игрока</h2>
       <p>
@@ -307,11 +313,12 @@
         <button class="btn primary" id="startBtn">Начать игру</button>
       </div>
 
-      <div class="hint">Пропускать ответы можно — они появятся снова.</div>
+      <div class="hint">Пропускать ответы можно — вопрос повторится, пока не ответишь правильно.</div>
     </div>
   </div>
 
-  <div id="finalOverlay">
+  <!-- FINAL -->
+  <div id="finalOverlay" class="overlay">
     <div class="card">
       <h2 id="finalTitle">—</h2>
       <p id="finalText">—</p>
@@ -322,7 +329,7 @@
     </div>
   </div>
 
-  <div id="version">v15</div>
+  <div id="version">v16</div>
 </div>
 
 <script>
@@ -382,6 +389,7 @@ const menuBtn = document.getElementById("menuBtn");
 let keys = {};
 let raf = null;
 let state = null;
+let pendingTimer = null;
 
 /* ===== SOUND ===== */
 let audioCtx = null, unlocked = false;
@@ -436,9 +444,22 @@ function soundLose(){
 
 function preset(level){ return CFG.difficulty[level] || CFG.difficulty.easy; }
 
+function clearPending(){
+  if(pendingTimer !== null){
+    clearTimeout(pendingTimer);
+    pendingTimer = null;
+  }
+}
+
+function showOverlay(el, on){
+  // ✅ всегда правильно: show/remove show
+  if(on) el.classList.add("show");
+  else el.classList.remove("show");
+}
+
 function initState(){
   state = {
-    running: false,
+    phase: "menu",   // menu | playing | ended
     locked: true,
 
     qIndex: 0,
@@ -540,7 +561,7 @@ function newestX(){
 }
 
 function maybeSpawn(now){
-  if(!state.running || state.locked) return;
+  if(state.phase !== "playing" || state.locked) return;
   if(state.active.length >= state.maxOnScreen) return;
 
   if(now - state.lastSpawnAt < state.spawnEveryMs) return;
@@ -581,7 +602,8 @@ function showPointsPop(x,y,points){
 }
 
 function endGame(win){
-  state.running = false;
+  clearPending();
+  state.phase = "ended";
   state.locked = true;
   clearAnswers();
   updateHUD();
@@ -593,26 +615,36 @@ function endGame(win){
     ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
     : `Жизни закончились. Очки: ${state.score}.`;
 
-  finalOverlay.style.display = "flex";
-  finalOverlay.classList.add("show");
+  showOverlay(finalOverlay, true);
+}
+
+function resumeSameQuestion(){
+  // ✅ продолжаем тот же вопрос после ошибки
+  state.locked = false;
+  clearAnswers();
+  state.lastSpawnAt = performance.now();
 }
 
 function goNextQuestion(){
+  // ✅ следующий вопрос только при ПРАВИЛЬНОМ ответе
   state.qIndex++;
-  state.locked = false;
 
-  if(state.lives <= 0){ endGame(false); return; }
-  if(state.qIndex >= CFG.questions.length){ endGame(true); return; }
+  if(state.qIndex >= CFG.questions.length){
+    endGame(true);
+    return;
+  }
 
   updateHUD();
+  state.locked = false;
   clearAnswers();
   state.lastSpawnAt = performance.now();
 }
 
 function handleHit(correct, hitX, hitY){
-  if(state.locked || !state.running) return;
+  if(state.locked || state.phase !== "playing") return;
   state.locked = true;
   clearAnswers();
+  clearPending();
 
   if(correct){
     state.score += CFG.pointsPerCorrect;
@@ -620,17 +652,35 @@ function handleHit(correct, hitX, hitY){
     showPointsPop(hitX, hitY, CFG.pointsPerCorrect);
     showFeedback("Верно", true);
     soundOk();
+
+    pendingTimer = setTimeout(()=> {
+      pendingTimer = null;
+      goNextQuestion();
+    }, CFG.feedbackMs);
+
   }else{
     state.lives--;
     updateHUD();
     showFeedback("Неверно", false);
     soundBad();
+
+    if(state.lives <= 0){
+      pendingTimer = setTimeout(()=> {
+        pendingTimer = null;
+        endGame(false);
+      }, Math.max(120, CFG.feedbackMs));
+    }else{
+      // ✅ тот же вопрос снова
+      pendingTimer = setTimeout(()=> {
+        pendingTimer = null;
+        resumeSameQuestion();
+      }, CFG.feedbackMs);
+    }
   }
-  setTimeout(goNextQuestion, CFG.feedbackMs);
 }
 
 function checkCollision(obj){
-  if(obj.hit || state.locked || !state.running) return;
+  if(obj.hit || state.locked || state.phase !== "playing") return;
   const a = obj.el.getBoundingClientRect();
   const p = player.getBoundingClientRect();
   const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
@@ -644,14 +694,17 @@ function checkCollision(obj){
   }
 }
 
-function resetGameStateForPlay(){
-  // ✅ гарантированный reset
+function resetGameForPlay(){
+  clearPending();
   clearAnswers();
+
   state.score = 0;
   state.lives = CFG.lives;
   state.qIndex = 0;
+
+  state.phase = "playing";
   state.locked = false;
-  state.running = true;
+
   state.lastSpawnAt = performance.now();
   updateHUD();
   player.style.top = "50%";
@@ -661,55 +714,61 @@ async function startGame(){
   await unlockAudio();
   soundStart();
 
-  startOverlay.classList.add("hide");
-  finalOverlay.classList.remove("show");
-  finalOverlay.style.display = "none";
+  showOverlay(startOverlay, false);
+  showOverlay(finalOverlay, false);
 
-  resetGameStateForPlay();
+  resetGameForPlay();
 }
 
 async function playAgain(){
   await unlockAudio();
-  soundStart(); // как "старт"
-  finalOverlay.classList.remove("show");
-  finalOverlay.style.display = "none";
-  startOverlay.classList.add("hide");
-  resetGameStateForPlay();
+  soundStart();
+
+  // ✅ главное: прячем финальный оверлей
+  showOverlay(finalOverlay, false);
+  showOverlay(startOverlay, false);
+
+  resetGameForPlay();
 }
 
 function backToMenu(){
-  state.running = false;
-  state.locked = true;
+  clearPending();
   clearAnswers();
+
+  state.phase = "menu";
+  state.locked = true;
+
+  showOverlay(finalOverlay, false);
+  showOverlay(startOverlay, true);
+
   updateHUD();
-  finalOverlay.classList.remove("show");
-  finalOverlay.style.display = "none";
-  startOverlay.classList.remove("hide");
 }
 
 function loop(now){
-  if(state.running){
+  if(state.phase === "playing"){
+    // player movement
     let y = player.offsetTop;
     if(keys.ArrowUp) y -= CFG.playerSpeed;
     if(keys.ArrowDown) y += CFG.playerSpeed;
     y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
     player.style.top = y + "px";
-  }
 
-  maybeSpawn(now);
+    // spawn + move
+    maybeSpawn(now);
 
-  if(state.running && !state.locked){
-    const leftLimit = -160;
-    const next = [];
-    for(const obj of state.active){
-      obj.el.style.left = (obj.el.offsetLeft - state.speed) + "px";
-      checkCollision(obj);
-      if(obj.el.isConnected){
-        if(obj.el.offsetLeft >= leftLimit) next.push(obj);
-        else obj.el.remove(); // пропуск без штрафа
+    if(!state.locked){
+      const leftLimit = -160;
+      const next = [];
+      for(const obj of state.active){
+        obj.el.style.left = (obj.el.offsetLeft - state.speed) + "px";
+        checkCollision(obj);
+        if(obj.el.isConnected){
+          if(obj.el.offsetLeft >= leftLimit) next.push(obj);
+          else obj.el.remove(); // пропуск без штрафа
+        }
       }
+      state.active = next;
     }
-    state.active = next;
   }
 
   raf = requestAnimationFrame(loop);
@@ -738,6 +797,8 @@ initState();
 applyDifficulty("easy");
 updateHUD();
 player.style.top = "50%";
+showOverlay(startOverlay, true);
+showOverlay(finalOverlay, false);
 loop(performance.now());
 </script>
 </body>
