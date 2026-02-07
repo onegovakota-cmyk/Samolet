@@ -9,7 +9,6 @@
   <style>
     :root{
       --bg: transparent;
-
       --panel-bg: rgba(10,10,20,.60);
       --panel-brd: rgba(255,255,255,.18);
       --shadow: 0 16px 60px rgba(0,0,0,.42);
@@ -293,8 +292,8 @@
     <div class="card">
       <h2>Задача игрока</h2>
       <p>
-        Вопросы появляются <b>рандомно</b> из списка.<br>
-        Ошибка = минус жизнь, но вопрос остаётся в игре и может выпасть снова.
+        Вопросы выбираются <b>рандомно</b>.<br>
+        Ошибка = минус жизнь, вопрос может вернуться, но <b>не сразу</b>.
       </p>
 
       <div class="row">
@@ -321,7 +320,7 @@
     </div>
   </div>
 
-  <div id="version">v18</div>
+  <div id="version">v19</div>
 </div>
 
 <script>
@@ -331,6 +330,9 @@ const CFG = {
   feedbackMs: 420,
   pointsPerCorrect: 10,
   soundVolume: 0.28,
+
+  // ✅ сколько "других" вопросов должно пройти, чтобы тот же мог вернуться
+  cooldownTurns: 2,
 
   layout: { paddingTop: 130, paddingBottom: 86, laneMinDist: 108 },
 
@@ -455,11 +457,11 @@ function initState(){
     score: 0,
     lives: CFG.lives,
 
-    // ✅ пул нерешённых вопросов
     remaining: [],
-
-    // текущий вопрос (индекс)
     currentIdx: null,
+
+    // ✅ хранит последние показанные вопросы (для cooldown)
+    recent: [],
 
     active: [],
     lastSpawnAt: performance.now(),
@@ -485,12 +487,6 @@ function applyDifficulty(level){
 }
 
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
-
-function pickRandomQuestion(){
-  if(!state.remaining.length) return null;
-  const r = Math.floor(Math.random() * state.remaining.length);
-  return state.remaining[r];
-}
 
 function updateProgress(){
   const total = CFG.questions.length;
@@ -625,13 +621,44 @@ function endGame(win){
   showOverlay(finalOverlay, true);
 }
 
-function chooseNextQuestionRandom(){
-  // ✅ выбор нового вопроса рандомно из remaining
-  state.currentIdx = pickRandomQuestion();
+function pushRecent(idx){
+  if(idx === null) return;
+  state.recent.push(idx);
+  // держим длину = cooldownTurns + 1 (чтобы "через N вопросов")
+  const maxLen = Math.max(0, CFG.cooldownTurns + 1);
+  while(state.recent.length > maxLen) state.recent.shift();
+}
+
+function pickNextQuestionWithCooldown(){
+  if(!state.remaining.length) return null;
+
+  // если остался 1 — показываем его (иначе зависнем)
+  if(state.remaining.length === 1) return state.remaining[0];
+
+  // кандидаты = remaining без recent
+  const banned = new Set(state.recent);
+  const candidates = state.remaining.filter(i => !banned.has(i));
+
+  // если вдруг все забанены (малый пул) — ослабляем и берём любой, кроме текущего
+  let pool = candidates.length ? candidates : state.remaining.filter(i => i !== state.currentIdx);
+
+  // финальный fallback
+  if(!pool.length) pool = state.remaining.slice();
+
+  const r = Math.floor(Math.random() * pool.length);
+  return pool[r];
+}
+
+function chooseNextQuestion(){
+  // ✅ добавляем текущий в recent (чтобы он не мог выпасть сразу снова)
+  pushRecent(state.currentIdx);
+
+  state.currentIdx = pickNextQuestionWithCooldown();
   if(state.currentIdx === null){
     endGame(true);
     return;
   }
+
   updateHUD();
   state.locked = false;
   clearAnswers();
@@ -651,14 +678,14 @@ function handleHit(correct, hitX, hitY){
     showFeedback("Верно", true);
     soundOk();
 
-    // ✅ удаляем текущий из remaining
+    // удаляем текущий из remaining
     const idx = state.currentIdx;
     state.remaining = state.remaining.filter(x => x !== idx);
 
     pendingTimer = setTimeout(()=> {
       pendingTimer = null;
       if(state.remaining.length === 0) endGame(true);
-      else chooseNextQuestionRandom();
+      else chooseNextQuestion();
     }, CFG.feedbackMs);
 
   } else {
@@ -669,7 +696,7 @@ function handleHit(correct, hitX, hitY){
     pendingTimer = setTimeout(()=> {
       pendingTimer = null;
       if(state.lives <= 0) endGame(false);
-      else chooseNextQuestionRandom(); // ✅ дальше рандомно, вопрос остаётся в remaining
+      else chooseNextQuestion();
     }, CFG.feedbackMs);
   }
 
@@ -699,10 +726,11 @@ function resetGameForPlay(){
   state.lives = CFG.lives;
   state.remaining = CFG.questions.map((_, i)=>i);
 
+  state.recent = [];
   state.phase = "playing";
   state.locked = false;
 
-  state.currentIdx = pickRandomQuestion();
+  state.currentIdx = pickNextQuestionWithCooldown();
   state.lastSpawnAt = performance.now();
   player.style.top = "50%";
   updateHUD();
@@ -730,6 +758,7 @@ function backToMenu(){
   state.phase = "menu";
   state.locked = true;
   state.currentIdx = null;
+  state.recent = [];
   showOverlay(finalOverlay, false);
   showOverlay(startOverlay, true);
   updateHUD();
