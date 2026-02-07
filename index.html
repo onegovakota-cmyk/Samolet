@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Answer</title>
+<title>Catch the Answer v2</title>
 
 <style>
   :root{
@@ -16,15 +16,17 @@
     --shadow: 0 14px 50px rgba(0,0,0,.35);
 
     --accent: rgba(120,90,255,.95);
-    --answer: rgba(255,255,255,.16);   /* одинаковый цвет для всех ответов */
+
+    /* все ответы одинаковые, одного цвета */
+    --answer-bg: rgba(255,255,255,.16);
     --answer-brd: rgba(255,255,255,.18);
     --answer-text: rgba(255,255,255,.92);
 
     --good: #4cff9e;
     --bad:  #ff6b6b;
 
-    --size: 58px;      /* игрок и ответы одного размера */
-    --radius: 18px;
+    /* игрок и ответы одного размера */
+    --size: 58px;
   }
 
   html,body{
@@ -34,24 +36,16 @@
     color:var(--text);
     overflow:hidden;
   }
-
   #game{position:relative;width:100%;height:100%;}
 
-  /* HUD */
+  /* HUD: слева очки, справа жизни */
   #hud{
-    position:absolute;
-    top:12px; left:12px; right:12px;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-    z-index:20;
-    pointer-events:none;
+    position:absolute; top:12px; left:12px; right:12px;
+    display:flex; align-items:flex-start; justify-content:space-between;
+    gap:12px; z-index:20; pointer-events:none;
   }
 
-  /* Score box (left-top) */
-  .scoreBox{
-    pointer-events:none;
+  .pill{
     background: var(--panel-bg);
     border: 1px solid var(--panel-brd);
     border-radius: 999px;
@@ -59,47 +53,17 @@
     box-shadow: var(--shadow);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    display:flex;
-    gap:10px;
-    align-items:center;
-    min-width: 110px;
-  }
-  .scoreBox .label{
-    font-size:12px;
-    color: var(--muted);
-    font-weight:900;
-    letter-spacing:.2px;
-  }
-  .scoreBox .value{
-    font-size:16px;
-    font-weight:1100;
-    color: var(--text);
-  }
-
-  /* Lives (right-top, minimal) */
-  .livesBox{
-    pointer-events:none;
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-brd);
-    border-radius: 999px;
-    padding: 10px 12px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    font-size:14px;
-    font-weight:1000;
-    color: var(--text);
+    display:flex; gap:10px; align-items:center;
     white-space:nowrap;
   }
+  .pill .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
+  .pill .value{font-size:16px;font-weight:1100}
 
-  /* Question centered */
+  /* ВОПРОС: строго по центру сверху в отдельной рамочке */
   #questionWrap{
-    position:absolute;
-    top:12px;
-    left:50%;
+    position:absolute; top:12px; left:50%;
     transform:translateX(-50%);
-    z-index:21;
-    pointer-events:none;
+    z-index:21; pointer-events:none;
     max-width:min(860px, calc(100% - 24px));
   }
   #questionBox{
@@ -119,18 +83,16 @@
     text-overflow:ellipsis;
   }
 
-  /* Scene */
+  /* Сцена */
   #scene{position:absolute; inset:0; overflow:hidden;}
 
-  /* Player + Answers */
+  /* Игрок и ответы */
   .orb{
     position:absolute;
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex; align-items:center; justify-content:center;
     user-select:none;
   }
 
@@ -144,15 +106,14 @@
   }
   #player:before{
     content:"";
-    width: 18px;
-    height: 18px;
+    width: 18px; height: 18px;
     border-radius: 999px;
     background: rgba(255,255,255,.85);
     box-shadow: 0 0 12px rgba(255,255,255,.25);
   }
 
   .answer{
-    background: var(--answer);
+    background: var(--answer-bg);
     border: 1px solid var(--answer-brd);
     box-shadow: 0 14px 45px rgba(0,0,0,.28);
     color: var(--answer-text);
@@ -161,7 +122,7 @@
     letter-spacing:.5px;
   }
 
-  /* Pop +points */
+  /* +очки */
   .pop{
     position:absolute;
     font-weight:1100;
@@ -173,24 +134,23 @@
     z-index:30;
   }
   @keyframes popUp{
-    0%   { opacity:0; transform:translate(-50%,-50%) scale(.9); filter:blur(.2px); }
-    15%  { opacity:1; transform:translate(-50%,-62%) scale(1.05); filter:blur(0); }
+    0%   { opacity:0; transform:translate(-50%,-50%) scale(.9); }
+    15%  { opacity:1; transform:translate(-50%,-62%) scale(1.05); }
     100% { opacity:0; transform:translate(-50%,-105%) scale(1.0); }
   }
 
-  /* Feedback center (subtle) */
+  /* Фидбек */
   #feedback{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
     font-size:30px; font-weight:1100;
     pointer-events:none;
-    opacity:0;
-    transition:.18s;
+    opacity:0; transition:.18s;
     z-index:25;
   }
   #feedback.show{ opacity:1; }
 
-  /* Final overlay */
+  /* Финал */
   #final{
     position:absolute; inset:0;
     background: rgba(0,0,0,.78);
@@ -215,18 +175,12 @@
     font-weight:1000;
     cursor:pointer;
   }
-  #final button:hover{ background: rgba(255,255,255,.14); }
 
-  /* tiny hint bottom (optional) */
-  #hint{
-    position:absolute;
-    left:50%;
-    bottom:10px;
-    transform:translateX(-50%);
-    font-size:12px;
-    opacity:.55;
+  /* Явный индикатор версии (чтобы увидеть, что код обновился) */
+  #version{
+    position:absolute; bottom:10px; right:12px;
+    font-size:12px; opacity:.55;
     pointer-events:none;
-    z-index:5;
   }
 </style>
 </head>
@@ -235,12 +189,12 @@
 <div id="game">
 
   <div id="hud">
-    <div class="scoreBox">
+    <div class="pill">
       <div class="label">Очки</div>
       <div class="value" id="score">0</div>
     </div>
 
-    <div class="livesBox" id="lives">❤️❤️❤️</div>
+    <div class="pill" id="lives">❤️❤️❤️</div>
   </div>
 
   <div id="questionWrap">
@@ -259,11 +213,10 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="hint">⬆ / ⬇ чтобы двигаться</div>
+  <div id="version">v2</div>
 </div>
 
 <script>
-/* ================= CONFIG (под будущий редактор) ================= */
 const GAME_CONFIG = {
   lives: 3,
   speed: 3.0,
@@ -273,11 +226,11 @@ const GAME_CONFIG = {
   scoring: {
     pointsPerCorrect: 10,
     popColor: "#4cff9e",
-    popText: (pts)=>`+${pts}`, // на будущее под локализацию
+    popText: (pts)=>`+${pts}`,
   },
 
   layout: {
-    paddingTop: 92,    // учитываем HUD/вопрос
+    paddingTop: 92,
     paddingBottom: 34,
     minDistY: 88,
     startX: 120,
@@ -285,35 +238,18 @@ const GAME_CONFIG = {
     xSpreadMax: 190,
   },
 
-  // вопросы/ответы. correct скрыт визуально, используется логикой.
   questions: [
-    {
-      q: "Столица Франции?",
-      answers: [
-        { label:"A", correct:false },
-        { label:"B", correct:true  },
-        { label:"C", correct:false }
-      ]
-    },
-    {
-      q: "2 + 2 = ?",
-      answers: [
-        { label:"A", correct:false },
-        { label:"B", correct:true  },
-        { label:"C", correct:false }
-      ]
-    },
-    {
-      q: "Где больше: 7 или 9?",
-      answers: [
-        { label:"A", correct:false },
-        { label:"B", correct:true  },
-        { label:"C", correct:false }
-      ]
-    },
+    { q: "Столица Франции?", answers: [
+      { label:"A", correct:false }, { label:"B", correct:true }, { label:"C", correct:false }
+    ]},
+    { q: "2 + 2 = ?", answers: [
+      { label:"A", correct:false }, { label:"B", correct:true }, { label:"C", correct:false }
+    ]},
+    { q: "Где больше: 7 или 9?", answers: [
+      { label:"A", correct:false }, { label:"B", correct:true }, { label:"C", correct:false }
+    ]},
   ],
 };
-/* ================================================================ */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -330,28 +266,15 @@ let raf = null;
 let state = null;
 
 function initState(){
-  state = {
-    qIndex: 0,
-    lives: GAME_CONFIG.lives,
-    score: 0,
-    active: [],
-    locked: false,
-  };
+  state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
 }
 
-function hearts(n){
-  return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : "");
-}
+function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
 
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
-
-  if(state.qIndex < GAME_CONFIG.questions.length){
-    questionBox.textContent = GAME_CONFIG.questions[state.qIndex].q;
-  } else {
-    questionBox.textContent = "";
-  }
+  questionBox.textContent = state.qIndex < GAME_CONFIG.questions.length ? GAME_CONFIG.questions[state.qIndex].q : "";
 }
 
 function clearAnswers(){
@@ -359,9 +282,7 @@ function clearAnswers(){
   state.active = [];
 }
 
-function randInt(a,b){
-  return Math.floor(a + Math.random() * (b - a + 1));
-}
+function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
 
 function spawnAnswersForQuestion(){
   clearAnswers();
@@ -376,26 +297,26 @@ function spawnAnswersForQuestion(){
     const maxY = scene.clientHeight - L.paddingBottom;
     for(let attempt=0; attempt<40; attempt++){
       const y = randInt(minY, maxY);
-      const ok = usedY.every(prev => Math.abs(prev - y) >= L.minDistY);
-      if(ok){ usedY.push(y); return y; }
+      if(usedY.every(prev => Math.abs(prev-y) >= L.minDistY)){
+        usedY.push(y); return y;
+      }
     }
     const fallback = randInt(minY, maxY);
     usedY.push(fallback);
     return fallback;
   }
 
-  // перетасуем позиции, чтобы буквы не были всегда сверху/снизу одинаково
   const shuffled = [...q.answers].sort(()=>Math.random()-0.5);
 
   shuffled.forEach((a,i)=>{
     const el = document.createElement("div");
     el.className = "orb answer";
-    el.textContent = a.label;
-    el.dataset.correct = a.correct ? "1" : "0";
+    el.textContent = a.label;              // ответы одинаковые (только буква)
+    el.dataset.correct = a.correct ? "1":"0";
 
     const xOffset = i * randInt(L.xSpreadMin, L.xSpreadMax);
     el.style.left = (startX + xOffset) + "px";
-    el.style.top  = pickY() + "px";
+    el.style.top = pickY() + "px";
     el.style.transform = "translate(-50%,-50%)";
 
     scene.appendChild(el);
@@ -430,7 +351,7 @@ function endGame(win){
   finalTitle.textContent = win ? "🎉 Отлично!" : "💀 Игра окончена";
   const total = GAME_CONFIG.questions.length;
   const answered = Math.min(state.qIndex, total);
-  finalText.textContent = `Ты прошёл(ла) ${answered}/${total} вопросов. Очки: ${state.score}.`;
+  finalText.textContent = `Пройдено ${answered}/${total}. Очки: ${state.score}.`;
 
   if(raf) cancelAnimationFrame(raf);
   raf = null;
@@ -448,8 +369,6 @@ function goNextQuestion(){
 function handleAnswer(correct, hitX, hitY){
   if(state.locked) return;
   state.locked = true;
-
-  // убрать остальные ответы, чтобы не было повторных попаданий
   clearAnswers();
 
   if(correct){
@@ -462,8 +381,6 @@ function handleAnswer(correct, hitX, hitY){
     state.lives--;
     updateHUD();
     showFeedback("Неверно", false);
-
-    // лёгкая “вибрация”
     player.animate(
       [{transform:"translate(-50%,-50%)"},
        {transform:"translate(-50%,-50%) translateX(-4px)"},
@@ -473,7 +390,6 @@ function handleAnswer(correct, hitX, hitY){
     );
   }
 
-  // игра продолжается
   setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
 }
 
@@ -498,19 +414,15 @@ function checkCollision(obj){
 function loop(){
   if(!state) return;
 
-  // player move
-  const step = GAME_CONFIG.playerSpeed;
   let y = player.offsetTop;
-  if(keys.ArrowUp) y -= step;
-  if(keys.ArrowDown) y += step;
+  if(keys.ArrowUp) y -= GAME_CONFIG.playerSpeed;
+  if(keys.ArrowDown) y += GAME_CONFIG.playerSpeed;
   y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
   player.style.top = y + "px";
 
-  // answers move
   if(!state.locked){
     state.active.forEach(obj=>{
-      const x = obj.el.offsetLeft - GAME_CONFIG.speed;
-      obj.el.style.left = x + "px";
+      obj.el.style.left = (obj.el.offsetLeft - GAME_CONFIG.speed) + "px";
       checkCollision(obj);
     });
   }
@@ -525,16 +437,14 @@ function restart(){
 
   initState();
   updateHUD();
-  player.style.top = Math.round(scene.clientHeight/2) + "px";
+  player.style.top = "50%";
   spawnAnswersForQuestion();
   loop();
 }
 
-// controls
-window.addEventListener("keydown", (e)=>{ keys[e.key]=true; });
-window.addEventListener("keyup", (e)=>{ keys[e.key]=false; });
+window.addEventListener("keydown",(e)=>keys[e.key]=true);
+window.addEventListener("keyup",(e)=>keys[e.key]=false);
 
-// start
 initState();
 updateHUD();
 player.style.top = "50%";
