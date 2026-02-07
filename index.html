@@ -146,9 +146,9 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">v25: кнопка «Применить к предпросмотру» + iframe по применённым настройкам.</div>
+        <div class="sub">v26: сенсор + анимации попаданий + парение/наклон + фон + конфетти/тинт.</div>
       </div>
-      <div class="badge">v25 • one-file</div>
+      <div class="badge">v26 • one-file</div>
     </div>
 
     <div class="content">
@@ -213,6 +213,21 @@
             <input id="hudPanelColor" type="color" value="#0f0f19" />
           </div>
         </div>
+      </div>
+
+      <div class="section">
+        <h3>Обратная связь</h3>
+        <div class="grid">
+          <div>
+            <label>Фраза за правильный ответ</label>
+            <input id="feedbackCorrect" type="text" placeholder="Верно!" />
+          </div>
+          <div>
+            <label>Фраза за неправильный ответ</label>
+            <input id="feedbackWrong" type="text" placeholder="Неверно!" />
+          </div>
+        </div>
+        <div class="hint">Эти фразы будут появляться в игре при попадании.</div>
       </div>
 
       <div class="section">
@@ -377,6 +392,7 @@
             <input id="playerSpeed" type="number" min="3" max="18" value="7" />
           </div>
         </div>
+        <div class="hint">Управление: клавиши ↑/↓ или сенсор (перетаскивание пальцем по экрану).</div>
       </div>
 
       <div class="section">
@@ -486,6 +502,19 @@ const DEFAULT_CFG = {
   cooldownTurns: 3,
   playerSpeed: 7,
 
+  /* === ваши запросы (анимации/эффекты) === */
+  feedbackCorrect: "Верно!",
+  feedbackWrong: "Неверно!",
+
+  playerTiltMax: 18,
+  playerTiltSmooth: 0.18,
+
+  bgScrollFactor: 0.35,
+  bgParallaxY: 18,
+
+  winConfetti: true,
+  loseRedTint: 0.10,
+
   difficulty: {
     easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
     medium: { speed: 3.2, spawnEveryMs:  900, minXGap: 200, maxOnScreen: 5 },
@@ -569,6 +598,9 @@ function startEditorMode(){
     scoreSize: document.getElementById("scoreSize"),
     livesSize: document.getElementById("livesSize"),
 
+    feedbackCorrect: document.getElementById("feedbackCorrect"),
+    feedbackWrong: document.getElementById("feedbackWrong"),
+
     fxShadow: document.getElementById("fxShadow"),
     fxNeon: document.getElementById("fxNeon"),
     fxStroke: document.getElementById("fxStroke"),
@@ -625,8 +657,8 @@ function startEditorMode(){
 
   els.baseUrl.value = location.origin + location.pathname;
 
-  let cfgDraft = deepClone(DEFAULT_CFG);     // текущие изменения в форме
-  let cfgApplied = deepClone(DEFAULT_CFG);   // последняя применённая конфигурация (для предпросмотра/iframe)
+  let cfgDraft = deepClone(DEFAULT_CFG);
+  let cfgApplied = deepClone(DEFAULT_CFG);
 
   function syncPair(rangeEl, numberEl, v){
     rangeEl.value = String(v);
@@ -648,6 +680,9 @@ function startEditorMode(){
     els.hudPanelColor.value = cfgDraft.hudPanelColor;
     els.scoreSize.value = cfgDraft.scoreSize;
     els.livesSize.value = cfgDraft.livesSize;
+
+    els.feedbackCorrect.value = cfgDraft.feedbackCorrect || "Верно!";
+    els.feedbackWrong.value = cfgDraft.feedbackWrong || "Неверно!";
 
     els.fxShadow.checked = !!cfgDraft.fxShadow;
     els.fxNeon.checked = !!cfgDraft.fxNeon;
@@ -816,6 +851,9 @@ function startEditorMode(){
     cfgDraft.scoreSize = Number(els.scoreSize.value || 24);
     cfgDraft.livesSize = Number(els.livesSize.value || 24);
 
+    cfgDraft.feedbackCorrect = els.feedbackCorrect.value || "Верно!";
+    cfgDraft.feedbackWrong = els.feedbackWrong.value || "Неверно!";
+
     cfgDraft.fxShadow = els.fxShadow.checked;
     cfgDraft.fxNeon = els.fxNeon.checked;
     cfgDraft.fxStroke = els.fxStroke.checked;
@@ -871,7 +909,7 @@ function startEditorMode(){
   }
 
   function updateSilent(){
-    readUIIntoDraft(); // только обновляем draft, не трогаем iframe
+    readUIIntoDraft();
   }
 
   function applyPreview(){
@@ -880,12 +918,12 @@ function startEditorMode(){
     els.previewFrame.src = buildPlayUrl(cfgApplied);
   }
 
-  // bindings (silent)
   const bindInputs = [
     els.baseUrl, els.fontFamily, els.fontWeight,
     els.questionSize, els.questionColor,
     els.hudTextColor, els.hudPanelColor,
     els.scoreSize, els.livesSize,
+    els.feedbackCorrect, els.feedbackWrong,
     els.fxShadow, els.fxNeon, els.fxStroke, els.fxStrokeNeon,
     els.fxToQuestion, els.fxToHud, els.fxToAnswers, els.fxToPoints,
     els.fxColor, els.fxStrength, els.strokeWidth, els.strokeColor,
@@ -899,7 +937,6 @@ function startEditorMode(){
     el.addEventListener("change", updateSilent);
   });
 
-  // range/number pairs (silent)
   pairBind(els.answerImgOpacityR, els.answerImgOpacity, updateSilent);
   pairBind(els.answerImgScaleR, els.answerImgScale, updateSilent);
   pairBind(els.answerImgBlurR, els.answerImgBlur, updateSilent);
@@ -934,10 +971,8 @@ function startEditorMode(){
     applyPreview();
   };
 
-  // APPLY preview button
   els.applyPreviewBtn.onclick = ()=>{ applyPreview(); };
 
-  // generate iframe ALWAYS from applied cfg (or apply if never applied)
   els.genIframeBtn.onclick = ()=>{
     if(!cfgApplied) applyPreview();
     const src = buildPlayUrl(cfgApplied);
@@ -960,11 +995,10 @@ function startEditorMode(){
     }
   };
 
-  // init
   cfgToUI();
   renderQuestions();
   updateSilent();
-  applyPreview(); // первый предпросмотр (по дефолту)
+  applyPreview();
 }
 
 /* ================= GAME ================= */
@@ -996,6 +1030,15 @@ function normalizeCfg(cfg){
   out.answerImgPosX = clampNum(out.answerImgPosX, 0, 100, 50);
   out.answerImgPosY = clampNum(out.answerImgPosY, 0, 100, 50);
 
+  out.feedbackCorrect = String(out.feedbackCorrect || "Верно!");
+  out.feedbackWrong = String(out.feedbackWrong || "Неверно!");
+  out.playerTiltMax = clampNum(out.playerTiltMax, 0, 35, 18);
+  out.playerTiltSmooth = clampNum(out.playerTiltSmooth, 0.01, 0.6, 0.18);
+  out.bgScrollFactor = clampNum(out.bgScrollFactor, 0, 1.5, 0.35);
+  out.bgParallaxY = clampNum(out.bgParallaxY, 0, 60, 18);
+  out.winConfetti = out.winConfetti !== false;
+  out.loseRedTint = clampNum(out.loseRedTint, 0, 0.25, 0.10);
+
   out.lives = out.livesCount;
   return out;
 }
@@ -1019,11 +1062,32 @@ function startGameMode(){
   root.innerHTML = `
     <style>
       html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;}
-      #wrap{position:relative;width:100%;height:100%;background:transparent;}
-      #bg{
-        position:absolute; inset:0; z-index:0;
+      #wrap{position:relative;width:100%;height:100%;background:transparent;touch-action:none;}
+
+      #bg{position:absolute; inset:0; z-index:0; overflow:hidden; background:transparent;}
+      #bgLayer{
+        position:absolute; inset:-40px;
         background: ${CFG.transparentBg ? "transparent" : (CFG.bgImg ? `url('${cssUrl(CFG.bgImg)}') center/cover no-repeat` : "transparent")};
+        transform: translate(0px,0px) scale(1.05);
+        will-change: transform;
       }
+
+      #loseTint{
+        position:absolute; inset:0;
+        background: rgba(255, 60, 60, ${clampNum(CFG.loseRedTint,0,0.25,0.10)});
+        opacity: 0;
+        pointer-events:none;
+        z-index: 200;
+        transition: opacity .35s ease;
+      }
+      #loseTint.on{ opacity: 1; }
+
+      #fxCanvas{
+        position:absolute; inset:0;
+        z-index: 260;
+        pointer-events:none;
+      }
+
       #game{position:absolute; inset:0; z-index:1; font-family:${escapeCss(CFG.fontFamily)};}
 
       #topbar{
@@ -1079,12 +1143,31 @@ function startGameMode(){
 
       #player{
         left:92px; top:50%;
-        transform:translate(-50%,-50%);
+        transform:translate(-50%,-50%) rotate(var(--tilt, 0deg));
+        transform-origin: 50% 50%;
+        transition: transform 0.08s linear;
         background: rgba(120,90,255,.22);
         border: 1px solid rgba(120,90,255,.40);
         box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
         overflow:hidden;
       }
+      #playerInner{
+        width:100%;height:100%;
+        animation: playerBob 1.15s ease-in-out infinite;
+      }
+      @keyframes playerBob{
+        0%{ transform: translateY(0px) scale(1); }
+        50%{ transform: translateY(-6px) scale(1); }
+        100%{ transform: translateY(0px) scale(1); }
+      }
+      /* попадание в правильный => игрок слегка увеличивается */
+      #player.okPulse #playerInner{ animation: okPulse .26s ease-out 1; }
+      @keyframes okPulse{
+        0%{ transform: translateY(-2px) scale(1); }
+        60%{ transform: translateY(-8px) scale(1.10); }
+        100%{ transform: translateY(-2px) scale(1); }
+      }
+
       #player .img{
         width:100%;height:100%;
         background-size:cover;background-position:center;
@@ -1103,6 +1186,19 @@ function startGameMode(){
         text-align:center;gap:6px;
         overflow:hidden;
       }
+
+      /* попадание в ошибку => вариант мигает */
+      .answer.blinkBad{
+        animation: badBlink .22s ease-in-out 2;
+        border-color: rgba(255,107,107,.85);
+        box-shadow: 0 16px 55px rgba(0,0,0,.35), 0 0 26px rgba(255,107,107,.35);
+      }
+      @keyframes badBlink{
+        0%{ filter:none; transform: translate(-50%,-50%) scale(1); }
+        50%{ filter: brightness(1.25); transform: translate(-50%,-50%) scale(1.06); }
+        100%{ filter:none; transform: translate(-50%,-50%) scale(1); }
+      }
+
       .answer .img{
         position:absolute; inset:0;
         background-image: ${CFG.answerImg ? `url('${cssUrl(CFG.answerImg)}')` : "none"};
@@ -1262,7 +1358,10 @@ function startGameMode(){
     </style>
 
     <div id="wrap">
-      <div id="bg"></div>
+      <div id="bg"><div id="bgLayer"></div></div>
+      <div id="loseTint"></div>
+      <canvas id="fxCanvas"></canvas>
+
       <div id="game">
         <div id="topbar">
           <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
@@ -1272,7 +1371,11 @@ function startGameMode(){
         <div id="questionWrap"><div id="questionBox">—</div></div>
 
         <div id="scene">
-          <div class="orb" id="player"><div class="img" id="playerImg"></div></div>
+          <div class="orb" id="player">
+            <div id="playerInner">
+              <div class="img" id="playerImg"></div>
+            </div>
+          </div>
         </div>
 
         <div id="feedback"></div>
@@ -1287,7 +1390,7 @@ function startGameMode(){
         <div id="startOverlay" class="overlay show">
           <div class="card">
             <h2>Задача игрока</h2>
-            <p>Лови <b>правильный ответ</b> на вопрос сверху. Управление: <b>↑</b> / <b>↓</b>.</p>
+            <p>Лови <b>правильный ответ</b> на вопрос сверху. Управление: <b>↑</b>/<b>↓</b> или <b>сенсор</b> (веди пальцем по экрану).</p>
             <div class="row">
               <div class="chips">
                 <div class="chipBtn active" data-level="easy">Лёгкий</div>
@@ -1332,12 +1435,105 @@ function startGameMode(){
   const finalText = root.querySelector("#finalText");
   const playAgainBtn = root.querySelector("#playAgainBtn");
 
+  const bgLayer = root.querySelector("#bgLayer");
+  const loseTint = root.querySelector("#loseTint");
+
+  const fxCanvas = root.querySelector("#fxCanvas");
+  const fxCtx = fxCanvas ? fxCanvas.getContext("2d") : null;
+
   if(CFG.playerImg) playerImg.style.backgroundImage = `url('${cssUrl(CFG.playerImg)}')`;
 
-  let keys = {};
-  let state = null;
-  let pendingTimer = null;
+  /* ======== confetti ======== */
+  function resizeFx(){
+    if(!fxCanvas) return;
+    fxCanvas.width = Math.floor(root.clientWidth * devicePixelRatio);
+    fxCanvas.height = Math.floor(root.clientHeight * devicePixelRatio);
+    fxCanvas.style.width = root.clientWidth + "px";
+    fxCanvas.style.height = root.clientHeight + "px";
+    if(fxCtx) fxCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  window.addEventListener("resize", resizeFx);
+  resizeFx();
 
+  let confetti = [];
+  let confettiUntil = 0;
+
+  function startConfetti(ms=2600){
+    if(!fxCtx || !CFG.winConfetti) return;
+    resizeFx();
+    confetti = [];
+    const W = root.clientWidth, H = root.clientHeight;
+    for(let i=0;i<150;i++){
+      confetti.push({
+        x: Math.random()*W,
+        y: -20 - Math.random()*H*0.25,
+        vx: -1.2 + Math.random()*2.4,
+        vy: 2.4 + Math.random()*3.6,
+        r: 2 + Math.random()*4,
+        a: Math.random()*Math.PI*2,
+        va: -0.25 + Math.random()*0.5,
+        life: 900 + Math.random()*1600
+      });
+    }
+    confettiUntil = performance.now() + ms;
+  }
+
+  function drawConfetti(now){
+    if(!fxCtx) return;
+    fxCtx.clearRect(0,0,root.clientWidth,root.clientHeight);
+    if(now > confettiUntil) return;
+
+    const W = root.clientWidth, H = root.clientHeight;
+    for(const p of confetti){
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a += p.va;
+      p.vy += 0.02;
+      p.life -= 16;
+
+      if(p.y > H+40) { p.y = -20; p.x = Math.random()*W; p.vy = 2.4 + Math.random()*3.6; }
+
+      fxCtx.save();
+      fxCtx.translate(p.x, p.y);
+      fxCtx.rotate(p.a);
+      fxCtx.globalAlpha = Math.max(0, Math.min(1, p.life/900));
+      fxCtx.fillRect(-p.r, -p.r*0.6, p.r*2, p.r*1.2);
+      fxCtx.restore();
+    }
+  }
+
+  /* ======== input (keyboard + touch) ======== */
+  let keys = {};
+  let touchActive = false;
+  let touchTargetY = null; // в координатах scene (px)
+
+  function sceneYFromClientY(clientY){
+    const sr = scene.getBoundingClientRect();
+    return clientY - sr.top;
+  }
+
+  // Сенсор: ведём пальцем по экрану => целимся в Y
+  scene.addEventListener("pointerdown", (e)=>{
+    touchActive = true;
+    touchTargetY = sceneYFromClientY(e.clientY);
+    try{ scene.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  scene.addEventListener("pointermove", (e)=>{
+    if(!touchActive) return;
+    touchTargetY = sceneYFromClientY(e.clientY);
+  });
+  function endTouch(){
+    touchActive = false;
+    touchTargetY = null;
+  }
+  scene.addEventListener("pointerup", endTouch);
+  scene.addEventListener("pointercancel", endTouch);
+  scene.addEventListener("pointerleave", endTouch);
+
+  // Чтобы страница не прокручивалась на планшете при свайпе
+  window.addEventListener("touchmove", (e)=>{ if(mode==="play") e.preventDefault(); }, {passive:false});
+
+  /* ======== audio ======== */
   let audioCtx = null, unlocked = false;
   function ensureAudio(){ if(audioCtx) return; const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return; audioCtx = new Ctx(); }
   async function unlockAudio(){ ensureAudio(); if(!audioCtx) return; if(audioCtx.state==="suspended"){ try{await audioCtx.resume();}catch(e){} } unlocked = true; }
@@ -1359,6 +1555,9 @@ function startGameMode(){
   function soundWin(){ [523,659,784,988,784,988,1175].forEach((f,i)=>setTimeout(()=>tone(f,0.12,"sine"), i*120)); }
   function soundLose(){ [392,330,294,262].forEach((f,i)=>setTimeout(()=>tone(f,0.18,"triangle"), i*160)); }
 
+  let state = null;
+  let pendingTimer = null;
+
   function clearPending(){ if(pendingTimer!==null){ clearTimeout(pendingTimer); pendingTimer=null; } }
   function showOverlay(el, on){ if(on) el.classList.add("show"); else el.classList.remove("show"); }
   function preset(level){ return CFG.difficulty[level] || CFG.difficulty.easy; }
@@ -1375,6 +1574,10 @@ function startGameMode(){
       spawnEveryMs:preset("easy").spawnEveryMs,
       minXGap:preset("easy").minXGap,
       maxOnScreen:preset("easy").maxOnScreen,
+
+      bgX: 0,
+      tilt: 0,
+      lastPlayerY: null,
     };
   }
   function applyDifficulty(level){
@@ -1491,7 +1694,7 @@ function startGameMode(){
     feedback.textContent = text;
     feedback.style.color = ok ? "#4cff9e" : "#ff6b6b";
     feedback.classList.add("show");
-    setTimeout(()=>feedback.classList.remove("show"), 340);
+    setTimeout(()=>feedback.classList.remove("show"), 360);
   }
   function showPointsPop(x,y,points){
     const pop = document.createElement("div");
@@ -1510,6 +1713,13 @@ function startGameMode(){
     clearAnswers();
     updateHUD();
     win ? soundWin() : soundLose();
+
+    if(win) startConfetti(2600);
+    if(!win && loseTint){
+      loseTint.classList.add("on");
+      setTimeout(()=>loseTint.classList.remove("on"), 700);
+    }
+
     finalTitle.textContent = win ? "🎉 Молодец!" : "😢 Попробуй ещё";
     finalText.textContent = win ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
                                 : `Жизни закончились. Очки: ${state.score}.`;
@@ -1541,6 +1751,14 @@ function startGameMode(){
     state.lastSpawnAt = performance.now();
   }
 
+  function pulsePlayerOk(){
+    player.classList.remove("okPulse");
+    // reflow
+    void player.offsetWidth;
+    player.classList.add("okPulse");
+    setTimeout(()=>player.classList.remove("okPulse"), 350);
+  }
+
   function handleHit(correct, hitX, hitY){
     if(state.locked || state.phase!=="playing") return;
     state.locked = true;
@@ -1550,8 +1768,9 @@ function startGameMode(){
     if(correct){
       state.score += CFG.pointsPerCorrect;
       showPointsPop(hitX, hitY, CFG.pointsPerCorrect);
-      showFeedback("Верно", true);
+      showFeedback(CFG.feedbackCorrect || "Верно!", true);
       soundOk();
+      pulsePlayerOk();
 
       const idx = state.currentIdx;
       state.remaining = state.remaining.filter(x => x!==idx);
@@ -1562,8 +1781,9 @@ function startGameMode(){
       }, 420);
     }else{
       state.lives--;
-      showFeedback("Неверно", false);
+      showFeedback(CFG.feedbackWrong || "Неверно!", false);
       soundBad();
+
       pendingTimer = setTimeout(()=>{
         pendingTimer=null;
         state.lives<=0 ? endGame(false) : chooseNextQuestion();
@@ -1577,13 +1797,26 @@ function startGameMode(){
     const a = obj.el.getBoundingClientRect();
     const p = player.getBoundingClientRect();
     const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
-    if(overlap){
-      obj.hit = true;
-      const sr = scene.getBoundingClientRect();
-      const hitX = (a.left+a.right)/2 - sr.left;
-      const hitY = (a.top+a.bottom)/2 - sr.top;
+    if(!overlap) return;
+
+    obj.hit = true;
+    const sr = scene.getBoundingClientRect();
+    const hitX = (a.left+a.right)/2 - sr.left;
+    const hitY = (a.top+a.bottom)/2 - sr.top;
+
+    const isCorrect = (obj.data.correct===true);
+
+    if(isCorrect){
+      // удаляем сразу и считаем
       obj.el.remove();
-      handleHit(obj.data.correct===true, hitX, hitY);
+      handleHit(true, hitX, hitY);
+    }else{
+      // неверный вариант: мигнёт, потом исчезнет
+      obj.el.classList.add("blinkBad");
+      setTimeout(()=>{
+        if(obj.el && obj.el.isConnected) obj.el.remove();
+        handleHit(false, hitX, hitY);
+      }, 180);
     }
   }
 
@@ -1599,6 +1832,7 @@ function startGameMode(){
     state.currentIdx = pickNextQuestionWithCooldown();
     state.lastSpawnAt = performance.now();
     player.style.top="50%";
+    state.lastPlayerY = null;
     updateHUD();
   }
 
@@ -1620,10 +1854,46 @@ function startGameMode(){
   function loop(now){
     if(state.phase==="playing"){
       let y = player.offsetTop;
-      if(keys.ArrowUp) y -= CFG.playerSpeed;
-      if(keys.ArrowDown) y += CFG.playerSpeed;
+
+      // keyboard (если сенсор не активен)
+      if(!touchActive){
+        if(keys.ArrowUp) y -= CFG.playerSpeed;
+        if(keys.ArrowDown) y += CFG.playerSpeed;
+      }else{
+        // touch: двигаемся к целевой точке
+        if(touchTargetY !== null){
+          const target = touchTargetY - player.clientHeight/2;
+          const diff = target - y;
+          // скорость адаптивная: базовая + чуть быстрее при большом расстоянии
+          const step = Math.sign(diff) * Math.min(Math.abs(diff), CFG.playerSpeed * 1.6);
+          y += step;
+        }
+      }
+
       y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
       player.style.top = y + "px";
+
+      // === наклон игрока от направления ===
+      if(state.lastPlayerY === null) state.lastPlayerY = y;
+      const dy = y - state.lastPlayerY; // >0 вниз, <0 вверх
+      state.lastPlayerY = y;
+
+      const tiltMax = clampNum(CFG.playerTiltMax, 0, 35, 18);
+      const targetTilt = clampNum(dy * 1.6, -tiltMax, tiltMax, 0);
+      const smooth = clampNum(CFG.playerTiltSmooth, 0.01, 0.6, 0.18);
+      state.tilt = state.tilt + (targetTilt - state.tilt) * smooth;
+      player.style.setProperty("--tilt", state.tilt.toFixed(2) + "deg");
+
+      // === фон двигается (если есть фон и не transparent) ===
+      if(bgLayer && !CFG.transparentBg && CFG.bgImg){
+        const factor = clampNum(CFG.bgScrollFactor, 0, 1.5, 0.35);
+        state.bgX -= state.speed * factor;
+        const sceneH = Math.max(1, scene.clientHeight);
+        const t = (y / sceneH) - 0.5; // -0.5..0.5
+        const parY = clampNum(CFG.bgParallaxY, 0, 60, 18);
+        const bgY = (-t) * parY;
+        bgLayer.style.transform = `translate(${state.bgX.toFixed(2)}px, ${bgY.toFixed(2)}px) scale(1.05)`;
+      }
 
       maybeSpawn(now);
 
@@ -1641,6 +1911,8 @@ function startGameMode(){
         state.active = next;
       }
     }
+
+    drawConfetti(now);
     requestAnimationFrame(loop);
   }
 
