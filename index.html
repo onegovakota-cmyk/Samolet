@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Answer v2</title>
+<title>Catch the Answer v3</title>
 
 <style>
   :root{
@@ -26,7 +26,7 @@
     --bad:  #ff6b6b;
 
     /* игрок и ответы одного размера */
-    --size: 58px;
+    --size: 64px;
   }
 
   html,body{
@@ -38,13 +38,12 @@
   }
   #game{position:relative;width:100%;height:100%;}
 
-  /* HUD: слева очки, справа жизни */
+  /* HUD */
   #hud{
     position:absolute; top:12px; left:12px; right:12px;
     display:flex; align-items:flex-start; justify-content:space-between;
     gap:12px; z-index:20; pointer-events:none;
   }
-
   .pill{
     background: var(--panel-bg);
     border: 1px solid var(--panel-brd);
@@ -59,7 +58,7 @@
   .pill .label{font-size:12px;color:var(--muted);font-weight:900;letter-spacing:.2px}
   .pill .value{font-size:16px;font-weight:1100}
 
-  /* ВОПРОС: строго по центру сверху в отдельной рамочке */
+  /* Вопрос по центру в рамочке */
   #questionWrap{
     position:absolute; top:12px; left:50%;
     transform:translateX(-50%);
@@ -97,7 +96,7 @@
   }
 
   #player{
-    left:72px;
+    left:78px;
     top:50%;
     transform:translate(-50%,-50%);
     background: rgba(120,90,255,.22);
@@ -117,9 +116,31 @@
     border: 1px solid var(--answer-brd);
     box-shadow: 0 14px 45px rgba(0,0,0,.28);
     color: var(--answer-text);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 6px 8px;
+    box-sizing:border-box;
+    text-align:center;
+  }
+  .answer .lab{
     font-weight:1100;
-    font-size:18px;
-    letter-spacing:.5px;
+    font-size:16px;
+    line-height:1;
+    letter-spacing:.6px;
+    margin-bottom:2px;
+  }
+  .answer .txt{
+    font-weight:900;
+    font-size:10px;
+    line-height:1.1;
+    opacity:.9;
+    max-width: 92px;            /* переносы */
+    display:-webkit-box;
+    -webkit-line-clamp: 2;      /* максимум 2 строки */
+    -webkit-box-orient: vertical;
+    overflow:hidden;
   }
 
   /* +очки */
@@ -176,7 +197,6 @@
     cursor:pointer;
   }
 
-  /* Явный индикатор версии (чтобы увидеть, что код обновился) */
   #version{
     position:absolute; bottom:10px; right:12px;
     font-size:12px; opacity:.55;
@@ -213,10 +233,11 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v2</div>
+  <div id="version">v3</div>
 </div>
 
 <script>
+/* ================= CONFIG (под будущий редактор) ================= */
 const GAME_CONFIG = {
   lives: 3,
   speed: 3.0,
@@ -232,24 +253,31 @@ const GAME_CONFIG = {
   layout: {
     paddingTop: 92,
     paddingBottom: 34,
-    minDistY: 88,
-    startX: 120,
-    xSpreadMin: 110,
-    xSpreadMax: 190,
+    minDistY: 92,
+    startX: 140,
+    xSpreadMin: 130,
+    xSpreadMax: 210,
   },
 
   questions: [
     { q: "Столица Франции?", answers: [
-      { label:"A", correct:false }, { label:"B", correct:true }, { label:"C", correct:false }
+      { label:"A", text:"Париж", correct:true  },
+      { label:"B", text:"Рим",   correct:false },
+      { label:"C", text:"Берлин",correct:false }
     ]},
     { q: "2 + 2 = ?", answers: [
-      { label:"A", correct:false }, { label:"B", correct:true }, { label:"C", correct:false }
+      { label:"A", text:"3", correct:false },
+      { label:"B", text:"4", correct:true  },
+      { label:"C", text:"5", correct:false }
     ]},
     { q: "Где больше: 7 или 9?", answers: [
-      { label:"A", correct:false }, { label:"B", correct:true }, { label:"C", correct:false }
+      { label:"A", text:"7", correct:false },
+      { label:"B", text:"9", correct:true  },
+      { label:"C", text:"равны", correct:false }
     ]},
   ],
 };
+/* ================================================================ */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -295,7 +323,7 @@ function spawnAnswersForQuestion(){
   function pickY(){
     const minY = L.paddingTop;
     const maxY = scene.clientHeight - L.paddingBottom;
-    for(let attempt=0; attempt<40; attempt++){
+    for(let attempt=0; attempt<50; attempt++){
       const y = randInt(minY, maxY);
       if(usedY.every(prev => Math.abs(prev-y) >= L.minDistY)){
         usedY.push(y); return y;
@@ -311,8 +339,19 @@ function spawnAnswersForQuestion(){
   shuffled.forEach((a,i)=>{
     const el = document.createElement("div");
     el.className = "orb answer";
-    el.textContent = a.label;              // ответы одинаковые (только буква)
     el.dataset.correct = a.correct ? "1":"0";
+
+    // ВНУТРИ: буква + текст варианта
+    const lab = document.createElement("div");
+    lab.className = "lab";
+    lab.textContent = a.label;
+
+    const txt = document.createElement("div");
+    txt.className = "txt";
+    txt.textContent = a.text || "";
+
+    el.appendChild(lab);
+    el.appendChild(txt);
 
     const xOffset = i * randInt(L.xSpreadMin, L.xSpreadMax);
     el.style.left = (startX + xOffset) + "px";
