@@ -3,186 +3,330 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Catch the Right Answer</title>
+<title>Catch the Answer</title>
 
 <style>
-html,body{
-  margin:0;height:100%;
-  background:#0b0b14;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:#fff;overflow:hidden;
-}
-#game{position:relative;width:100%;height:100%;}
-#hud{
-  position:absolute;top:0;left:0;right:0;
-  padding:12px 16px;
-  display:flex;justify-content:space-between;align-items:center;
-  z-index:10;
-  background:linear-gradient(to bottom, rgba(0,0,0,.65), transparent);
-}
-#question{font-weight:1000;max-width:70vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#stats{font-size:14px;opacity:.95;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
-#barWrap{
-  width:180px;height:10px;border-radius:999px;
-  background:rgba(255,255,255,.12);overflow:hidden;
-}
-#bar{height:100%;width:0%;background:rgba(120,90,255,.95);}
-#scene{position:absolute;inset:0;overflow:hidden;}
-.player{
-  position:absolute;left:60px;top:50%;
-  width:44px;height:44px;border-radius:50%;
-  background:#7b4dff;transform:translateY(-50%);
-  box-shadow:0 0 18px rgba(123,77,255,.55);
-}
-.answer{
-  position:absolute;
-  width:78px;height:78px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  font-weight:1000;font-size:20px;color:#000;
-  box-shadow:0 10px 25px rgba(0,0,0,.28);
-  user-select:none;
-}
-.answer .t{
-  font-size:11px;font-weight:900;opacity:.82;margin-top:2px;
-  max-width:70px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.answer.correct{ background:#4cff9e; }
-.answer.wrong{ background:#ff6b6b; }
+  :root{
+    --bg: transparent;
+    --text: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.72);
 
-#feedback{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:36px;font-weight:1100;
-  pointer-events:none;opacity:0;
-  transition:.18s;
-  z-index:15;
-}
-#feedback.show{ opacity:1; }
+    --panel-bg: rgba(10,10,20,.55);
+    --panel-brd: rgba(255,255,255,.14);
+    --shadow: 0 14px 50px rgba(0,0,0,.35);
 
-/* +points pop */
-.pop{
-  position:absolute;
-  font-weight:1100;
-  font-size:22px;
-  pointer-events:none;
-  text-shadow:0 10px 25px rgba(0,0,0,.45);
-  transform:translate(-50%,-50%);
-  animation: popUp .75s ease-out forwards;
-  z-index:16;
-}
-@keyframes popUp{
-  0%   { opacity:0; transform:translate(-50%,-50%) scale(.9); }
-  15%  { opacity:1; transform:translate(-50%,-58%) scale(1.05); }
-  100% { opacity:0; transform:translate(-50%,-95%) scale(1.0); }
-}
+    --accent: rgba(120,90,255,.95);
+    --answer: rgba(255,255,255,.16);   /* одинаковый цвет для всех ответов */
+    --answer-brd: rgba(255,255,255,.18);
+    --answer-text: rgba(255,255,255,.92);
 
-#final{
-  position:absolute;inset:0;
-  background:rgba(0,0,0,.82);
-  display:none;align-items:center;justify-content:center;flex-direction:column;
-  gap:16px;z-index:20;text-align:center;padding:20px;
-}
-#final.show{ display:flex; }
-button{
-  padding:10px 16px;border-radius:12px;border:none;
-  font-weight:1000;cursor:pointer;
-}
-.small{font-size:12px;opacity:.75;max-width:560px;line-height:1.4}
+    --good: #4cff9e;
+    --bad:  #ff6b6b;
+
+    --size: 58px;      /* игрок и ответы одного размера */
+    --radius: 18px;
+  }
+
+  html,body{
+    margin:0;height:100%;
+    background: var(--bg) !important;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    overflow:hidden;
+  }
+
+  #game{position:relative;width:100%;height:100%;}
+
+  /* HUD */
+  #hud{
+    position:absolute;
+    top:12px; left:12px; right:12px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    z-index:20;
+    pointer-events:none;
+  }
+
+  /* Score box (left-top) */
+  .scoreBox{
+    pointer-events:none;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-brd);
+    border-radius: 999px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display:flex;
+    gap:10px;
+    align-items:center;
+    min-width: 110px;
+  }
+  .scoreBox .label{
+    font-size:12px;
+    color: var(--muted);
+    font-weight:900;
+    letter-spacing:.2px;
+  }
+  .scoreBox .value{
+    font-size:16px;
+    font-weight:1100;
+    color: var(--text);
+  }
+
+  /* Lives (right-top, minimal) */
+  .livesBox{
+    pointer-events:none;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-brd);
+    border-radius: 999px;
+    padding: 10px 12px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size:14px;
+    font-weight:1000;
+    color: var(--text);
+    white-space:nowrap;
+  }
+
+  /* Question centered */
+  #questionWrap{
+    position:absolute;
+    top:12px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:21;
+    pointer-events:none;
+    max-width:min(860px, calc(100% - 24px));
+  }
+  #questionBox{
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-brd);
+    border-radius: 999px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-align:center;
+    font-weight:1000;
+    font-size:14px;
+    letter-spacing:.2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* Scene */
+  #scene{position:absolute; inset:0; overflow:hidden;}
+
+  /* Player + Answers */
+  .orb{
+    position:absolute;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    user-select:none;
+  }
+
+  #player{
+    left:72px;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background: rgba(120,90,255,.22);
+    border: 1px solid rgba(120,90,255,.35);
+    box-shadow: 0 12px 35px rgba(0,0,0,.25), 0 0 22px rgba(120,90,255,.25);
+  }
+  #player:before{
+    content:"";
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.85);
+    box-shadow: 0 0 12px rgba(255,255,255,.25);
+  }
+
+  .answer{
+    background: var(--answer);
+    border: 1px solid var(--answer-brd);
+    box-shadow: 0 14px 45px rgba(0,0,0,.28);
+    color: var(--answer-text);
+    font-weight:1100;
+    font-size:18px;
+    letter-spacing:.5px;
+  }
+
+  /* Pop +points */
+  .pop{
+    position:absolute;
+    font-weight:1100;
+    font-size:18px;
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    text-shadow: 0 14px 30px rgba(0,0,0,.5);
+    animation: popUp .78s ease-out forwards;
+    z-index:30;
+  }
+  @keyframes popUp{
+    0%   { opacity:0; transform:translate(-50%,-50%) scale(.9); filter:blur(.2px); }
+    15%  { opacity:1; transform:translate(-50%,-62%) scale(1.05); filter:blur(0); }
+    100% { opacity:0; transform:translate(-50%,-105%) scale(1.0); }
+  }
+
+  /* Feedback center (subtle) */
+  #feedback{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:30px; font-weight:1100;
+    pointer-events:none;
+    opacity:0;
+    transition:.18s;
+    z-index:25;
+  }
+  #feedback.show{ opacity:1; }
+
+  /* Final overlay */
+  #final{
+    position:absolute; inset:0;
+    background: rgba(0,0,0,.78);
+    display:none;
+    align-items:center; justify-content:center;
+    flex-direction:column;
+    gap:14px;
+    z-index:40;
+    text-align:center;
+    padding:20px;
+  }
+  #final.show{ display:flex; }
+  #final h1{ margin:0; font-size:30px; }
+  #final .small{ opacity:.8; max-width:560px; line-height:1.4; font-size:13px; }
+  #final button{
+    pointer-events:auto;
+    padding:10px 16px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.10);
+    color: rgba(255,255,255,.92);
+    font-weight:1000;
+    cursor:pointer;
+  }
+  #final button:hover{ background: rgba(255,255,255,.14); }
+
+  /* tiny hint bottom (optional) */
+  #hint{
+    position:absolute;
+    left:50%;
+    bottom:10px;
+    transform:translateX(-50%);
+    font-size:12px;
+    opacity:.55;
+    pointer-events:none;
+    z-index:5;
+  }
 </style>
 </head>
 
 <body>
 <div id="game">
+
   <div id="hud">
-    <div id="question"></div>
-    <div id="stats">
-      <div id="count"></div>
-      <div id="score"></div>
-      <div id="lives"></div>
-      <div id="barWrap"><div id="bar"></div></div>
+    <div class="scoreBox">
+      <div class="label">Очки</div>
+      <div class="value" id="score">0</div>
     </div>
+
+    <div class="livesBox" id="lives">❤️❤️❤️</div>
+  </div>
+
+  <div id="questionWrap">
+    <div id="questionBox">—</div>
   </div>
 
   <div id="scene">
-    <div class="player" id="player" title="⬆/⬇"></div>
+    <div class="orb" id="player"></div>
   </div>
 
   <div id="feedback"></div>
 
   <div id="final">
-    <h1 id="finalText"></h1>
-    <div class="small" id="finalSub"></div>
+    <h1 id="finalTitle">—</h1>
+    <div class="small" id="finalText"></div>
     <button onclick="restart()">Играть ещё</button>
   </div>
+
+  <div id="hint">⬆ / ⬇ чтобы двигаться</div>
 </div>
 
 <script>
-// ================= CONFIG (под будущий редактор) =================
+/* ================= CONFIG (под будущий редактор) ================= */
 const GAME_CONFIG = {
   lives: 3,
-  speed: 2.8,          // скорость движения ответов влево
-  playerSpeed: 7,      // скорость игрока вверх/вниз
-  feedbackMs: 450,     // пауза фидбека перед сменой вопроса
+  speed: 3.0,
+  playerSpeed: 7,
+  feedbackMs: 420,
 
   scoring: {
-    pointsPerCorrect: 10, // ✅ сколько очков за правильный ответ
-    showPop: true,        // ✅ показывать “+N”
-    popColor: "#4cff9e",  // цвет “+N”
+    pointsPerCorrect: 10,
+    popColor: "#4cff9e",
+    popText: (pts)=>`+${pts}`, // на будущее под локализацию
   },
 
   layout: {
-    paddingTop: 110,   // чтобы не залезали под HUD
-    paddingBottom: 40,
-    minDistY: 95,      // минимум расстояния между ответами по Y
-    startX: 80,        // стартовая дистанция за правым краем
-    xSpreadMin: 90,    // разнос по X между A/B/C
-    xSpreadMax: 170,
+    paddingTop: 92,    // учитываем HUD/вопрос
+    paddingBottom: 34,
+    minDistY: 88,
+    startX: 120,
+    xSpreadMin: 110,
+    xSpreadMax: 190,
   },
 
+  // вопросы/ответы. correct скрыт визуально, используется логикой.
   questions: [
     {
       q: "Столица Франции?",
       answers: [
-        { label:"A", text:"Париж",  correct:true  },
-        { label:"B", text:"Рим",    correct:false },
-        { label:"C", text:"Берлин", correct:false }
+        { label:"A", correct:false },
+        { label:"B", correct:true  },
+        { label:"C", correct:false }
       ]
     },
     {
       q: "2 + 2 = ?",
       answers: [
-        { label:"A", text:"3", correct:false },
-        { label:"B", text:"4", correct:true  },
-        { label:"C", text:"5", correct:false }
+        { label:"A", correct:false },
+        { label:"B", correct:true  },
+        { label:"C", correct:false }
       ]
     },
     {
       q: "Где больше: 7 или 9?",
       answers: [
-        { label:"A", text:"7", correct:false },
-        { label:"B", text:"9", correct:true  },
-        { label:"C", text:"равны", correct:false }
+        { label:"A", correct:false },
+        { label:"B", correct:true  },
+        { label:"C", correct:false }
       ]
     },
   ],
 };
-// =================================================================
+/* ================================================================ */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
-const questionEl = document.getElementById("question");
-const countEl = document.getElementById("count");
+const questionBox = document.getElementById("questionBox");
 const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
-const barEl = document.getElementById("bar");
 const feedback = document.getElementById("feedback");
 const final = document.getElementById("final");
+const finalTitle = document.getElementById("finalTitle");
 const finalText = document.getElementById("finalText");
-const finalSub = document.getElementById("finalSub");
 
 let keys = {};
 let raf = null;
-
 let state = null;
 
 function initState(){
@@ -200,24 +344,18 @@ function hearts(n){
 }
 
 function updateHUD(){
-  const total = GAME_CONFIG.questions.length;
-  const done = Math.min(state.qIndex, total);
-  const pct = total ? Math.round((done / total) * 100) : 0;
+  scoreEl.textContent = String(state.score);
+  livesEl.textContent = hearts(state.lives);
 
-  if(state.qIndex < total){
-    questionEl.textContent = GAME_CONFIG.questions[state.qIndex].q;
+  if(state.qIndex < GAME_CONFIG.questions.length){
+    questionBox.textContent = GAME_CONFIG.questions[state.qIndex].q;
   } else {
-    questionEl.textContent = "";
+    questionBox.textContent = "";
   }
-
-  countEl.textContent = `${done}/${total}`;
-  scoreEl.textContent = `Очки: ${state.score}`;
-  livesEl.textContent = `Жизни: ${hearts(state.lives)}`;
-  barEl.style.width = pct + "%";
 }
 
 function clearAnswers(){
-  state.active.forEach(o => o.el.remove());
+  state.active.forEach(o=>o.el.remove());
   state.active = [];
 }
 
@@ -227,7 +365,6 @@ function randInt(a,b){
 
 function spawnAnswersForQuestion(){
   clearAnswers();
-
   const q = GAME_CONFIG.questions[state.qIndex];
   const L = GAME_CONFIG.layout;
 
@@ -237,42 +374,28 @@ function spawnAnswersForQuestion(){
   function pickY(){
     const minY = L.paddingTop;
     const maxY = scene.clientHeight - L.paddingBottom;
-
     for(let attempt=0; attempt<40; attempt++){
       const y = randInt(minY, maxY);
       const ok = usedY.every(prev => Math.abs(prev - y) >= L.minDistY);
-      if(ok){
-        usedY.push(y);
-        return y;
-      }
+      if(ok){ usedY.push(y); return y; }
     }
     const fallback = randInt(minY, maxY);
     usedY.push(fallback);
     return fallback;
   }
 
+  // перетасуем позиции, чтобы буквы не были всегда сверху/снизу одинаково
   const shuffled = [...q.answers].sort(()=>Math.random()-0.5);
 
   shuffled.forEach((a,i)=>{
     const el = document.createElement("div");
-    el.className = "answer " + (a.correct ? "correct" : "wrong");
-
-    const lab = document.createElement("div");
-    lab.textContent = a.label;
-
-    const t = document.createElement("div");
-    t.className = "t";
-    t.textContent = a.text;
-
-    el.appendChild(lab);
-    el.appendChild(t);
-
+    el.className = "orb answer";
+    el.textContent = a.label;
     el.dataset.correct = a.correct ? "1" : "0";
 
     const xOffset = i * randInt(L.xSpreadMin, L.xSpreadMax);
     el.style.left = (startX + xOffset) + "px";
-
-    el.style.top = pickY() + "px";
+    el.style.top  = pickY() + "px";
     el.style.transform = "translate(-50%,-50%)";
 
     scene.appendChild(el);
@@ -282,21 +405,20 @@ function spawnAnswersForQuestion(){
 
 function showFeedback(text, ok){
   feedback.textContent = text;
-  feedback.style.color = ok ? "#4cff9e" : "#ff6b6b";
+  feedback.style.color = ok ? "var(--good)" : "var(--bad)";
   feedback.classList.add("show");
   setTimeout(()=>feedback.classList.remove("show"), Math.max(120, GAME_CONFIG.feedbackMs - 80));
 }
 
-function showPointsPop(x, y, points){
-  if(!GAME_CONFIG.scoring.showPop) return;
-  const el = document.createElement("div");
-  el.className = "pop";
-  el.textContent = `+${points}`;
-  el.style.color = GAME_CONFIG.scoring.popColor;
-  el.style.left = x + "px";
-  el.style.top = y + "px";
-  scene.appendChild(el);
-  setTimeout(()=>el.remove(), 900);
+function showPointsPop(x,y,points){
+  const pop = document.createElement("div");
+  pop.className = "pop";
+  pop.textContent = GAME_CONFIG.scoring.popText(points);
+  pop.style.color = GAME_CONFIG.scoring.popColor;
+  pop.style.left = x + "px";
+  pop.style.top = y + "px";
+  scene.appendChild(pop);
+  setTimeout(()=>pop.remove(), 900);
 }
 
 function endGame(win){
@@ -305,8 +427,10 @@ function endGame(win){
   updateHUD();
 
   final.classList.add("show");
-  finalText.textContent = win ? "🎉 Вопросы закончились!" : "💀 Жизни закончились!";
-  finalSub.textContent = `Очки: ${state.score}. Правильных: ${Math.round(state.score / GAME_CONFIG.scoring.pointsPerCorrect)}/${GAME_CONFIG.questions.length}.`;
+  finalTitle.textContent = win ? "🎉 Отлично!" : "💀 Игра окончена";
+  const total = GAME_CONFIG.questions.length;
+  const answered = Math.min(state.qIndex, total);
+  finalText.textContent = `Ты прошёл(ла) ${answered}/${total} вопросов. Очки: ${state.score}.`;
 
   if(raf) cancelAnimationFrame(raf);
   raf = null;
@@ -314,12 +438,8 @@ function endGame(win){
 
 function goNextQuestion(){
   state.qIndex++;
-  if(state.lives <= 0){
-    endGame(false); return;
-  }
-  if(state.qIndex >= GAME_CONFIG.questions.length){
-    endGame(true); return;
-  }
+  if(state.lives <= 0){ endGame(false); return; }
+  if(state.qIndex >= GAME_CONFIG.questions.length){ endGame(true); return; }
   state.locked = false;
   updateHUD();
   spawnAnswersForQuestion();
@@ -329,30 +449,31 @@ function handleAnswer(correct, hitX, hitY){
   if(state.locked) return;
   state.locked = true;
 
-  // убираем остальные ответы, чтобы не было повторных столкновений
+  // убрать остальные ответы, чтобы не было повторных попаданий
   clearAnswers();
 
   if(correct){
     const pts = GAME_CONFIG.scoring.pointsPerCorrect;
     state.score += pts;
-    showFeedback("Супер!", true);
+    updateHUD();
     showPointsPop(hitX, hitY, pts);
-  }else{
+    showFeedback("Верно", true);
+  } else {
     state.lives--;
-    scene.animate([{filter:"brightness(1)"},{filter:"brightness(.72)"},{filter:"brightness(1)"}], {duration:220});
+    updateHUD();
+    showFeedback("Неверно", false);
+
+    // лёгкая “вибрация”
     player.animate(
-      [{transform:"translateY(-50%)"},
-       {transform:"translateY(-50%) translateX(-5px)"},
-       {transform:"translateY(-50%) translateX(5px)"},
-       {transform:"translateY(-50%)"}],
+      [{transform:"translate(-50%,-50%)"},
+       {transform:"translate(-50%,-50%) translateX(-4px)"},
+       {transform:"translate(-50%,-50%) translateX(4px)"},
+       {transform:"translate(-50%,-50%)"}],
       {duration:220}
     );
-    showFeedback("Ошибка", false);
   }
 
-  updateHUD();
-
-  // ✅ игра не останавливается — просто следующий вопрос после короткой паузы
+  // игра продолжается
   setTimeout(goNextQuestion, GAME_CONFIG.feedbackMs);
 }
 
@@ -365,10 +486,9 @@ function checkCollision(obj){
 
   if(overlap){
     obj.hit = true;
-
-    // координаты для “+N” (центр столкновения)
-    const hitX = (a.left + a.right) / 2 - scene.getBoundingClientRect().left;
-    const hitY = (a.top + a.bottom) / 2 - scene.getBoundingClientRect().top;
+    const sceneRect = scene.getBoundingClientRect();
+    const hitX = (a.left + a.right)/2 - sceneRect.left;
+    const hitY = (a.top + a.bottom)/2 - sceneRect.top;
 
     obj.el.remove();
     handleAnswer(obj.data.correct === true, hitX, hitY);
@@ -378,14 +498,15 @@ function checkCollision(obj){
 function loop(){
   if(!state) return;
 
-  // движение игрока
-  let top = player.offsetTop;
-  if(keys.ArrowUp) top -= GAME_CONFIG.playerSpeed;
-  if(keys.ArrowDown) top += GAME_CONFIG.playerSpeed;
-  top = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, top));
-  player.style.top = top + "px";
+  // player move
+  const step = GAME_CONFIG.playerSpeed;
+  let y = player.offsetTop;
+  if(keys.ArrowUp) y -= step;
+  if(keys.ArrowDown) y += step;
+  y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
+  player.style.top = y + "px";
 
-  // движение ответов справа налево
+  // answers move
   if(!state.locked){
     state.active.forEach(obj=>{
       const x = obj.el.offsetLeft - GAME_CONFIG.speed;
@@ -403,20 +524,20 @@ function restart(){
   raf = null;
 
   initState();
-  player.style.top = Math.round(scene.clientHeight/2) + "px";
   updateHUD();
+  player.style.top = Math.round(scene.clientHeight/2) + "px";
   spawnAnswersForQuestion();
   loop();
 }
 
-// input
+// controls
 window.addEventListener("keydown", (e)=>{ keys[e.key]=true; });
 window.addEventListener("keyup", (e)=>{ keys[e.key]=false; });
 
 // start
 initState();
-player.style.top = "50%";
 updateHUD();
+player.style.top = "50%";
 spawnAnswersForQuestion();
 loop();
 </script>
