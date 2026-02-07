@@ -38,7 +38,7 @@
       -webkit-backdrop-filter: blur(10px);
     }
     #left{
-      width:min(660px, 56vw);
+      width:min(700px, 58vw);
       min-width:390px;
       display:flex;flex-direction:column;overflow:hidden;
     }
@@ -146,9 +146,9 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">v32: предпросмотр всегда открывает текущий файл • iframe генерируется по baseUrl • управление сенсором • наклон и парение игрока • ответы без подложки (картинка) • ползунки и предпросмотр ответа.</div>
+        <div class="sub">v33: игрок — только картинка (без круга), тень по контуру • авто-предпросмотр (без кнопки) • предпросмотр игрока и ответа • фон бесконечно (repeat-x) + маска для шва.</div>
       </div>
-      <div class="badge">v32 • one-file</div>
+      <div class="badge">v33 • one-file</div>
     </div>
 
     <div class="content">
@@ -335,17 +335,36 @@
             </select>
           </div>
         </div>
+        <div class="hint">Чтобы шва фона не было видно — лучше использовать бесшовную картинку. Я добавил “маску” (лёгкий шум/винигрет), чтобы шов скрывался максимально мягко.</div>
       </div>
 
       <div class="section">
-        <h3>Игрок: размер и тень</h3>
+        <h3>Игрок: размер и тень по контуру</h3>
         <label>Размер игрока (px)</label>
         <div class="rangeRow">
-          <input id="playerSizeR" type="range" min="56" max="180" step="1" value="86" />
-          <input id="playerSize" type="number" min="56" max="180" step="1" value="86" />
+          <input id="playerSizeR" type="range" min="56" max="220" step="1" value="86" />
+          <input id="playerSize" type="number" min="56" max="220" step="1" value="86" />
         </div>
+
+        <div class="grid" style="margin-top:10px;">
+          <div>
+            <label>Тень: сила (0–40)</label>
+            <div class="rangeRow">
+              <input id="playerShadowBlurR" type="range" min="0" max="40" step="1" value="18" />
+              <input id="playerShadowBlur" type="number" min="0" max="40" step="1" value="18" />
+            </div>
+          </div>
+          <div>
+            <label>Тень: прозрачность (0–1)</label>
+            <div class="rangeRow">
+              <input id="playerShadowAlphaR" type="range" min="0" max="1" step="0.05" value="0.35" />
+              <input id="playerShadowAlpha" type="number" min="0" max="1" step="0.05" value="0.35" />
+            </div>
+          </div>
+        </div>
+
         <div class="checkGrid" style="margin-top:10px;">
-          <div class="checkItem"><input id="playerShadow" type="checkbox" /> <span>Тень по контуру игрока</span></div>
+          <div class="checkItem"><input id="playerShadow" type="checkbox" /> <span>Включить тень по контуру картинки</span></div>
         </div>
       </div>
 
@@ -354,8 +373,8 @@
 
         <label>Размер ответа (px)</label>
         <div class="rangeRow">
-          <input id="answerSizeR" type="range" min="56" max="220" step="1" value="86" />
-          <input id="answerSize" type="number" min="56" max="220" step="1" value="86" />
+          <input id="answerSizeR" type="range" min="56" max="240" step="1" value="86" />
+          <input id="answerSize" type="number" min="56" max="240" step="1" value="86" />
         </div>
 
         <label style="margin-top:10px;">Масштаб контента</label>
@@ -408,67 +427,86 @@
           <input id="answerCardPosY" type="number" min="0" max="100" step="1" value="50" />
         </div>
 
-        <div class="hint">Буква у вариантов в игре убрана. Ответы рисуются только через твою картинку + текст.</div>
+        <div class="hint">Буквы вариантов в игре убраны. Ответы рисуются через твою картинку + текст.</div>
       </div>
 
       <div class="section">
-        <h3>Предпросмотр карточки ответа</h3>
-        <div class="hint">Один ответ: картинка + текст + ползунки (чтобы красиво оформить).</div>
+        <h3>Предпросмотр: игрок и карточка ответа</h3>
+        <div class="hint">Слева — игрок (картинка + тень), справа — ответ (картинка + текст + ползунки).</div>
 
         <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:10px;">
-          <div id="answerPreviewBox" style="
-            width:240px;height:240px;
-            border-radius:16px;
-            border:1px solid rgba(255,255,255,.14);
-            background: rgba(0,0,0,.18);
-            display:flex;align-items:center;justify-content:center;
-            position:relative;
-            overflow:hidden;
-          ">
-            <div id="answerPreviewOrb" style="width:86px;height:86px;border-radius:999px;position:relative;">
-              <div id="answerPreviewImg" style="
-                position:absolute; inset:0;
-                border-radius:999px;
-                background: transparent;
-                background-repeat:no-repeat;
-                background-position:50% 50%;
-                background-size:contain;
-                transform:scale(1);
-              "></div>
+          <!-- Player preview -->
+          <div style="flex:0 0 auto;">
+            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-bottom:8px;">Игрок</div>
+            <div id="playerPreviewBox" style="
+              width:240px;height:240px;
+              border-radius:16px;
+              border:1px solid rgba(255,255,255,.14);
+              background: rgba(0,0,0,.18);
+              display:flex;align-items:center;justify-content:center;
+              position:relative;
+              overflow:hidden;
+            ">
+              <img id="playerPreviewImg" alt="player preview" style="
+                width:86px;height:86px;
+                object-fit:contain;
+                image-rendering:auto;
+                filter:none;
+                transform: translateY(0px);
+              " />
+            </div>
+          </div>
 
-              <div id="answerPreviewLayer" style="
-                position:absolute; inset:0;
-                transform:scale(1);
-                transform-origin:50% 50%;
-                pointer-events:none;
-              ">
-                <div id="answerPreviewText" style="
-                  position:absolute; left:50%; top:64%;
-                  transform:translate(-50%,-50%);
-                  font-weight:700;
-                  font-size:13px;
-                  color:#fff;
-                  max-width: 220px;
-                  text-align:center;
-                  padding:4px 8px;
-                  border-radius:10px;
-                  background: rgba(0,0,0,.18);
-                  border: 1px solid rgba(255,255,255,.10);
-                  text-shadow:0 10px 22px rgba(0,0,0,.55);
-                ">Текст варианта</div>
+          <!-- Answer preview -->
+          <div style="flex:0 0 auto;">
+            <div style="font-size:12px;color:rgba(255,255,255,.75);margin-bottom:8px;">Ответ</div>
+            <div id="answerPreviewBox" style="
+              width:240px;height:240px;
+              border-radius:16px;
+              border:1px solid rgba(255,255,255,.14);
+              background: rgba(0,0,0,.18);
+              display:flex;align-items:center;justify-content:center;
+              position:relative;
+              overflow:hidden;
+            ">
+              <div id="answerPreviewOrb" style="width:86px;height:86px;position:relative;">
+                <div id="answerPreviewImg" style="
+                  position:absolute; inset:0;
+                  background: transparent;
+                  background-repeat:no-repeat;
+                  background-position:50% 50%;
+                  background-size:contain;
+                  transform:scale(1);
+                "></div>
+                <div id="answerPreviewLayer" style="
+                  position:absolute; inset:0;
+                  transform:scale(1);
+                  transform-origin:50% 50%;
+                  pointer-events:none;
+                ">
+                  <div id="answerPreviewText" style="
+                    position:absolute; left:50%; top:64%;
+                    transform:translate(-50%,-50%);
+                    font-weight:700;
+                    font-size:13px;
+                    color:#fff;
+                    max-width: 220px;
+                    text-align:center;
+                    padding:4px 8px;
+                    border-radius:10px;
+                    background: rgba(0,0,0,.18);
+                    border: 1px solid rgba(255,255,255,.10);
+                    text-shadow:0 10px 22px rgba(0,0,0,.55);
+                  ">Текст варианта</div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div style="flex:1;min-width:220px;">
-            <label>Текст для предпросмотра</label>
+          <div style="flex:1;min-width:240px;">
+            <label>Текст для предпросмотра ответа</label>
             <input id="answerPreviewTextInput" type="text" value="Текст варианта" />
-            <div class="hint">Это только для предпросмотра (на вопросы не влияет).</div>
-
-            <div class="hr"></div>
-            <div class="hint">
-              Для бесшовного фона используй бесшовную картинку (seamless/tile). Фон движется repeat-x.
-            </div>
+            <div class="hint">Все изменения сверху применяются автоматически к предпросмотру игры справа.</div>
           </div>
         </div>
       </div>
@@ -506,13 +544,12 @@
       </div>
 
       <div class="section">
-        <h3>Предпросмотр и iframe</h3>
+        <h3>iframe для Genially</h3>
         <div class="row">
-          <button class="btn" id="applyPreviewBtn">Применить к предпросмотру</button>
           <button class="btn primary" id="genIframeBtn">Создать iframe</button>
           <button class="btn" id="copyIframeBtn">Скопировать</button>
         </div>
-        <div class="hint">Предпросмотр справа использует текущий файл. iframe — baseUrl (GitHub Pages).</div>
+        <div class="hint">iframe генерируется по baseUrl. Предпросмотр справа — текущий файл.</div>
         <textarea id="codeBox" readonly placeholder="Тут появится iframe..."></textarea>
       </div>
     </div>
@@ -522,7 +559,7 @@
     <div class="head">
       <div>
         <h1>Предпросмотр игры</h1>
-        <div class="sub">Справа — всегда текущий файл (без кеша).</div>
+        <div class="sub">Авто-обновление при любых настройках (анти-кэш включён).</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -604,7 +641,10 @@ const DEFAULT_CFG = {
 
   playerImg: "",
   playerSize: 86,
+
   playerShadow: false,
+  playerShadowBlur: 18,
+  playerShadowAlpha: 0.35,
 
   answerCardImg: "",
   bgImg: "",
@@ -756,12 +796,14 @@ function startEditorMode(){
 
     transparentBg: document.getElementById("transparentBg"),
 
-    // player
     playerSizeR: document.getElementById("playerSizeR"),
     playerSize: document.getElementById("playerSize"),
     playerShadow: document.getElementById("playerShadow"),
+    playerShadowBlurR: document.getElementById("playerShadowBlurR"),
+    playerShadowBlur: document.getElementById("playerShadowBlur"),
+    playerShadowAlphaR: document.getElementById("playerShadowAlphaR"),
+    playerShadowAlpha: document.getElementById("playerShadowAlpha"),
 
-    // answer sliders
     answerSizeR: document.getElementById("answerSizeR"),
     answerSize: document.getElementById("answerSize"),
     answerContentScaleR: document.getElementById("answerContentScaleR"),
@@ -788,7 +830,6 @@ function startEditorMode(){
     addQuestionBtn: document.getElementById("addQuestionBtn"),
     resetQuestionsBtn: document.getElementById("resetQuestionsBtn"),
 
-    applyPreviewBtn: document.getElementById("applyPreviewBtn"),
     genIframeBtn: document.getElementById("genIframeBtn"),
     copyIframeBtn: document.getElementById("copyIframeBtn"),
     codeBox: document.getElementById("codeBox"),
@@ -796,15 +837,15 @@ function startEditorMode(){
     previewFrame: document.getElementById("previewFrame"),
     cfgSizeBadge: document.getElementById("cfgSizeBadge"),
 
-    // answer preview
     answerPreviewOrb: document.getElementById("answerPreviewOrb"),
     answerPreviewImg: document.getElementById("answerPreviewImg"),
     answerPreviewLayer: document.getElementById("answerPreviewLayer"),
     answerPreviewText: document.getElementById("answerPreviewText"),
     answerPreviewTextInput: document.getElementById("answerPreviewTextInput"),
+
+    playerPreviewImg: document.getElementById("playerPreviewImg"),
   };
 
-  // baseUrl по умолчанию (на всякий случай)
   els.baseUrl.value = location.origin + location.pathname;
 
   let cfgDraft = deepClone(DEFAULT_CFG);
@@ -828,6 +869,15 @@ function startEditorMode(){
     const has = !!cfgDraft.answerCardImg;
     const kind = has ? (cfgDraft.answerCardImg.startsWith("data:") ? "файл (dataURL)" : "URL") : "нет";
     els.answerImgStatus.textContent = `Статус: ${kind}`;
+  }
+
+  async function fileToDataUrl(file){
+    return new Promise((res, rej)=>{
+      const r = new FileReader();
+      r.onload = ()=>res(String(r.result||""));
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
   }
 
   function cfgToUI(){
@@ -874,6 +924,8 @@ function startEditorMode(){
 
     pairSync(els.playerSizeR, els.playerSize, cfgDraft.playerSize ?? 86);
     els.playerShadow.checked = !!cfgDraft.playerShadow;
+    pairSync(els.playerShadowBlurR, els.playerShadowBlur, cfgDraft.playerShadowBlur ?? 18);
+    pairSync(els.playerShadowAlphaR, els.playerShadowAlpha, cfgDraft.playerShadowAlpha ?? 0.35);
 
     pairSync(els.answerSizeR, els.answerSize, cfgDraft.answerSize ?? 86);
     pairSync(els.answerContentScaleR, els.answerContentScale, cfgDraft.answerContentScale ?? 1);
@@ -913,6 +965,7 @@ function startEditorMode(){
         cfgDraft.questions.splice(qi,1);
         if(cfgDraft.questions.length === 0) cfgDraft.questions.push(makeEmptyQuestion());
         renderQuestions();
+        scheduleAutoPreview();
       };
 
       top.appendChild(title); top.appendChild(delQ);
@@ -921,7 +974,7 @@ function startEditorMode(){
       qInput.type = "text";
       qInput.value = q.q || "";
       qInput.placeholder = "Текст вопроса...";
-      qInput.oninput = ()=>{ cfgDraft.questions[qi].q = qInput.value; };
+      qInput.oninput = ()=>{ cfgDraft.questions[qi].q = qInput.value; scheduleAutoPreview(); };
 
       const answers = document.createElement("div");
       answers.className = "answers";
@@ -934,13 +987,13 @@ function startEditorMode(){
         lab.type = "text";
         lab.value = a.label || "";
         lab.placeholder = "A";
-        lab.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].label = lab.value; };
+        lab.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].label = lab.value; scheduleAutoPreview(); };
 
         const txt = document.createElement("input");
         txt.type = "text";
         txt.value = a.text || "";
         txt.placeholder = "Текст варианта...";
-        txt.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].text = txt.value; };
+        txt.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].text = txt.value; scheduleAutoPreview(); };
 
         const right = document.createElement("div");
         right.className = "chk";
@@ -951,6 +1004,7 @@ function startEditorMode(){
           cfgDraft.questions[qi].answers.forEach(x=>x.correct=false);
           cfgDraft.questions[qi].answers[ai].correct = chk.checked;
           renderQuestions();
+          scheduleAutoPreview();
         };
         right.appendChild(chk);
         right.appendChild(Object.assign(document.createElement("span"), {textContent:"верный"}));
@@ -969,6 +1023,7 @@ function startEditorMode(){
       addA.onclick = ()=>{
         cfgDraft.questions[qi].answers.push({label: nextLabel(cfgDraft.questions[qi].answers), text:"", correct:false});
         renderQuestions();
+        scheduleAutoPreview();
       };
 
       const delA = document.createElement("button");
@@ -979,6 +1034,7 @@ function startEditorMode(){
         cfgDraft.questions[qi].answers.pop();
         if(!cfgDraft.questions[qi].answers.some(x=>x.correct)) cfgDraft.questions[qi].answers[0].correct = true;
         renderQuestions();
+        scheduleAutoPreview();
       };
 
       qButtons.appendChild(addA); qButtons.appendChild(delA);
@@ -990,15 +1046,6 @@ function startEditorMode(){
       wrap.appendChild(qButtons);
 
       els.questionsList.appendChild(wrap);
-    });
-  }
-
-  async function fileToDataUrl(file){
-    return new Promise((res, rej)=>{
-      const r = new FileReader();
-      r.onload = ()=>res(String(r.result||""));
-      r.onerror = rej;
-      r.readAsDataURL(file);
     });
   }
 
@@ -1045,6 +1092,8 @@ function startEditorMode(){
 
     cfgDraft.playerSize = Number(els.playerSize.value || 86);
     cfgDraft.playerShadow = els.playerShadow.checked;
+    cfgDraft.playerShadowBlur = Number(els.playerShadowBlur.value || 18);
+    cfgDraft.playerShadowAlpha = Number(els.playerShadowAlpha.value || 0.35);
 
     cfgDraft.answerSize = Number(els.answerSize.value || 86);
     cfgDraft.answerContentScale = Number(els.answerContentScale.value || 1);
@@ -1079,14 +1128,12 @@ function startEditorMode(){
     return b64urlEncode(JSON.stringify(c));
   }
 
-  // ПРЕДПРОСМОТР: всегда текущий файл, чтобы изменения кода были видны сразу
   function buildPlayUrlForPreview(fromCfg){
     const base = location.origin + location.pathname;
     const enc = buildCfgParam(fromCfg);
     els.cfgSizeBadge.textContent = `cfg: ${Math.round(enc.length/1024*10)/10}KB`;
     return `${base}?mode=play&cfg=${enc}&v=${Date.now()}`;
   }
-  // IFRAME: берём baseUrl (GitHub Pages)
   function buildPlayUrlForIframe(fromCfg){
     const base = els.baseUrl.value.trim() || (location.origin + location.pathname);
     const enc = buildCfgParam(fromCfg);
@@ -1109,11 +1156,8 @@ function startEditorMode(){
 
     els.answerPreviewText.style.left  = (cfgDraft.answerTextX ?? 50) + "%";
     els.answerPreviewText.style.top   = (cfgDraft.answerTextY ?? 64) + "%";
+    els.answerPreviewText.textContent = (els.answerPreviewTextInput?.value || "Текст варианта");
 
-    const t = (els.answerPreviewTextInput?.value || "Текст варианта");
-    els.answerPreviewText.textContent = t;
-
-    // подложка текста
     if(cfgDraft.answerTextBgOn){
       els.answerPreviewText.style.padding = "4px 8px";
       els.answerPreviewText.style.background = "rgba(0,0,0,.18)";
@@ -1124,34 +1168,57 @@ function startEditorMode(){
       els.answerPreviewText.style.border = "none";
     }
 
-    // эффекты текста на ответы
     const fx = buildFxCss(cfgDraft);
     const fxAns = (cfgDraft.fxToAnswers !== false) ? fx : "";
-    // сбросим только то, что мы контролируем (просто перезапишем стили добавкой)
-    // (не делаем сложный парсинг)
     els.answerPreviewText.style.webkitTextStroke = "";
     els.answerPreviewText.style.textShadow = "";
-    if(fxAns.includes("text-shadow:")){
-      const m = fxAns.match(/text-shadow:([^;]+);/);
-      if(m) els.answerPreviewText.style.textShadow = m[1].trim();
-    }
-    if(fxAns.includes("-webkit-text-stroke:")){
-      const m2 = fxAns.match(/-webkit-text-stroke:([^;]+);/);
-      if(m2) els.answerPreviewText.style.webkitTextStroke = m2[1].trim();
+    const m = fxAns.match(/text-shadow:([^;]+);/);
+    if(m) els.answerPreviewText.style.textShadow = m[1].trim();
+    const m2 = fxAns.match(/-webkit-text-stroke:([^;]+);/);
+    if(m2) els.answerPreviewText.style.webkitTextStroke = m2[1].trim();
+  }
+
+  function updatePlayerPreview(){
+    const img = cfgDraft.playerImg || "";
+    els.playerPreviewImg.src = img ? img : "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+        <rect width="256" height="256" fill="rgba(0,0,0,0)"/>
+        <path d="M128 20l18 46h50l-40 30 14 52-42-30-42 30 14-52-40-30h50z" fill="rgba(255,255,255,0.5)"/>
+      </svg>`
+    );
+
+    const size = Number(cfgDraft.playerSize || 86);
+    els.playerPreviewImg.style.width = size + "px";
+    els.playerPreviewImg.style.height = size + "px";
+
+    if(cfgDraft.playerShadow){
+      const blur = clampInt(cfgDraft.playerShadowBlur, 0, 40, 18);
+      const a = clampNum(cfgDraft.playerShadowAlpha, 0, 1, 0.35);
+      // drop-shadow по альфе картинки (это “тень по контуру”)
+      els.playerPreviewImg.style.filter = `drop-shadow(0 0 ${blur}px rgba(0,0,0,${a})) drop-shadow(0 0 ${Math.max(0, Math.round(blur*0.7))}px rgba(120,90,255,${Math.min(0.5, a)}))`;
+    }else{
+      els.playerPreviewImg.style.filter = "none";
     }
   }
 
   function updateSilent(){
     readUIIntoDraft();
     updateAnswerPreview();
+    updatePlayerPreview();
   }
 
-  function applyPreview(){
+  // ===== авто-предпросмотр (debounce) =====
+  let autoTimer = null;
+  function scheduleAutoPreview(){
+    updateSilent();
+    if(autoTimer) clearTimeout(autoTimer);
+    autoTimer = setTimeout(()=>{ applyPreviewNow(); }, 220);
+  }
+
+  function applyPreviewNow(){
     readUIIntoDraft();
     cfgApplied = deepClone(cfgDraft);
     const url = buildPlayUrlForPreview(cfgApplied);
-
-    // жёсткий сброс iframe (анти-кэш/анти-залипание)
     els.previewFrame.src = "about:blank";
     requestAnimationFrame(()=>{ els.previewFrame.src = url; });
   }
@@ -1173,47 +1240,49 @@ function startEditorMode(){
     els.answerCardFit,
     els.livesCount, els.pointsPerCorrect, els.cooldownTurns, els.playerSpeed,
     els.playerImgUrl, els.answerCardImgUrl, els.bgImgUrl,
-    els.playerShadow
+    els.playerShadow,
+    els.answerPreviewTextInput
   ];
   bindInputs.forEach(el=>{
-    el.addEventListener("input", updateSilent);
-    el.addEventListener("change", updateSilent);
+    el.addEventListener("input", scheduleAutoPreview);
+    el.addEventListener("change", scheduleAutoPreview);
   });
 
-  pairBind(els.playerSizeR, els.playerSize, updateSilent);
-  pairBind(els.answerSizeR, els.answerSize, updateSilent);
-  pairBind(els.answerContentScaleR, els.answerContentScale, updateSilent);
-  pairBind(els.answerTextXR, els.answerTextX, updateSilent);
-  pairBind(els.answerTextYR, els.answerTextY, updateSilent);
-  pairBind(els.answerCardScaleR, els.answerCardScale, updateSilent);
-  pairBind(els.answerCardPosXR, els.answerCardPosX, updateSilent);
-  pairBind(els.answerCardPosYR, els.answerCardPosY, updateSilent);
+  pairBind(els.playerSizeR, els.playerSize, scheduleAutoPreview);
+  pairBind(els.playerShadowBlurR, els.playerShadowBlur, scheduleAutoPreview);
+  pairBind(els.playerShadowAlphaR, els.playerShadowAlpha, scheduleAutoPreview);
 
-  els.answerPreviewTextInput.addEventListener("input", updateAnswerPreview);
-  els.answerPreviewTextInput.addEventListener("change", updateAnswerPreview);
+  pairBind(els.answerSizeR, els.answerSize, scheduleAutoPreview);
+  pairBind(els.answerContentScaleR, els.answerContentScale, scheduleAutoPreview);
+  pairBind(els.answerTextXR, els.answerTextX, scheduleAutoPreview);
+  pairBind(els.answerTextYR, els.answerTextY, scheduleAutoPreview);
+  pairBind(els.answerCardScaleR, els.answerCardScale, scheduleAutoPreview);
+  pairBind(els.answerCardPosXR, els.answerCardPosX, scheduleAutoPreview);
+  pairBind(els.answerCardPosYR, els.answerCardPosY, scheduleAutoPreview);
 
   els.playerImgFile.addEventListener("change", async ()=>{
     const f = els.playerImgFile.files?.[0]; if(!f) return;
     cfgDraft.playerImg = await fileToDataUrl(f);
     els.playerImgUrl.value = "";
-    updateSilent();
+    scheduleAutoPreview();
   });
   els.answerCardImgFile.addEventListener("change", async ()=>{
     const f = els.answerCardImgFile.files?.[0]; if(!f) return;
     cfgDraft.answerCardImg = await fileToDataUrl(f);
     els.answerCardImgUrl.value = "";
-    updateSilent();
+    scheduleAutoPreview();
   });
   els.bgImgFile.addEventListener("change", async ()=>{
     const f = els.bgImgFile.files?.[0]; if(!f) return;
     cfgDraft.bgImg = await fileToDataUrl(f);
     els.bgImgUrl.value = "";
-    updateSilent();
+    scheduleAutoPreview();
   });
 
   els.addQuestionBtn.onclick = ()=>{
     cfgDraft.questions.push(makeEmptyQuestion());
     renderQuestions();
+    scheduleAutoPreview();
   };
 
   els.resetQuestionsBtn.onclick = ()=>{
@@ -1221,11 +1290,8 @@ function startEditorMode(){
     cfgApplied = deepClone(DEFAULT_CFG);
     cfgToUI(); renderQuestions();
     els.codeBox.value = "";
-    updateSilent();
-    applyPreview();
+    scheduleAutoPreview();
   };
-
-  els.applyPreviewBtn.onclick = ()=>{ applyPreview(); };
 
   els.genIframeBtn.onclick = ()=>{
     readUIIntoDraft();
@@ -1254,7 +1320,7 @@ function startEditorMode(){
   cfgToUI();
   renderQuestions();
   updateSilent();
-  applyPreview();
+  applyPreviewNow();
 }
 
 /* ================= GAME ================= */
@@ -1280,10 +1346,12 @@ function normalizeCfg(cfg){
   out.scoreSize = clampInt(out.scoreSize, 12, 70, 24);
   out.livesSize = clampInt(out.livesSize, 12, 70, 24);
 
-  out.playerSize = clampInt(out.playerSize, 56, 180, 86);
+  out.playerSize = clampInt(out.playerSize, 56, 220, 86);
   out.playerShadow = !!out.playerShadow;
+  out.playerShadowBlur = clampInt(out.playerShadowBlur, 0, 40, 18);
+  out.playerShadowAlpha = clampNum(out.playerShadowAlpha, 0, 1, 0.35);
 
-  out.answerSize = clampInt(out.answerSize, 56, 220, 86);
+  out.answerSize = clampInt(out.answerSize, 56, 240, 86);
   out.answerContentScale = clampNum(out.answerContentScale, 0.6, 1.6, 1);
   out.answerTextX  = clampNum(out.answerTextX, 0, 100, 50);
   out.answerTextY  = clampNum(out.answerTextY, 0, 100, 64);
@@ -1330,16 +1398,34 @@ function startGameMode(){
   const fxAns = CFG.fxToAnswers ? fxCSS : "";
   const fxPts = CFG.fxToPoints ? fxCSS : "";
 
+  const playerShadowFilter = CFG.playerShadow
+    ? `drop-shadow(0 0 ${CFG.playerShadowBlur}px rgba(0,0,0,${CFG.playerShadowAlpha})) drop-shadow(0 0 ${Math.max(0, Math.round(CFG.playerShadowBlur*0.7))}px rgba(120,90,255,${Math.min(0.5, CFG.playerShadowAlpha)}))`
+    : `none`;
+
   root.innerHTML = `
     <style>
       html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;}
       #wrap{position:relative;width:100%;height:100%;background:transparent;touch-action:none;}
+
+      /* ===== фон ===== */
       #bg{position:absolute; inset:0; z-index:0; overflow:hidden; background:transparent;}
       #bgLayer{
-        position:absolute; inset:-40px;
-        background: ${CFG.transparentBg ? "transparent" : (CFG.bgImg ? `url('${cssUrl(CFG.bgImg)}') 0 50% / auto 110% repeat-x` : "transparent")};
-        will-change: background-position, transform;
-        transform: scale(1.05);
+        position:absolute; inset:-60px;
+        background: ${CFG.transparentBg ? "transparent" : (CFG.bgImg ? `url('${cssUrl(CFG.bgImg)}') 0 50% / auto 112% repeat-x` : "transparent")};
+        will-change: background-position;
+        transform: translateZ(0);
+      }
+      /* маска, чтобы шов меньше “читался” (шум+винигрет) */
+      #bgMask{
+        position:absolute; inset:-60px;
+        pointer-events:none;
+        background:
+          radial-gradient(900px 540px at 20% 20%, rgba(0,0,0,.10), transparent 65%),
+          radial-gradient(900px 540px at 80% 25%, rgba(0,0,0,.08), transparent 65%),
+          repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0px, rgba(255,255,255,.03) 1px, transparent 2px, transparent 6px);
+        opacity: .20;
+        mix-blend-mode: overlay;
+        filter: blur(0.4px);
       }
 
       #loseTint{
@@ -1420,24 +1506,22 @@ function startGameMode(){
       #scene{position:absolute; inset:0; overflow:hidden;}
       .orb{
         position:absolute;
-        border-radius: 999px;
         display:flex; align-items:center; justify-content:center;
         user-select:none;
         will-change: transform, left, top;
       }
 
-      /* ===== игрок: без обводки ===== */
+      /* ===== игрок: ТОЛЬКО КАРТИНКА (без круга/фона/обводки) ===== */
       #player{
         width: ${CFG.playerSize}px; height: ${CFG.playerSize}px;
         left:92px; top:50%;
         transform:translate(-50%,-50%) rotate(var(--tilt, 0deg));
         transform-origin: 50% 50%;
         transition: transform 0.06s linear;
-        background: rgba(120,90,255,.12);
+        background: transparent;
         border: none;
-        box-shadow: ${CFG.playerShadow ? "0 12px 40px rgba(0,0,0,.30), 0 0 26px rgba(120,90,255,.22)" : "none"};
-        filter: ${CFG.playerShadow ? "drop-shadow(0 0 14px rgba(120,90,255,.18))" : "none"};
-        overflow:hidden;
+        box-shadow: none;
+        overflow: visible;
       }
       #playerInner{
         width:100%;height:100%;
@@ -1454,14 +1538,16 @@ function startGameMode(){
         60%{ transform: translateY(-8px) scale(1.10); }
         100%{ transform: translateY(-2px) scale(1); }
       }
-      #player .img{
+      #playerImg{
         width:100%;height:100%;
-        background-size:cover;background-position:center;
-        border-radius:999px;
-        opacity:${CFG.playerImg ? 1 : 0};
+        object-fit: contain;
+        display:block;
+        filter: ${playerShadowFilter};
+        user-select:none;
+        -webkit-user-drag:none;
       }
 
-      /* ===== ответы: без подложки (картинка — фон) ===== */
+      /* ===== ответы: без подложки, только картинка фоном ===== */
       .answer{
         width:${CFG.answerSize}px; height:${CFG.answerSize}px;
         background: transparent;
@@ -1477,7 +1563,6 @@ function startGameMode(){
         background-size:${CFG.answerCardFit};
         background-position:${CFG.answerCardPosX}% ${CFG.answerCardPosY}%;
         transform: scale(${CFG.answerCardScale});
-        border-radius: 999px;
       }
 
       .ansLayer{
@@ -1646,7 +1731,10 @@ function startGameMode(){
     </style>
 
     <div id="wrap">
-      <div id="bg"><div id="bgLayer"></div></div>
+      <div id="bg">
+        <div id="bgLayer"></div>
+        <div id="bgMask"></div>
+      </div>
       <div id="loseTint"></div>
       <canvas id="fxCanvas"></canvas>
 
@@ -1663,7 +1751,7 @@ function startGameMode(){
         <div id="scene">
           <div class="orb" id="player">
             <div id="playerInner">
-              <div class="img" id="playerImg"></div>
+              <img id="playerImg" alt="player" />
             </div>
           </div>
         </div>
@@ -1743,10 +1831,16 @@ function startGameMode(){
 
   const dbg = root.querySelector("#cfgDebug");
   if(dbg){
-    dbg.textContent = `CFG: playerSize=${CFG.playerSize} • answerSize=${CFG.answerSize} • textBg=${CFG.answerTextBgOn?"on":"off"} • img=${CFG.answerCardImg? "yes":"no"}`;
+    dbg.textContent = `CFG: playerSize=${CFG.playerSize} • shadow=${CFG.playerShadow?"on":"off"} • answerSize=${CFG.answerSize} • bg=${CFG.bgImg?"yes":"no"}`;
   }
 
-  if(CFG.playerImg) playerImg.style.backgroundImage = `url('${cssUrl(CFG.playerImg)}')`;
+  // player img
+  playerImg.src = CFG.playerImg ? CFG.playerImg : "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+      <rect width="256" height="256" fill="rgba(0,0,0,0)"/>
+      <path d="M128 20l18 46h50l-40 30 14 52-42-30-42 30 14-52-40-30h50z" fill="rgba(255,255,255,0.6)"/>
+    </svg>`
+  );
 
   /* ===== confetti ===== */
   function resizeFx(){
@@ -1997,7 +2091,6 @@ function startGameMode(){
       setTimeout(()=>loseTint.classList.remove("on"), 700);
     }
 
-    // заголовок
     const textNode = finalTitle.childNodes[finalTitle.childNodes.length-1];
     if(textNode) textNode.textContent = win ? " Победа!" : " Конец игры";
 
@@ -2157,7 +2250,7 @@ function startGameMode(){
       if(dir === 0) state.tilt *= 0.88;
       player.style.setProperty("--tilt", state.tilt.toFixed(2) + "deg");
 
-      // бесшовный фон (repeat-x)
+      // бесконечный фон (repeat-x)
       if(bgLayer && !CFG.transparentBg && CFG.bgImg){
         const factor = clampNum(CFG.bgScrollFactor, 0, 3, 0.35);
         state.bgX = (state.bgX - state.speed * factor);
