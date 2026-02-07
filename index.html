@@ -4,23 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Catch the Answer</title>
-
-  <!-- убирает 404 favicon.ico -->
   <link rel="icon" href="data:,">
 
   <style>
     :root{
       --bg: transparent;
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.72);
 
+      /* панели */
       --panel-bg: rgba(10,10,20,.60);
       --panel-brd: rgba(255,255,255,.18);
       --shadow: 0 16px 60px rgba(0,0,0,.42);
 
-      --answer-bg: rgba(255,255,255,.18);
-      --answer-brd: rgba(255,255,255,.28);
+      /* ОТВЕТЫ: делаем темнее, чтобы текст был виден даже на белом фоне */
+      --answer-bg: rgba(25, 25, 40, .62);
+      --answer-brd: rgba(255,255,255,.22);
       --answer-text: rgba(255,255,255,.96);
+
+      /* игрок */
+      --player-bg: rgba(120,90,255,.22);
+      --player-brd: rgba(120,90,255,.40);
+
+      /* неон желтый для очков */
+      --neon-yellow: #ffd84a;
 
       --good: #4cff9e;
       --bad:  #ff6b6b;
@@ -32,7 +37,6 @@
       margin:0;height:100%;
       background:var(--bg)!important;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
       overflow:hidden;
     }
     #game{position:relative;width:100%;height:100%;}
@@ -53,8 +57,9 @@
       -webkit-backdrop-filter: blur(10px);
       display:flex; gap:10px; align-items:center;
       white-space:nowrap;
+      color: rgba(255,255,255,.92);
     }
-    .pill .label{font-size:12px;color:var(--muted);font-weight:900}
+    .pill .label{font-size:12px;color:rgba(255,255,255,.72);font-weight:900}
     .pill .value{font-size:16px;font-weight:1100}
 
     /* QUESTION */
@@ -74,6 +79,7 @@
       text-align:center;
       font-weight:1100;
       font-size:14px;
+      color: rgba(255,255,255,.92);
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
 
@@ -92,8 +98,8 @@
     #player{
       left:92px; top:50%;
       transform:translate(-50%,-50%);
-      background: rgba(120,90,255,.22);
-      border: 1px solid rgba(120,90,255,.40);
+      background: var(--player-bg);
+      border: 1px solid var(--player-brd);
       box-shadow: 0 12px 40px rgba(0,0,0,.28), 0 0 26px rgba(120,90,255,.25);
     }
     #player:before{
@@ -103,7 +109,7 @@
       box-shadow:0 0 14px rgba(255,255,255,.25);
     }
 
-    /* ANSWER ORBS (одинаковые, одного цвета) */
+    /* ANSWERS */
     .answer{
       background: var(--answer-bg);
       border: 1px solid var(--answer-brd);
@@ -123,7 +129,8 @@
       font-size:18px;
       line-height:1;
       letter-spacing:.8px;
-      opacity:.95;
+      opacity:.98;
+      text-shadow: 0 10px 22px rgba(0,0,0,.55);
     }
     .answer .txt{
       font-weight:1000;
@@ -133,23 +140,28 @@
       max-width: 160px;
       white-space:normal;
       word-break:break-word;
+      text-shadow: 0 10px 22px rgba(0,0,0,.55);
     }
 
-    /* +points */
+    /* +points (жёлтый неон) */
     .pop{
       position:absolute;
-      font-weight:1200;
-      font-size:18px;
+      font-weight:1300;
+      font-size:20px;
       pointer-events:none;
       transform:translate(-50%,-50%);
-      text-shadow:0 16px 36px rgba(0,0,0,.55);
+      color: var(--neon-yellow);
+      text-shadow:
+        0 0 10px rgba(255,216,74,.85),
+        0 0 22px rgba(255,216,74,.65),
+        0 16px 36px rgba(0,0,0,.55);
       animation: popUp .78s ease-out forwards;
       z-index:80;
     }
     @keyframes popUp{
       0%{opacity:0;transform:translate(-50%,-50%) scale(.9);}
       15%{opacity:1;transform:translate(-50%,-62%) scale(1.05);}
-      100%{opacity:0;transform:translate(-50%,-110%) scale(1);}
+      100%{opacity:0;transform:translate(-50%,-112%) scale(1);}
     }
 
     #feedback{
@@ -159,13 +171,13 @@
       pointer-events:none;
       opacity:0; transition:.18s;
       z-index:70;
+      text-shadow: 0 16px 36px rgba(0,0,0,.55);
     }
     #feedback.show{opacity:1;}
 
-    /* ПРОГРЕСС-БАР СНИЗУ */
+    /* progress bottom */
     #progressWrap{
-      position:absolute;
-      left:12px; right:12px; bottom:12px;
+      position:absolute; left:12px; right:12px; bottom:12px;
       z-index:90; pointer-events:none;
     }
     #progressBar{
@@ -201,6 +213,7 @@
       align-items:center; justify-content:center;
       flex-direction:column; gap:14px;
       z-index:120; text-align:center; padding:20px;
+      color: rgba(255,255,255,.92);
     }
     #final.show{display:flex;}
     #final h1{margin:0;font-size:30px;}
@@ -214,10 +227,10 @@
       font-weight:1100;cursor:pointer;
     }
 
-    /* маркер версии */
     #version{
       position:absolute; right:12px; bottom:40px;
       font-size:12px; opacity:.55; pointer-events:none; z-index:200;
+      color: rgba(0,0,0,.35);
     }
   </style>
 </head>
@@ -250,11 +263,10 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v6-index</div>
+  <div id="version">v7</div>
 </div>
 
 <script>
-/* ================= НАСТРОЙКИ (потом будет редактор) ================= */
 const GAME_CONFIG = {
   lives: 3,
   speed: 3.0,
@@ -263,7 +275,6 @@ const GAME_CONFIG = {
 
   scoring: {
     pointsPerCorrect: 10,
-    popColor: "#4cff9e",
     popText: (pts)=>`+${pts}`,
   },
 
@@ -273,7 +284,7 @@ const GAME_CONFIG = {
 
   layout: {
     paddingTop: 96,
-    paddingBottom: 86,   // место под прогресс-бар
+    paddingBottom: 86,
     minDistY: 96,
     startX: 160,
     xSpreadMin: 160,
@@ -298,7 +309,6 @@ const GAME_CONFIG = {
     ]},
   ],
 };
-/* =================================================================== */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -306,10 +316,8 @@ const questionBox = document.getElementById("questionBox");
 const scoreEl = document.getElementById("score");
 const livesEl = document.getElementById("lives");
 const feedback = document.getElementById("feedback");
-
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
-
 const final = document.getElementById("final");
 const finalTitle = document.getElementById("finalTitle");
 const finalText = document.getElementById("finalText");
@@ -367,7 +375,7 @@ function beepBad(){
   o1.stop(now+0.24); o2.stop(now+0.24);
 }
 
-/* game state */
+/* game */
 function initState(){
   state = { qIndex:0, lives:GAME_CONFIG.lives, score:0, active:[], locked:false };
 }
@@ -430,7 +438,7 @@ function spawnAnswersForQuestion(){
 
     const txt = document.createElement("div");
     txt.className = "txt";
-    txt.textContent = a.text;
+    txt.textContent = a.text;   // <-- ВАРИАНТ ОТВЕТА
 
     el.appendChild(lab);
     el.appendChild(txt);
@@ -456,7 +464,6 @@ function showPointsPop(x,y,points){
   const pop = document.createElement("div");
   pop.className = "pop";
   pop.textContent = GAME_CONFIG.scoring.popText(points);
-  pop.style.color = GAME_CONFIG.scoring.popColor;
   pop.style.left = x + "px";
   pop.style.top = y + "px";
   scene.appendChild(pop);
@@ -566,7 +573,6 @@ window.addEventListener("keydown", async (e)=>{
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
 window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true});
 
-/* start */
 initState();
 updateHUD();
 player.style.top = "50%";
