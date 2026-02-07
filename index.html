@@ -23,7 +23,6 @@
 
       --good: #4cff9e;
       --bad:  #ff6b6b;
-
       --neon-yellow: #ffd84a;
 
       --size: 86px;
@@ -55,34 +54,6 @@
     }
     .pill .label{font-size:12px;color:rgba(255,255,255,.72);font-weight:900}
     .pill .value{font-size:16px;font-weight:1100}
-
-    /* difficulty pill (ALWAYS visible) */
-    #difficultyPill{
-      pointer-events:auto;
-      display:flex; align-items:center; gap:8px;
-      padding: 8px 10px;
-    }
-    #difficultyPill .title{
-      font-size:12px;
-      font-weight:1000;
-      color: rgba(255,255,255,.78);
-      margin-right:2px;
-    }
-    .chip{
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-weight:1100;
-      font-size:12px;
-      color: rgba(255,255,255,.92);
-      cursor:pointer;
-      user-select:none;
-    }
-    .chip.active{
-      background: rgba(120,90,255,.32);
-      border-color: rgba(120,90,255,.45);
-    }
 
     /* QUESTION */
     #questionWrap{
@@ -161,12 +132,10 @@
       max-width: 180px;
       white-space:normal;
       word-break:break-word;
-
       padding: 4px 8px;
       border-radius: 10px;
       background: rgba(255,255,255,.08);
       border: 1px solid rgba(255,255,255,.10);
-
       text-shadow: 0 10px 22px rgba(0,0,0,.55);
       -webkit-text-stroke: 0.35px rgba(0,0,0,.35);
     }
@@ -233,30 +202,91 @@
       text-shadow:0 10px 22px rgba(0,0,0,.5);
     }
 
-    #final{
+    /* START OVERLAY */
+    #startOverlay, #finalOverlay{
       position:absolute; inset:0;
-      background: rgba(0,0,0,.78);
-      display:none;
-      align-items:center; justify-content:center;
-      flex-direction:column; gap:14px;
-      z-index:200; text-align:center; padding:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:300;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .card{
+      width:min(560px, calc(100% - 28px));
+      background: rgba(20,18,34,.78);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px 18px 16px;
       color: rgba(255,255,255,.92);
     }
-    #final.show{display:flex;}
-    #final h1{margin:0;font-size:30px;}
-    #final .small{opacity:.85;max-width:560px;line-height:1.4;font-size:13px;}
-    #final button{
-      pointer-events:auto;
-      padding:10px 16px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.10);
-      color:rgba(255,255,255,.92);
-      font-weight:1100;cursor:pointer;
+    .card h2{
+      margin:0 0 8px;
+      font-size:20px;
+      font-weight:1200;
+      letter-spacing:.2px;
     }
+    .card p{
+      margin:0 0 12px;
+      font-size:13px;
+      line-height:1.35;
+      opacity:.9;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .chips{
+      display:flex; gap:8px; flex-wrap:wrap;
+    }
+    .chipBtn{
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight:1100;
+      font-size:12px;
+      color: rgba(255,255,255,.92);
+      cursor:pointer;
+      user-select:none;
+    }
+    .chipBtn.active{
+      background: rgba(120,90,255,.32);
+      border-color: rgba(120,90,255,.45);
+    }
+    .btn{
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.20);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-weight:1200;
+      color: rgba(255,255,255,.95);
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn.primary{
+      background: rgba(120,90,255,.40);
+      border-color: rgba(120,90,255,.55);
+    }
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      opacity:.75;
+    }
+
+    #finalOverlay{display:none;}
+    #finalOverlay.show{display:flex;}
+    #startOverlay.hide{display:none;}
 
     #version{
       position:absolute; right:12px; bottom:40px;
-      font-size:12px; opacity:.55; pointer-events:none; z-index:220;
+      font-size:12px; opacity:.55; pointer-events:none; z-index:400;
       color: rgba(0,0,0,.35);
     }
   </style>
@@ -264,19 +294,12 @@
 
 <body>
 <div id="game">
+
   <div id="topbar">
     <div class="pill">
       <div class="label">Очки</div>
       <div class="value" id="score">0</div>
     </div>
-
-    <div class="pill" id="difficultyPill">
-      <div class="title">Сложность:</div>
-      <div class="chip active" data-level="easy">Лёгкий</div>
-      <div class="chip" data-level="medium">Средний</div>
-      <div class="chip" data-level="hard">Сложный</div>
-    </div>
-
     <div class="pill" id="lives">❤️❤️❤️</div>
   </div>
 
@@ -295,29 +318,57 @@
     </div>
   </div>
 
-  <div id="final">
-    <h1 id="finalTitle">—</h1>
-    <div class="small" id="finalText"></div>
-    <button onclick="restart()">Играть ещё</button>
+  <!-- START SCREEN -->
+  <div id="startOverlay">
+    <div class="card" role="dialog" aria-label="start">
+      <h2>Задача игрока</h2>
+      <p>
+        Лови игроком <b>правильный ответ</b> на вопрос сверху.<br>
+        Управление: <b>↑</b> и <b>↓</b> (или свайп вверх/вниз на планшете).
+      </p>
+
+      <div class="row">
+        <div class="chips" aria-label="difficulty">
+          <div class="chipBtn active" data-level="easy">Лёгкий</div>
+          <div class="chipBtn" data-level="medium">Средний</div>
+          <div class="chipBtn" data-level="hard">Сложный</div>
+        </div>
+
+        <button class="btn primary" id="startBtn">Начать игру</button>
+      </div>
+
+      <div class="hint">Подсказка: пропускать ответы можно — они появятся снова.</div>
+    </div>
   </div>
 
-  <div id="version">v12</div>
+  <!-- FINAL SCREEN -->
+  <div id="finalOverlay">
+    <div class="card" role="dialog" aria-label="final">
+      <h2 id="finalTitle">—</h2>
+      <p id="finalText">—</p>
+      <div class="row" style="justify-content:flex-end;">
+        <button class="btn" id="restartBtn">Играть ещё</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="version">v13</div>
 </div>
 
 <script>
+/* ============ CONFIG ============ */
 const GAME_CONFIG = {
   lives: 3,
   playerSpeed: 7,
   feedbackMs: 420,
+  scoring: { pointsPerCorrect: 10 },
 
-  scoring: { pointsPerCorrect: 10, popText: (pts)=>`+${pts}` },
-
-  sound: { enabled:true, ok:{volume:0.25}, bad:{volume:0.30} },
+  sound: { enabled:true, volume:0.28 },
 
   layout: {
-    paddingTop: 130,      // оставили место под topbar+вопрос
+    paddingTop: 130,
     paddingBottom: 86,
-    laneMinDist: 108,     // больше дистанция между "уровнями"
+    laneMinDist: 108,
   },
 
   difficultyPresets: {
@@ -344,6 +395,7 @@ const GAME_CONFIG = {
     ]},
   ],
 };
+/* =============================== */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -353,17 +405,23 @@ const livesEl = document.getElementById("lives");
 const feedback = document.getElementById("feedback");
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
-const final = document.getElementById("final");
+
+const startOverlay = document.getElementById("startOverlay");
+const startBtn = document.getElementById("startBtn");
+const diffBtns = Array.from(document.querySelectorAll(".chipBtn"));
+
+const finalOverlay = document.getElementById("finalOverlay");
 const finalTitle = document.getElementById("finalTitle");
 const finalText = document.getElementById("finalText");
-const chips = Array.from(document.querySelectorAll(".chip"));
+const restartBtn = document.getElementById("restartBtn");
 
 let keys = {};
 let raf = null;
 let state = null;
 
-/* WebAudio */
-let audioCtx = null, audioUnlocked = false;
+/* --------- Sound (WebAudio) --------- */
+let audioCtx = null, unlocked = false;
+
 function ensureAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
   if(audioCtx) return;
@@ -371,47 +429,64 @@ function ensureAudio(){
   if(!Ctx) return;
   audioCtx = new Ctx();
 }
+
 async function unlockAudio(){
   if(!GAME_CONFIG.sound.enabled) return;
   ensureAudio();
   if(!audioCtx) return;
   if(audioCtx.state === "suspended") { try{ await audioCtx.resume(); }catch(e){} }
-  audioUnlocked = true;
+  unlocked = true;
 }
-function beepOk(){
-  if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
-  const v = GAME_CONFIG.sound.ok.volume ?? 0.25;
+
+// helper: short synth tones
+function tone(freq, dur=0.18, type="sine", vol=0.28){
+  if(!GAME_CONFIG.sound.enabled || !unlocked || !audioCtx) return;
   const now = audioCtx.currentTime;
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
-  o.type="sine";
-  o.frequency.setValueAtTime(660, now);
-  o.frequency.exponentialRampToValueAtTime(990, now+0.12);
+  o.type = type;
+  o.frequency.setValueAtTime(freq, now);
   g.gain.setValueAtTime(0.0001, now);
-  g.gain.exponentialRampToValueAtTime(v, now+0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, now+0.18);
+  g.gain.exponentialRampToValueAtTime(vol, now + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
   o.connect(g); g.connect(audioCtx.destination);
-  o.start(now); o.stop(now+0.2);
-}
-function beepBad(){
-  if(!GAME_CONFIG.sound.enabled || !audioUnlocked || !audioCtx) return;
-  const v = GAME_CONFIG.sound.bad.volume ?? 0.30;
-  const now = audioCtx.currentTime;
-  const o1 = audioCtx.createOscillator();
-  const o2 = audioCtx.createOscillator();
-  const g  = audioCtx.createGain();
-  o1.type="square"; o2.type="sawtooth";
-  o1.frequency.setValueAtTime(220, now);
-  o2.frequency.setValueAtTime(170, now);
-  g.gain.setValueAtTime(0.0001, now);
-  g.gain.exponentialRampToValueAtTime(v, now+0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, now+0.22);
-  o1.connect(g); o2.connect(g); g.connect(audioCtx.destination);
-  o1.start(now); o2.start(now);
-  o1.stop(now+0.24); o2.stop(now+0.24);
+  o.start(now);
+  o.stop(now + dur + 0.02);
 }
 
-function preset(level){ return GAME_CONFIG.difficultyPresets[level] || GAME_CONFIG.difficultyPresets.easy; }
+function soundStart(){
+  // бодрый "три-нотный" старт
+  tone(523.25, 0.10, "sine", GAME_CONFIG.sound.volume);
+  setTimeout(()=>tone(659.25, 0.10, "sine", GAME_CONFIG.sound.volume), 110);
+  setTimeout(()=>tone(783.99, 0.14, "sine", GAME_CONFIG.sound.volume), 230);
+}
+
+function soundOk(){
+  tone(660, 0.10, "sine", GAME_CONFIG.sound.volume);
+  setTimeout(()=>tone(990, 0.12, "sine", GAME_CONFIG.sound.volume), 90);
+}
+
+function soundBad(){
+  tone(220, 0.14, "square", GAME_CONFIG.sound.volume);
+  setTimeout(()=>tone(180, 0.16, "sawtooth", GAME_CONFIG.sound.volume), 90);
+}
+
+function soundWin(){
+  // простые "фанфары"
+  const seq = [523,659,784,988,784,988,1175];
+  seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.12, "sine", GAME_CONFIG.sound.volume), i*120));
+}
+
+function soundLose(){
+  // грустная концовка
+  const seq = [392,330,294,262];
+  seq.forEach((f,i)=>setTimeout(()=>tone(f, 0.18, "triangle", GAME_CONFIG.sound.volume), i*160));
+}
+/* ------------------------------------ */
+
+function preset(level){
+  return GAME_CONFIG.difficultyPresets[level] || GAME_CONFIG.difficultyPresets.easy;
+}
 
 function initState(){
   state = {
@@ -420,7 +495,7 @@ function initState(){
     score: 0,
     locked: false,
     active: [],
-    running: true,
+    running: false,          // стартуем только после кнопки
 
     difficulty: "easy",
     speed: preset("easy").speed,
@@ -429,8 +504,7 @@ function initState(){
     maxOnScreen: preset("easy").maxOnScreen,
 
     lastSpawnAt: performance.now(),
-    lastSpawnX: null,      // ✅ для гарантированного gap
-    lastLaneY: null,       // ✅ чтобы не спавнить подряд в ту же полосу
+    lastLaneY: null,
   };
 }
 
@@ -441,7 +515,8 @@ function applyDifficulty(level){
   state.spawnEveryMs = p.spawnEveryMs;
   state.minXGap = p.minXGap;
   state.maxOnScreen = p.maxOnScreen;
-  chips.forEach(c=>c.classList.toggle("active", c.dataset.level===level));
+
+  diffBtns.forEach(b=>b.classList.toggle("active", b.dataset.level===level));
 }
 
 function hearts(n){ return "❤️".repeat(Math.max(0,n)) + (n<=0 ? "—" : ""); }
@@ -453,6 +528,7 @@ function updateProgress(){
   progressFill.style.width = pct + "%";
   progressText.textContent = `Вопрос ${current} из ${total}`;
 }
+
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
@@ -463,7 +539,6 @@ function updateHUD(){
 function clearAnswers(){
   state.active.forEach(o=>o.el.remove());
   state.active = [];
-  state.lastSpawnX = null;
   state.lastLaneY = null;
 }
 
@@ -480,10 +555,9 @@ function buildLanes(){
 
 function pickLaneY(){
   const lanes = buildLanes();
-  // не спавним подряд в ту же полосу
   let y = lanes[randInt(0, lanes.length-1)];
   if(state.lastLaneY !== null && lanes.length > 1){
-    let tries = 0;
+    let tries=0;
     while(y === state.lastLaneY && tries < 10){
       y = lanes[randInt(0, lanes.length-1)];
       tries++;
@@ -496,6 +570,7 @@ function pickLaneY(){
 function createAnswerOrb(answer){
   const el = document.createElement("div");
   el.className = "orb answer";
+  el.dataset.correct = answer.correct ? "1":"0";
 
   const lab = document.createElement("div");
   lab.className = "lab";
@@ -512,24 +587,21 @@ function createAnswerOrb(answer){
 
 function rightEdgeX(){ return scene.clientWidth + 50; }
 
+function newestX(){
+  let maxX = -Infinity;
+  for(const o of state.active) maxX = Math.max(maxX, o.el.offsetLeft);
+  return maxX;
+}
+
 function maybeSpawn(now){
-  if(state.locked) return;
+  if(!state.running || state.locked) return;
   if(state.active.length >= state.maxOnScreen) return;
 
-  // частота спавна
   if(now - state.lastSpawnAt < state.spawnEveryMs) return;
 
-  // ✅ ГАРАНТИРОВАННЫЙ ЗАЗОР:
-  // новый объект появляется только если предыдущий уехал влево минимум на minXGap
   const spawnX = rightEdgeX();
-  if(state.lastSpawnX !== null){
-    const delta = state.lastSpawnX - spawnX; // обычно 0
-    // вместо delta используем "сколько уехал" предыдущий: lastSpawnElX - spawnX
-    // проще: проверим текущую позицию самого нового объекта на экране
-    let newestX = -Infinity;
-    for(const o of state.active) newestX = Math.max(newestX, o.el.offsetLeft);
-    if(newestX > spawnX - state.minXGap) return;
-  }
+  const nx = newestX();
+  if(nx !== -Infinity && nx > (spawnX - state.minXGap)) return; // ✅ gap guarantee
 
   const q = GAME_CONFIG.questions[state.qIndex];
   const pick = q.answers[randInt(0, q.answers.length-1)];
@@ -538,13 +610,11 @@ function maybeSpawn(now){
   el.style.left = spawnX + "px";
   el.style.top = pickLaneY() + "px";
   el.style.transform = "translate(-50%,-50%)";
-  el.dataset.correct = pick.correct ? "1":"0";
 
   scene.appendChild(el);
   state.active.push({ el, data: pick, hit:false });
 
   state.lastSpawnAt = now;
-  state.lastSpawnX = spawnX;
 }
 
 function showFeedback(text, ok){
@@ -569,13 +639,19 @@ function endGame(win){
   state.running = false;
   clearAnswers();
   updateHUD();
-  final.classList.add("show");
-  finalTitle.textContent = win ? "🎉 Отлично!" : "💀 Игра окончена";
+
+  // sound end
+  if(win) soundWin(); else soundLose();
+
+  finalTitle.textContent = win ? "🎉 Молодец!" : "😢 Попробуй ещё";
   const total = GAME_CONFIG.questions.length;
   const answered = Math.min(state.qIndex, total);
-  finalText.textContent = `Пройдено ${answered}/${total}. Очки: ${state.score}.`;
-  if(raf) cancelAnimationFrame(raf);
-  raf = null;
+  finalText.textContent = win
+    ? `Ты ответил(а) на все вопросы! Очки: ${state.score}.`
+    : `Жизни закончились. Пройдено ${answered}/${total}. Очки: ${state.score}.`;
+
+  finalOverlay.classList.add("show");
+  finalOverlay.style.display = "flex";
 }
 
 function goNextQuestion(){
@@ -602,12 +678,12 @@ function handleHit(correct, hitX, hitY){
     updateHUD();
     showPointsPop(hitX, hitY, pts);
     showFeedback("Верно", true);
-    beepOk();
+    soundOk();
   } else {
     state.lives--;
     updateHUD();
     showFeedback("Неверно", false);
-    beepBad();
+    soundBad();
     player.animate(
       [{transform:"translate(-50%,-50%)"},
        {transform:"translate(-50%,-50%) translateX(-4px)"},
@@ -621,7 +697,7 @@ function handleHit(correct, hitX, hitY){
 }
 
 function checkCollision(obj){
-  if(obj.hit || state.locked) return;
+  if(obj.hit || state.locked || !state.running) return;
   const a = obj.el.getBoundingClientRect();
   const p = player.getBoundingClientRect();
   const overlap = !(a.right<p.left || a.left>p.right || a.bottom<p.top || a.top>p.bottom);
@@ -636,29 +712,29 @@ function checkCollision(obj){
 }
 
 function loop(now){
-  if(!state || !state.running) return;
+  if(!state) return;
 
-  // player
-  let y = player.offsetTop;
-  if(keys.ArrowUp) y -= GAME_CONFIG.playerSpeed;
-  if(keys.ArrowDown) y += GAME_CONFIG.playerSpeed;
-  y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
-  player.style.top = y + "px";
+  // player movement (только когда игра запущена)
+  if(state.running){
+    let y = player.offsetTop;
+    if(keys.ArrowUp) y -= GAME_CONFIG.playerSpeed;
+    if(keys.ArrowDown) y += GAME_CONFIG.playerSpeed;
+    y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
+    player.style.top = y + "px";
+  }
 
-  // spawn
+  // spawn + move
   maybeSpawn(now);
 
-  // move + remove missed (пропуск НЕ ошибка)
-  if(!state.locked){
+  if(state.running && !state.locked){
     const leftLimit = -160;
     const next = [];
     for(const obj of state.active){
       obj.el.style.left = (obj.el.offsetLeft - state.speed) + "px";
       checkCollision(obj);
-
       if(obj.el.isConnected){
         if(obj.el.offsetLeft >= leftLimit) next.push(obj);
-        else obj.el.remove();
+        else obj.el.remove(); // пропуск без наказания
       }
     }
     state.active = next;
@@ -667,42 +743,63 @@ function loop(now){
   raf = requestAnimationFrame(loop);
 }
 
-function restart(){
-  final.classList.remove("show");
-  if(raf) cancelAnimationFrame(raf);
-  raf = null;
+async function startGame(){
+  await unlockAudio(); // чтобы звук старта точно сыграл
+  soundStart();
 
-  initState();
-  applyDifficulty("easy");
-  updateHUD();
-  player.style.top = "50%";
+  startOverlay.classList.add("hide");
+  finalOverlay.classList.remove("show");
+  finalOverlay.style.display = "none";
+
+  state.running = true;
+  state.locked = false;
+  state.qIndex = 0;
+  state.lives = GAME_CONFIG.lives;
+  state.score = 0;
   clearAnswers();
   state.lastSpawnAt = performance.now();
-  state.running = true;
-  loop(performance.now());
+  updateHUD();
+
+  // центр игрока
+  player.style.top = "50%";
+}
+
+function resetToStart(){
+  state.running = false;
+  state.locked = true;
+  clearAnswers();
+  updateHUD();
+  startOverlay.classList.remove("hide");
+}
+
+function restart(){
+  // вернуть на стартовый экран (как просила: снова выбор уровня + начать)
+  resetToStart();
 }
 
 /* UI */
-chips.forEach(ch=>{
-  ch.addEventListener("click", async ()=>{
-    if(!audioUnlocked) await unlockAudio();
-    applyDifficulty(ch.dataset.level);
+diffBtns.forEach(btn=>{
+  btn.addEventListener("click", async ()=>{
+    await unlockAudio();
+    applyDifficulty(btn.dataset.level);
   });
 });
 
+startBtn.addEventListener("click", startGame);
+restartBtn.addEventListener("click", restart);
+
 window.addEventListener("keydown", async (e)=>{
   keys[e.key]=true;
-  if(!audioUnlocked) await unlockAudio();
+  await unlockAudio();
 });
 window.addEventListener("keyup",(e)=>keys[e.key]=false);
-window.addEventListener("pointerdown", async ()=>{ if(!audioUnlocked) await unlockAudio(); }, {passive:true});
+window.addEventListener("pointerdown", async ()=>{ await unlockAudio(); }, {passive:true});
 
-/* start */
+/* init */
 initState();
 applyDifficulty("easy");
 updateHUD();
 player.style.top = "50%";
-state.lastSpawnAt = performance.now();
 loop(performance.now());
 </script>
 </body>
