@@ -32,10 +32,13 @@
     html,body{margin:0;height:100%;background:var(--bg)!important;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden;}
     #game{position:relative;width:100%;height:100%;}
 
-    #hud{
+    /* TOP BAR */
+    #topbar{
       position:absolute; top:12px; left:12px; right:12px;
       display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; z-index:60; pointer-events:none;
+      gap:12px;
+      z-index:120;
+      pointer-events:none;
     }
     .pill{
       background: var(--panel-bg);
@@ -48,13 +51,43 @@
       display:flex; gap:10px; align-items:center;
       white-space:nowrap;
       color: rgba(255,255,255,.92);
+      pointer-events:none;
     }
     .pill .label{font-size:12px;color:rgba(255,255,255,.72);font-weight:900}
     .pill .value{font-size:16px;font-weight:1100}
 
+    /* difficulty pill (ALWAYS visible) */
+    #difficultyPill{
+      pointer-events:auto;
+      display:flex; align-items:center; gap:8px;
+      padding: 8px 10px;
+    }
+    #difficultyPill .title{
+      font-size:12px;
+      font-weight:1000;
+      color: rgba(255,255,255,.78);
+      margin-right:2px;
+    }
+    .chip{
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight:1100;
+      font-size:12px;
+      color: rgba(255,255,255,.92);
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip.active{
+      background: rgba(120,90,255,.32);
+      border-color: rgba(120,90,255,.45);
+    }
+
+    /* QUESTION */
     #questionWrap{
-      position:absolute; top:12px; left:50%; transform:translateX(-50%);
-      z-index:61; pointer-events:none;
+      position:absolute; top:62px; left:50%; transform:translateX(-50%);
+      z-index:110; pointer-events:none;
       max-width:min(900px, calc(100% - 24px));
     }
     #questionBox{
@@ -150,7 +183,7 @@
         0 0 24px rgba(255,216,74,.70),
         0 16px 36px rgba(0,0,0,.55);
       animation: popUp .78s ease-out forwards;
-      z-index:80;
+      z-index:140;
     }
     @keyframes popUp{
       0%{opacity:0;transform:translate(-50%,-50%) scale(.9);}
@@ -164,7 +197,7 @@
       font-size:30px; font-weight:1200;
       pointer-events:none;
       opacity:0; transition:.18s;
-      z-index:70;
+      z-index:130;
       text-shadow: 0 16px 36px rgba(0,0,0,.55);
       color: rgba(255,255,255,.92);
     }
@@ -172,7 +205,7 @@
 
     #progressWrap{
       position:absolute; left:12px; right:12px; bottom:12px;
-      z-index:90; pointer-events:none;
+      z-index:115; pointer-events:none;
     }
     #progressBar{
       height: 20px;
@@ -200,42 +233,13 @@
       text-shadow:0 10px 22px rgba(0,0,0,.5);
     }
 
-    /* Выбор сложности */
-    #difficulty{
-      position:absolute;
-      left:50%; top:58px;
-      transform:translateX(-50%);
-      z-index:62;
-      display:flex;
-      gap:8px;
-      pointer-events:auto;
-    }
-    .chip{
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px;
-      padding: 7px 10px;
-      font-weight:1100;
-      font-size:12px;
-      color: rgba(255,255,255,.92);
-      cursor:pointer;
-      user-select:none;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .chip.active{
-      background: rgba(120,90,255,.32);
-      border-color: rgba(120,90,255,.45);
-    }
-
     #final{
       position:absolute; inset:0;
       background: rgba(0,0,0,.78);
       display:none;
       align-items:center; justify-content:center;
       flex-direction:column; gap:14px;
-      z-index:120; text-align:center; padding:20px;
+      z-index:200; text-align:center; padding:20px;
       color: rgba(255,255,255,.92);
     }
     #final.show{display:flex;}
@@ -252,7 +256,7 @@
 
     #version{
       position:absolute; right:12px; bottom:40px;
-      font-size:12px; opacity:.55; pointer-events:none; z-index:200;
+      font-size:12px; opacity:.55; pointer-events:none; z-index:220;
       color: rgba(0,0,0,.35);
     }
   </style>
@@ -260,18 +264,23 @@
 
 <body>
 <div id="game">
-  <div id="hud">
-    <div class="pill"><div class="label">Очки</div><div class="value" id="score">0</div></div>
+  <div id="topbar">
+    <div class="pill">
+      <div class="label">Очки</div>
+      <div class="value" id="score">0</div>
+    </div>
+
+    <div class="pill" id="difficultyPill">
+      <div class="title">Сложность:</div>
+      <div class="chip active" data-level="easy">Лёгкий</div>
+      <div class="chip" data-level="medium">Средний</div>
+      <div class="chip" data-level="hard">Сложный</div>
+    </div>
+
     <div class="pill" id="lives">❤️❤️❤️</div>
   </div>
 
   <div id="questionWrap"><div id="questionBox">—</div></div>
-
-  <div id="difficulty" aria-label="difficulty">
-    <div class="chip active" data-level="easy">Лёгкий</div>
-    <div class="chip" data-level="medium">Средний</div>
-    <div class="chip" data-level="hard">Сложный</div>
-  </div>
 
   <div id="scene">
     <div class="orb" id="player"></div>
@@ -292,11 +301,10 @@
     <button onclick="restart()">Играть ещё</button>
   </div>
 
-  <div id="version">v11</div>
+  <div id="version">v12</div>
 </div>
 
 <script>
-/* ============ CONFIG ============ */
 const GAME_CONFIG = {
   lives: 3,
   playerSpeed: 7,
@@ -307,16 +315,15 @@ const GAME_CONFIG = {
   sound: { enabled:true, ok:{volume:0.25}, bad:{volume:0.30} },
 
   layout: {
-    paddingTop: 110,
+    paddingTop: 130,      // оставили место под topbar+вопрос
     paddingBottom: 86,
-    laneMinDist: 100,
+    laneMinDist: 108,     // больше дистанция между "уровнями"
   },
 
-  // Настройки сложности: скорость + как часто спавним + максимум объектов
   difficultyPresets: {
-    easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 190, maxOnScreen: 4 },
-    medium: { speed: 3.2, spawnEveryMs:  850, minXGap: 160, maxOnScreen: 5 },
-    hard:   { speed: 4.1, spawnEveryMs:  700, minXGap: 140, maxOnScreen: 6 },
+    easy:   { speed: 2.4, spawnEveryMs: 1050, minXGap: 220, maxOnScreen: 4 },
+    medium: { speed: 3.2, spawnEveryMs:  900, minXGap: 200, maxOnScreen: 5 },
+    hard:   { speed: 4.1, spawnEveryMs:  760, minXGap: 180, maxOnScreen: 6 },
   },
 
   questions: [
@@ -337,7 +344,6 @@ const GAME_CONFIG = {
     ]},
   ],
 };
-/* =============================== */
 
 const scene = document.getElementById("scene");
 const player = document.getElementById("player");
@@ -405,8 +411,7 @@ function beepBad(){
   o1.stop(now+0.24); o2.stop(now+0.24);
 }
 
-/* difficulty */
-function getPreset(level){ return GAME_CONFIG.difficultyPresets[level] || GAME_CONFIG.difficultyPresets.easy; }
+function preset(level){ return GAME_CONFIG.difficultyPresets[level] || GAME_CONFIG.difficultyPresets.easy; }
 
 function initState(){
   state = {
@@ -418,23 +423,24 @@ function initState(){
     running: true,
 
     difficulty: "easy",
-    speed: getPreset("easy").speed,
-    spawnEveryMs: getPreset("easy").spawnEveryMs,
-    minXGap: getPreset("easy").minXGap,
-    maxOnScreen: getPreset("easy").maxOnScreen,
+    speed: preset("easy").speed,
+    spawnEveryMs: preset("easy").spawnEveryMs,
+    minXGap: preset("easy").minXGap,
+    maxOnScreen: preset("easy").maxOnScreen,
 
     lastSpawnAt: performance.now(),
+    lastSpawnX: null,      // ✅ для гарантированного gap
+    lastLaneY: null,       // ✅ чтобы не спавнить подряд в ту же полосу
   };
 }
 
 function applyDifficulty(level){
-  const p = getPreset(level);
+  const p = preset(level);
   state.difficulty = level;
   state.speed = p.speed;
   state.spawnEveryMs = p.spawnEveryMs;
   state.minXGap = p.minXGap;
   state.maxOnScreen = p.maxOnScreen;
-  // не сбрасываем игру — просто меняем параметры потока
   chips.forEach(c=>c.classList.toggle("active", c.dataset.level===level));
 }
 
@@ -447,7 +453,6 @@ function updateProgress(){
   progressFill.style.width = pct + "%";
   progressText.textContent = `Вопрос ${current} из ${total}`;
 }
-
 function updateHUD(){
   scoreEl.textContent = String(state.score);
   livesEl.textContent = hearts(state.lives);
@@ -458,24 +463,39 @@ function updateHUD(){
 function clearAnswers(){
   state.active.forEach(o=>o.el.remove());
   state.active = [];
+  state.lastSpawnX = null;
+  state.lastLaneY = null;
 }
 
 function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
 
-function pickLaneY(){
+function buildLanes(){
   const minY = GAME_CONFIG.layout.paddingTop;
   const maxY = scene.clientHeight - GAME_CONFIG.layout.paddingBottom;
   const step = GAME_CONFIG.layout.laneMinDist;
   const lanes = [];
   for(let y=minY; y<=maxY; y+=step) lanes.push(y);
-  if(!lanes.length) return Math.round((minY+maxY)/2);
-  return lanes[randInt(0, lanes.length-1)];
+  return lanes.length ? lanes : [Math.round((minY+maxY)/2)];
+}
+
+function pickLaneY(){
+  const lanes = buildLanes();
+  // не спавним подряд в ту же полосу
+  let y = lanes[randInt(0, lanes.length-1)];
+  if(state.lastLaneY !== null && lanes.length > 1){
+    let tries = 0;
+    while(y === state.lastLaneY && tries < 10){
+      y = lanes[randInt(0, lanes.length-1)];
+      tries++;
+    }
+  }
+  state.lastLaneY = y;
+  return y;
 }
 
 function createAnswerOrb(answer){
   const el = document.createElement("div");
   el.className = "orb answer";
-  el.dataset.correct = answer.correct ? "1":"0";
 
   const lab = document.createElement("div");
   lab.className = "lab";
@@ -490,38 +510,41 @@ function createAnswerOrb(answer){
   return el;
 }
 
-function rightMostX(){
-  let maxX = -Infinity;
-  for(const o of state.active){
-    const x = o.el.offsetLeft;
-    if(x > maxX) maxX = x;
-  }
-  return maxX;
-}
+function rightEdgeX(){ return scene.clientWidth + 50; }
 
 function maybeSpawn(now){
   if(state.locked) return;
   if(state.active.length >= state.maxOnScreen) return;
 
-  // соблюдаем "немного пространства": не спавним если самый правый ещё слишком близко к правому краю
-  const rightEdge = scene.clientWidth + 50;
-  const maxX = rightMostX();
-  if(maxX !== -Infinity && maxX > (rightEdge - state.minXGap)) return;
-
+  // частота спавна
   if(now - state.lastSpawnAt < state.spawnEveryMs) return;
+
+  // ✅ ГАРАНТИРОВАННЫЙ ЗАЗОР:
+  // новый объект появляется только если предыдущий уехал влево минимум на minXGap
+  const spawnX = rightEdgeX();
+  if(state.lastSpawnX !== null){
+    const delta = state.lastSpawnX - spawnX; // обычно 0
+    // вместо delta используем "сколько уехал" предыдущий: lastSpawnElX - spawnX
+    // проще: проверим текущую позицию самого нового объекта на экране
+    let newestX = -Infinity;
+    for(const o of state.active) newestX = Math.max(newestX, o.el.offsetLeft);
+    if(newestX > spawnX - state.minXGap) return;
+  }
 
   const q = GAME_CONFIG.questions[state.qIndex];
   const pick = q.answers[randInt(0, q.answers.length-1)];
 
   const el = createAnswerOrb(pick);
-  el.style.left = rightEdge + "px";
+  el.style.left = spawnX + "px";
   el.style.top = pickLaneY() + "px";
   el.style.transform = "translate(-50%,-50%)";
+  el.dataset.correct = pick.correct ? "1":"0";
 
   scene.appendChild(el);
   state.active.push({ el, data: pick, hit:false });
 
   state.lastSpawnAt = now;
+  state.lastSpawnX = spawnX;
 }
 
 function showFeedback(text, ok){
@@ -534,7 +557,7 @@ function showFeedback(text, ok){
 function showPointsPop(x,y,points){
   const pop = document.createElement("div");
   pop.className = "pop";
-  pop.textContent = GAME_CONFIG.scoring.popText(points);
+  pop.textContent = `+${points}`;
   pop.style.left = x + "px";
   pop.style.top = y + "px";
   scene.appendChild(pop);
@@ -622,7 +645,7 @@ function loop(now){
   y = Math.max(0, Math.min(scene.clientHeight - player.clientHeight, y));
   player.style.top = y + "px";
 
-  // spawn (спокойно и не слишком часто)
+  // spawn
   maybeSpawn(now);
 
   // move + remove missed (пропуск НЕ ошибка)
@@ -630,8 +653,7 @@ function loop(now){
     const leftLimit = -160;
     const next = [];
     for(const obj of state.active){
-      const x = obj.el.offsetLeft - state.speed;
-      obj.el.style.left = x + "px";
+      obj.el.style.left = (obj.el.offsetLeft - state.speed) + "px";
       checkCollision(obj);
 
       if(obj.el.isConnected){
@@ -651,6 +673,7 @@ function restart(){
   raf = null;
 
   initState();
+  applyDifficulty("easy");
   updateHUD();
   player.style.top = "50%";
   clearAnswers();
@@ -659,7 +682,7 @@ function restart(){
   loop(performance.now());
 }
 
-/* UI events */
+/* UI */
 chips.forEach(ch=>{
   ch.addEventListener("click", async ()=>{
     if(!audioUnlocked) await unlockAudio();
