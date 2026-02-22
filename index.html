@@ -6,8 +6,7 @@
   <title>Игра + Редактор (Genially, one-file)</title>
   <link rel="icon" href="data:,">
   <style>
-    /* Google Fonts (если где-то блокируются — будет fallback на системные) */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Montserrat:wght@400;600;700;900&family=Rubik:wght@400;600;700;900&family=Nunito:wght@400;600;700;900&family=Oswald:wght@400;600;700&family=Russo+One&family=Press+Start+2P&family=Roboto+Condensed:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Montserrat:wght@400;600;700;900&family=Rubik:wght@400;600;700;900&family=Nunito:wght@400;600;700;900&family=Oswald:wght@400;600;700&family=Russo+One&family=Press+Start+2P&family=Roboto+Condensed:wght@400;700&family=Poppins:wght@400;600;700;900&family=Play:wght@400;700&family=Comfortaa:wght@400;700&family=PT+Sans:wght@400;700&display=swap');
 
     :root{
       --ui-card: rgba(18,16,32,.78);
@@ -41,7 +40,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-    #left{width:min(920px, 70vw);min-width:420px;display:flex;flex-direction:column;overflow:hidden;}
+    #left{width:min(980px, 72vw);min-width:420px;display:flex;flex-direction:column;overflow:hidden;}
     #right{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     .head{
       padding:14px 14px 10px;
@@ -116,15 +115,6 @@
       backdrop-filter: blur(6px);-webkit-backdrop-filter: blur(6px);
     }
 
-    .qitem{border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px;background: rgba(0,0,0,.12);margin-bottom:10px;}
-    .qtop{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px;}
-    .qtop strong{font-size:12px;}
-    .answers{display:flex;flex-direction:column;gap:8px;}
-    .ansRow{display:grid;grid-template-columns: 1fr 84px;gap:8px;align-items:center;}
-    .chk{display:flex;gap:8px;align-items:center;font-size:12px;color: rgba(255,255,255,.85);}
-    .chk input{width:18px;height:18px;}
-    .miniBtn{padding:8px 10px;border-radius:10px;font-size:12px;}
-
     #previewWrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
     #previewFrame{width:100%;flex:1;border:0;background:transparent;}
 
@@ -155,7 +145,7 @@
     <div class="head">
       <div>
         <h1>Редактор игры (Genially)</h1>
-        <div class="sub">⚡ Мгновенный предпросмотр без кэша • Сенсор • Парение/наклон • Эффекты текста</div>
+        <div class="sub">Live-предпросмотр без кэша • Сенсор • Неон/обводка • Игрок без круга • W/S</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -165,28 +155,28 @@
         <h3>Ссылка проекта (для iframe Genially)</h3>
         <label>Base URL (полный путь к этому .html)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/game.html" />
-        <div class="hint">Если Genially показывает старую версию — обнови GitHub Pages и подожди пару минут.</div>
+        <div class="hint">В предпросмотре справа настройки применяются мгновенно, без перезагрузки.</div>
       </div>
 
       <div class="section">
-        <h3>Текст и шрифты</h3>
+        <h3>Шрифт</h3>
         <div class="grid">
           <div>
             <label>Шрифт</label>
             <select id="fontFamily">
               <option value="system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">Системный</option>
-
-              <option value="'Inter', system-ui, sans-serif">Inter (modern)</option>
+              <option value="'Inter', system-ui, sans-serif">Inter</option>
+              <option value="'Poppins', system-ui, sans-serif">Poppins</option>
               <option value="'Montserrat', system-ui, sans-serif">Montserrat</option>
               <option value="'Rubik', system-ui, sans-serif">Rubik</option>
               <option value="'Nunito', system-ui, sans-serif">Nunito</option>
               <option value="'Roboto Condensed', system-ui, sans-serif">Roboto Condensed</option>
               <option value="'Oswald', system-ui, sans-serif">Oswald</option>
-              <option value="'Russo One', system-ui, sans-serif">Russo One (RU)</option>
-              <option value="'Press Start 2P', ui-monospace, monospace">Press Start 2P (pixel)</option>
-
+              <option value="'Comfortaa', system-ui, sans-serif">Comfortaa</option>
+              <option value="'PT Sans', system-ui, sans-serif">PT Sans</option>
+              <option value="'Russo One', system-ui, sans-serif">Russo One</option>
+              <option value="'Press Start 2P', ui-monospace, monospace">Press Start 2P</option>
               <option value="'Arial', sans-serif">Arial</option>
-              <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
               <option value="'Verdana', sans-serif">Verdana</option>
               <option value="'Georgia', serif">Georgia</option>
               <option value="'Times New Roman', serif">Times New Roman</option>
@@ -196,6 +186,7 @@
             <label>Насыщенность</label>
             <select id="fontWeight">
               <option value="900">Очень жирный</option>
+              <option value="800">Жирный+</option>
               <option value="700">Жирный</option>
               <option value="600">Полужирный</option>
               <option value="500">Обычный</option>
@@ -203,9 +194,10 @@
             </select>
           </div>
         </div>
+      </div>
 
-        <div class="hr"></div>
-
+      <div class="section">
+        <h3>Вопрос и HUD</h3>
         <div class="grid">
           <div><label>Размер вопроса (px)</label><input id="questionSize" type="number" min="12" max="70" value="24" /></div>
           <div><label>Цвет текста вопроса</label><input id="questionColor" type="color" value="#ffffff" /></div>
@@ -213,16 +205,16 @@
           <div><label>Цвет фона вопроса</label><input id="questionBgColor" type="color" value="#0a0a14" /></div>
           <div><label>Цвет рамки вопроса</label><input id="questionBorderColor" type="color" value="#ffffff" /></div>
 
-          <div><label>Размер очков (px)</label><input id="scoreSize" type="number" min="12" max="70" value="24" /></div>
-          <div><label>Размер жизней (px)</label><input id="livesSize" type="number" min="12" max="70" value="24" /></div>
-
           <div><label>HUD: цвет текста</label><input id="hudTextColor" type="color" value="#ffffff" /></div>
           <div><label>HUD: цвет подложки</label><input id="hudPanelColor" type="color" value="#0f0f19" /></div>
+
+          <div><label>Размер очков (px)</label><input id="scoreSize" type="number" min="12" max="70" value="24" /></div>
+          <div><label>Размер жизней (px)</label><input id="livesSize" type="number" min="12" max="70" value="24" /></div>
         </div>
       </div>
 
       <div class="section">
-        <h3>Эффекты текста (неон / обводка) — общие</h3>
+        <h3>Эффекты текста (общие)</h3>
 
         <div class="checkGrid" style="margin-bottom:10px;">
           <div class="checkItem"><input id="fxShadow" type="checkbox" /> <span>Тень</span></div>
@@ -234,42 +226,29 @@
         <label>Применять к</label>
         <div class="checkGrid" style="margin-bottom:10px;">
           <div class="checkItem"><input id="fxToQuestion" type="checkbox" checked /> <span>Вопрос</span></div>
-          <div class="checkItem"><input id="fxToHud" type="checkbox" checked /> <span>HUD (очки/жизни/прогресс)</span></div>
+          <div class="checkItem"><input id="fxToHud" type="checkbox" checked /> <span>HUD</span></div>
           <div class="checkItem"><input id="fxToAnswers" type="checkbox" checked /> <span>Ответы</span></div>
           <div class="checkItem"><input id="fxToPoints" type="checkbox" checked /> <span>“+очки”</span></div>
         </div>
 
         <div class="grid">
-          <div>
-            <label>Цвет эффекта</label>
-            <input id="fxColor" type="color" value="#ffd84a" />
-          </div>
-          <div>
-            <label>Сила эффекта (1–12)</label>
-            <input id="fxStrength" type="number" min="1" max="12" value="7" />
-          </div>
+          <div><label>Цвет эффекта</label><input id="fxColor" type="color" value="#ffd84a" /></div>
+          <div><label>Сила эффекта (1–12)</label><input id="fxStrength" type="number" min="1" max="12" value="7" /></div>
         </div>
 
         <div class="grid" style="margin-top:10px;">
-          <div>
-            <label>Толщина контура (px)</label>
-            <input id="strokeWidth" type="number" min="0" max="3" step="0.1" value="0.6" />
-          </div>
-          <div>
-            <label>Цвет контура</label>
-            <input id="strokeColor" type="color" value="#000000" />
-          </div>
+          <div><label>Толщина контура (px)</label><input id="strokeWidth" type="number" min="0" max="3" step="0.1" value="0.6" /></div>
+          <div><label>Цвет контура</label><input id="strokeColor" type="color" value="#000000" /></div>
         </div>
-
-        <div class="hint">Это общие эффекты (вопрос/HUD/ответы/+очки). Ниже есть отдельные эффекты именно для текста ответа.</div>
       </div>
 
       <div class="section">
-        <h3>Цвета UI</h3>
+        <h3>UI цвета</h3>
         <div class="grid">
           <div><label>Цвет иконок (старт/финиш)</label><input id="iconColor" type="color" value="#7a5aff" /></div>
           <div><label>Цвет кнопок</label><input id="btnColor" type="color" value="#7a5aff" /></div>
           <div><label>Цвет текста на кнопках</label><input id="btnTextColor" type="color" value="#ffffff" /></div>
+
           <div><label>Цвет прогресса</label><input id="progressColor" type="color" value="#7a5aff" /></div>
           <div><label>Высота прогресса (px)</label><input id="progressHeight" type="number" min="14" max="70" value="30" /></div>
         </div>
@@ -314,7 +293,7 @@
       </div>
 
       <div class="section">
-        <h3>Игрок (картинка без круга)</h3>
+        <h3>Игрок (только картинка, без круга)</h3>
         <div class="sideBySide">
           <div>
             <div class="grid">
@@ -362,12 +341,12 @@
       </div>
 
       <div class="section">
-        <h3>Ответ (объект) — без панели/фона</h3>
+        <h3>Ответ (объект) — только твоя картинка</h3>
         <div class="sideBySide">
           <div>
             <div class="grid">
               <div>
-                <label>Картинка ответа (фон объекта) — URL</label>
+                <label>Картинка ответа (объект) — URL</label>
                 <input id="answerCardImgUrl" type="text" placeholder="https://..." />
                 <div class="hint">или загрузить:</div>
                 <input id="answerCardImgFile" type="file" accept="image/*" />
@@ -388,7 +367,7 @@
             </div>
 
             <div class="hr"></div>
-            <h3 style="margin:0 0 10px;">Текст ответа: цвет / тень / неон</h3>
+            <h3 style="margin:0 0 10px;">Текст ответа</h3>
 
             <div class="grid">
               <div>
@@ -407,18 +386,17 @@
               </div>
 
               <div>
-                <label>Цвет неона (и эффекта)</label>
+                <label>Цвет неона</label>
                 <input id="answerTextFxColor" type="color" value="#ffd84a" />
               </div>
 
               <div>
-                <label>Сила неона/эффекта (1–12)</label>
+                <label>Сила неона (1–12)</label>
                 <input id="answerTextFxStrength" type="number" min="1" max="12" value="7" />
               </div>
             </div>
 
             <div class="hr"></div>
-
             <h3 style="margin:0 0 10px;">Положение/размер текста на объекте</h3>
             <div class="grid">
               <div>
@@ -445,8 +423,7 @@
             </div>
 
             <div class="hr"></div>
-
-            <h3 style="margin:0 0 10px;">Картинка объекта</h3>
+            <h3 style="margin:0 0 10px;">Картинка объекта (позиция/масштаб)</h3>
             <div class="grid">
               <div>
                 <label>Fit</label>
@@ -478,21 +455,18 @@
               </div>
             </div>
 
-            <div class="hint">Буквы вариантов убраны. Ответы — только твоя картинка + текст.</div>
+            <div class="hint">Ответы — картинка + текст. Если текст пустой — будет “только картинка”.</div>
           </div>
 
           <div class="previewCard">
             <div class="previewCaption">Предпросмотр ответа</div>
             <div id="answerPreviewObj" style="width:170px;height:170px;position:relative;">
-              <div id="answerPreviewBg"
-                   style="position:absolute;inset:0;background:transparent center/contain no-repeat;transform:scale(1);">
-              </div>
-
+              <div id="answerPreviewBg" style="position:absolute;inset:0;background:transparent center/contain no-repeat;transform:scale(1);"></div>
               <div id="answerPreviewText"
                    style="position:absolute;left:50%;top:64%;
                           transform:translate(-50%,-50%) scale(1);
                           text-align:center;
-                          color:rgba(255,255,255,.95);
+                          color:#fff;
                           font-weight:800;
                           font-size:14px;
                           padding:6px 10px;
@@ -506,14 +480,55 @@
         </div>
       </div>
 
+      <!-- БАЗОВЫЕ АССЕТЫ + НЕОН ФИГУРОК -->
       <div class="section">
-        <h3>Правила игры</h3>
+        <h3>Базовые ассеты + неон фигурок</h3>
         <div class="grid">
-          <div><label>Жизни</label><input id="livesCount" type="number" min="1" max="10" value="3" /></div>
-          <div><label>Очки за правильный</label><input id="pointsPerCorrect" type="number" min="1" max="200" value="10" /></div>
+          <div>
+            <label>Базовый игрок</label>
+            <select id="builtinPlayer">
+              <option value="fish">Рыбка</option>
+              <option value="plane">Самолётик</option>
+              <option value="car">Машина</option>
+            </select>
+          </div>
+          <div>
+            <label>Базовый объект ответа</label>
+            <select id="builtinAnswer">
+              <option value="cone">Дорожный конус</option>
+              <option value="bubbles">Пузырьки</option>
+              <option value="cloud">Облако</option>
+            </select>
+          </div>
+
+          <div class="checkItem">
+            <input id="spriteNeonOn" type="checkbox" checked />
+            <span>Неон у фигурок (игрок/ответ/бонусы)</span>
+          </div>
+          <div>
+            <label>Цвет неона</label>
+            <input id="spriteNeonColor" type="color" value="#7a5aff" />
+          </div>
+
+          <div>
+            <label>Сила неона (0–40)</label>
+            <div class="rangeRow">
+              <input id="spriteNeonStrengthR" type="range" min="0" max="40" step="1" value="14" />
+              <input id="spriteNeonStrength" type="number" min="0" max="40" step="1" value="14" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Игра: очки и жизни</h3>
+        <div class="grid">
+          <div><label>Количество жизней</label><input id="livesCount" type="number" min="1" max="10" value="3" /></div>
+          <div><label>Очков за правильный ответ</label><input id="pointsPerCorrect" type="number" min="1" max="200" value="10" /></div>
           <div><label>Откат вопросов (cooldown)</label><input id="cooldownTurns" type="number" min="0" max="10" value="3" /></div>
           <div><label>Скорость игрока</label><input id="playerSpeed" type="number" min="2" max="18" value="7" /></div>
         </div>
+        <div class="hint" style="margin-top:8px;">Бонусы: ❤️ возвращает жизнь, 💣 отнимает жизнь и очки.</div>
       </div>
 
       <div class="section">
@@ -523,58 +538,22 @@
         <div class="hr"></div>
         <h3 style="margin:0 0 10px;">Лёгкий</h3>
         <div class="grid">
-          <div>
-            <label>Скорость</label>
-            <div class="rangeRow">
-              <input id="easySpeedR" type="range" min="0.8" max="8" step="0.1" value="2.4" />
-              <input id="easySpeed" type="number" min="0.8" max="8" step="0.1" value="2.4" />
-            </div>
-          </div>
-          <div>
-            <label>Частота появления (мс)</label>
-            <div class="rangeRow">
-              <input id="easySpawnR" type="range" min="350" max="2200" step="10" value="1050" />
-              <input id="easySpawn" type="number" min="350" max="2200" step="10" value="1050" />
-            </div>
-          </div>
+          <div><label>Скорость</label><div class="rangeRow"><input id="easySpeedR" type="range" min="0.8" max="8" step="0.1" value="2.4" /><input id="easySpeed" type="number" min="0.8" max="8" step="0.1" value="2.4" /></div></div>
+          <div><label>Частота появления (мс)</label><div class="rangeRow"><input id="easySpawnR" type="range" min="350" max="2200" step="10" value="1050" /><input id="easySpawn" type="number" min="350" max="2200" step="10" value="1050" /></div></div>
         </div>
 
         <div class="hr"></div>
         <h3 style="margin:0 0 10px;">Средний</h3>
         <div class="grid">
-          <div>
-            <label>Скорость</label>
-            <div class="rangeRow">
-              <input id="medSpeedR" type="range" min="0.8" max="8" step="0.1" value="3.2" />
-              <input id="medSpeed" type="number" min="0.8" max="8" step="0.1" value="3.2" />
-            </div>
-          </div>
-          <div>
-            <label>Частота появления (мс)</label>
-            <div class="rangeRow">
-              <input id="medSpawnR" type="range" min="350" max="2200" step="10" value="900" />
-              <input id="medSpawn" type="number" min="350" max="2200" step="10" value="900" />
-            </div>
-          </div>
+          <div><label>Скорость</label><div class="rangeRow"><input id="medSpeedR" type="range" min="0.8" max="8" step="0.1" value="3.2" /><input id="medSpeed" type="number" min="0.8" max="8" step="0.1" value="3.2" /></div></div>
+          <div><label>Частота появления (мс)</label><div class="rangeRow"><input id="medSpawnR" type="range" min="350" max="2200" step="10" value="900" /><input id="medSpawn" type="number" min="350" max="2200" step="10" value="900" /></div></div>
         </div>
 
         <div class="hr"></div>
         <h3 style="margin:0 0 10px;">Сложный</h3>
         <div class="grid">
-          <div>
-            <label>Скорость</label>
-            <div class="rangeRow">
-              <input id="hardSpeedR" type="range" min="0.8" max="8" step="0.1" value="4.1" />
-              <input id="hardSpeed" type="number" min="0.8" max="8" step="0.1" value="4.1" />
-            </div>
-          </div>
-          <div>
-            <label>Частота появления (мс)</label>
-            <div class="rangeRow">
-              <input id="hardSpawnR" type="range" min="350" max="2200" step="10" value="760" />
-              <input id="hardSpawn" type="number" min="350" max="2200" step="10" value="760" />
-            </div>
-          </div>
+          <div><label>Скорость</label><div class="rangeRow"><input id="hardSpeedR" type="range" min="0.8" max="8" step="0.1" value="4.1" /><input id="hardSpeed" type="number" min="0.8" max="8" step="0.1" value="4.1" /></div></div>
+          <div><label>Частота появления (мс)</label><div class="rangeRow"><input id="hardSpawnR" type="range" min="350" max="2200" step="10" value="760" /><input id="hardSpawn" type="number" min="350" max="2200" step="10" value="760" /></div></div>
         </div>
       </div>
 
@@ -588,14 +567,37 @@
         </div>
       </div>
 
+      <!-- БЛОЧНЫЙ ВВОД ЗАДАНИЙ -->
       <div class="section">
-        <h3>Вопросы и варианты</h3>
-        <div class="row">
-          <button class="btn miniBtn" id="addQuestionBtn">+ Добавить вопрос</button>
+        <h3>Вопросы и ответы (блоком)</h3>
+        <div class="hint">
+          Вопросы: каждая строка — один вопрос. Ответы: каждая строка — варианты через <b>|</b>.
+          <br>Важно: <b>первый вариант в строке — правильный</b>.
+          <br>Если первый вариант пустой — будет “только картинка без текста”.
+        </div>
+
+        <div class="grid" style="margin-top:10px;">
+          <div>
+            <label>Вопросы (по строкам)</label>
+            <textarea id="bulkQuestions" placeholder="Столица Франции?
+2 + 2 = ?"></textarea>
+          </div>
+          <div>
+            <label>Ответы (по строкам, через |)</label>
+            <textarea id="bulkAnswers" placeholder="Париж|Рим|Берлин
+4|3|5"></textarea>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <button class="btn miniBtn primary" id="applyBulkBtn">Применить блок</button>
+          <button class="btn miniBtn" id="fillBulkFromCfgBtn">Заполнить из текущих</button>
           <button class="btn miniBtn danger" id="resetQuestionsBtn">Сбросить демо</button>
         </div>
-        <div class="hint">Галочка “верный” должна быть ровно у одного варианта.</div>
-        <div id="questionsList" style="margin-top:10px;"></div>
+
+        <div class="hint">
+          Пример “только картинка”: <code>|Рим|Берлин</code> — первый вариант пустой, текст не рисуется.
+        </div>
       </div>
 
       <div class="section">
@@ -605,10 +607,9 @@
           <button class="btn" id="copyIframeBtn">Скопировать</button>
         </div>
         <textarea id="codeBox" readonly placeholder="Тут появится iframe..."></textarea>
-        <div class="hint">Даже если Genially кэширует iframe — настройки всё равно применяются, потому что предпросмотр живой.</div>
       </div>
 
-      <div class="hint">Все изменения автоматически влияют на предпросмотр справа (без перезагрузки).</div>
+      <div class="hint">Все изменения автоматически влияют на предпросмотр справа.</div>
     </div>
   </div>
 
@@ -666,7 +667,88 @@ async function fileToDataUrl(file){
   });
 }
 
-/* ===== text fx builder (общий) ===== */
+/* ===== встроенные ассеты (data:image/svg+xml) ===== */
+function svgData(svg){
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
+}
+const BUILTIN = {
+  players: {
+    fish: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#4cff9e"/><stop offset="1" stop-color="#7a5aff"/></linearGradient></defs>
+        <path d="M40 128c30-52 96-84 162-66 6-18 24-36 42-42-6 26-6 44 0 66-6 22-6 40 0 66-18-6-36-24-42-42-66 18-132-14-162-66z" fill="url(#g)"/>
+        <circle cx="150" cy="108" r="10" fill="#0a0a14"/>
+        <path d="M64 128c10 14 24 24 44 28" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+    `),
+    plane: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <path d="M18 138l222-70-56 78 56 42-222-50z" fill="#7a5aff"/>
+        <path d="M70 128l64-22 40 30-72 20z" fill="#ffffff" fill-opacity=".85"/>
+        <path d="M18 138l222-70" stroke="#000" stroke-opacity=".25" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+    `),
+    car: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <path d="M54 144l20-54h108l20 54v40H54z" fill="#ff6b6b"/>
+        <path d="M88 98h80l10 26H78z" fill="#ffffff" fill-opacity=".85"/>
+        <circle cx="88" cy="184" r="18" fill="#0a0a14"/><circle cx="168" cy="184" r="18" fill="#0a0a14"/>
+        <circle cx="88" cy="184" r="8" fill="#ffffff" fill-opacity=".8"/><circle cx="168" cy="184" r="8" fill="#ffffff" fill-opacity=".8"/>
+      </svg>
+    `),
+  },
+  answers: {
+    cone: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <path d="M128 18l66 198H62L128 18z" fill="#ffb020"/>
+        <path d="M86 132h84" stroke="#ffffff" stroke-opacity=".9" stroke-width="16" stroke-linecap="round"/>
+        <path d="M74 168h108" stroke="#ffffff" stroke-opacity=".9" stroke-width="16" stroke-linecap="round"/>
+      </svg>
+    `),
+    bubbles: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <circle cx="92" cy="132" r="44" fill="#4cff9e" fill-opacity=".35" stroke="#ffffff" stroke-opacity=".6" stroke-width="6"/>
+        <circle cx="150" cy="110" r="26" fill="#7a5aff" fill-opacity=".30" stroke="#ffffff" stroke-opacity=".6" stroke-width="6"/>
+        <circle cx="160" cy="168" r="18" fill="#ffd84a" fill-opacity=".25" stroke="#ffffff" stroke-opacity=".55" stroke-width="6"/>
+      </svg>
+    `),
+    cloud: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <path d="M86 192h92c32 0 58-18 58-44 0-22-18-38-42-42-8-38-44-58-78-40-16-18-46-18-62 0-30 4-52 26-52 50 0 42 38 76 84 76z"
+          fill="#ffffff" fill-opacity=".85"/>
+      </svg>
+    `),
+  },
+  bonus: {
+    heart: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <path d="M128 226S18 164 18 92c0-28 22-50 50-50 20 0 38 10 48 26 10-16 28-26 48-26 28 0 50 22 50 50 0 72-110 134-110 134z"
+          fill="#ff3b6b"/>
+        <path d="M78 92c8-18 26-28 44-22" stroke="#fff" stroke-opacity=".7" stroke-width="10" stroke-linecap="round"/>
+      </svg>
+    `),
+    bomb: svgData(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+        <circle cx="120" cy="150" r="74" fill="#0a0a14"/>
+        <circle cx="98" cy="130" r="14" fill="#ffffff" fill-opacity=".18"/>
+        <path d="M164 96l28-28 18 18-28 28" stroke="#ffd84a" stroke-width="14" stroke-linecap="round"/>
+        <path d="M202 54c10 10 10 26 0 36" stroke="#ff6b6b" stroke-width="12" stroke-linecap="round"/>
+      </svg>
+    `),
+  }
+};
+
+function buildSpriteNeonFilter(cfg){
+  if(!cfg.spriteNeonOn) return "none";
+  const s = clampInt(cfg.spriteNeonStrength, 0, 40, 14);
+  if(s <= 0) return "none";
+  const c = cfg.spriteNeonColor || "#7a5aff";
+  return `drop-shadow(0 0 ${Math.max(2, s*0.6)}px ${hexToRgba(c,0.85)})
+          drop-shadow(0 0 ${Math.max(6, s*1.2)}px ${hexToRgba(c,0.55)})
+          drop-shadow(0 0 ${Math.max(10, s*1.8)}px ${hexToRgba(c,0.35)})`;
+}
+
+/* ===== text fx (общие) ===== */
 function buildFxCss(cfg){
   const s = clampInt(cfg.fxStrength, 1, 12, 7);
   const c = cfg.fxColor || "#ffd84a";
@@ -683,7 +765,6 @@ function buildFxCss(cfg){
     shadowParts.push(`0 0 ${b2}px ${hexToRgba(c,0.65)}`);
     shadowParts.push(`0 0 ${b3}px ${hexToRgba(c,0.45)}`);
   }
-
   const textShadow = shadowParts.length ? `text-shadow:${shadowParts.join(",")};` : "";
 
   let stroke = "";
@@ -698,7 +779,7 @@ function buildFxCss(cfg){
   return `${textShadow}${stroke}`;
 }
 
-/* ===== отдельный FX для текста ответа (цвет/тень/неон) ===== */
+/* ===== отдельный FX для текста ответа ===== */
 function buildAnswerTextShadow(cfg){
   const s = clampInt(cfg.answerTextFxStrength ?? 7, 1, 12, 7);
   const c = cfg.answerTextFxColor || "#ffd84a";
@@ -731,15 +812,16 @@ const DEFAULT_CFG = {
   scoreSize: 24,
   livesSize: 24,
 
-  /* общие эффекты */
   fxShadow: false,
   fxNeon: true,
   fxStroke: true,
   fxStrokeNeon: false,
+
   fxToQuestion: true,
   fxToHud: true,
   fxToAnswers: true,
   fxToPoints: true,
+
   fxColor: "#ffd84a",
   fxStrength: 7,
   strokeWidth: 0.6,
@@ -767,7 +849,7 @@ const DEFAULT_CFG = {
   answerSize: 86,
   answerTextBgOn: true,
 
-  /* отдельные настройки текста ответа */
+  /* ВАЖНО: цвет текста ответа */
   answerTextColor: "#ffffff",
   answerTextShadowOn: true,
   answerTextNeonOn: false,
@@ -783,6 +865,7 @@ const DEFAULT_CFG = {
   answerCardPosX: 50,
   answerCardPosY: 50,
 
+  /* ВАЖНО: жизни/очки */
   livesCount: 3,
   pointsPerCorrect: 10,
   cooldownTurns: 3,
@@ -799,6 +882,24 @@ const DEFAULT_CFG = {
     hard:   { speed: 4.1, spawnEveryMs:  760, minXGap: 180, maxOnScreen: 6 },
   },
 
+  /* ===== базовые ассеты ===== */
+  builtinPlayer: "fish",          // fish|plane|car
+  builtinAnswer: "cone",          // cone|bubbles|cloud
+
+  /* ===== неон у фигурок (спрайты: игрок/объекты/бонусы) ===== */
+  spriteNeonOn: true,
+  spriteNeonColor: "#7a5aff",
+  spriteNeonStrength: 14,         // 0..40
+
+  /* ===== ответы: можно "только картинка" ===== */
+  allowImageOnlyAnswers: true,
+
+  /* ===== бонусы ===== */
+  bonusesOn: true,
+  bonusChance: 0.14,              // шанс что прилетит бонус вместо ответа
+  bombPenaltyPoints: 15,          // сколько очков отнимает бомба
+  maxLives: 5,
+
   questions: [
     { q:"Столица Франции?", answers:[
       {label:"A", text:"Париж",  correct:true},
@@ -806,8 +907,8 @@ const DEFAULT_CFG = {
       {label:"C", text:"Берлин", correct:false},
     ]},
     { q:"2 + 2 = ?", answers:[
-      {label:"A", text:"3", correct:false},
-      {label:"B", text:"4", correct:true},
+      {label:"A", text:"4", correct:true},
+      {label:"B", text:"3", correct:false},
       {label:"C", text:"5", correct:false},
     ]},
   ]
@@ -817,18 +918,14 @@ const params = new URLSearchParams(location.search);
 const mode = params.get("mode");
 
 /* ==========================================================
-   LIVE предпросмотр без кэша:
-   - редактор загружает iframe один раз (?mode=play&live=1)
-   - потом отправляет cfg через postMessage
+   LIVE предпросмотр:
+   iframe загружается 1 раз, cfg летит через postMessage
    ========================================================== */
 
 if(mode === "play"){
   document.getElementById("gameRoot").style.display = "block";
-
-  // старт из cfg в URL (если есть)
   startGameMode(null);
 
-  // live обновления из редактора
   window.addEventListener("message", (e)=>{
     const d = e.data;
     if(!d || typeof d !== "object") return;
@@ -908,7 +1005,6 @@ function startEditorMode(){
     answerSize: document.getElementById("answerSize"),
     answerTextBgOn: document.getElementById("answerTextBgOn"),
 
-    /* NEW: текст ответа */
     answerTextColor: document.getElementById("answerTextColor"),
     answerTextShadowOn: document.getElementById("answerTextShadowOn"),
     answerTextNeonOn: document.getElementById("answerTextNeonOn"),
@@ -930,7 +1026,6 @@ function startEditorMode(){
     answerCardPosYR: document.getElementById("answerCardPosYR"),
     answerCardPosY: document.getElementById("answerCardPosY"),
 
-    answerPreviewObj: document.getElementById("answerPreviewObj"),
     answerPreviewBg: document.getElementById("answerPreviewBg"),
     answerPreviewText: document.getElementById("answerPreviewText"),
 
@@ -959,9 +1054,20 @@ function startEditorMode(){
     finalWinText: document.getElementById("finalWinText"),
     finalLoseText: document.getElementById("finalLoseText"),
 
-    questionsList: document.getElementById("questionsList"),
-    addQuestionBtn: document.getElementById("addQuestionBtn"),
+    // bulk editor
+    bulkQuestions: document.getElementById("bulkQuestions"),
+    bulkAnswers: document.getElementById("bulkAnswers"),
+    applyBulkBtn: document.getElementById("applyBulkBtn"),
+    fillBulkFromCfgBtn: document.getElementById("fillBulkFromCfgBtn"),
     resetQuestionsBtn: document.getElementById("resetQuestionsBtn"),
+
+    // builtins + sprite neon
+    builtinPlayer: document.getElementById("builtinPlayer"),
+    builtinAnswer: document.getElementById("builtinAnswer"),
+    spriteNeonOn: document.getElementById("spriteNeonOn"),
+    spriteNeonColor: document.getElementById("spriteNeonColor"),
+    spriteNeonStrengthR: document.getElementById("spriteNeonStrengthR"),
+    spriteNeonStrength: document.getElementById("spriteNeonStrength"),
 
     genIframeBtn: document.getElementById("genIframeBtn"),
     copyIframeBtn: document.getElementById("copyIframeBtn"),
@@ -972,20 +1078,6 @@ function startEditorMode(){
 
   let cfgDraft = deepClone(DEFAULT_CFG);
   let autoTimer = null;
-
-  function makeEmptyQuestion(){
-    return { q:"", answers:[
-      {label:"A", text:"", correct:true},
-      {label:"B", text:"", correct:false},
-      {label:"C", text:"", correct:false},
-    ]};
-  }
-  function nextLabel(arr){
-    const base="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const used=new Set(arr.map(x=>String(x.label||"").trim().toUpperCase()));
-    for(const c of base){ if(!used.has(c)) return c; }
-    return "X";
-  }
 
   function cfgToUI(){
     els.fontFamily.value = cfgDraft.fontFamily;
@@ -1019,6 +1111,7 @@ function startEditorMode(){
     els.iconColor.value = cfgDraft.iconColor;
     els.btnColor.value = cfgDraft.btnColor;
     els.btnTextColor.value = cfgDraft.btnTextColor;
+
     els.progressColor.value = cfgDraft.progressColor;
     els.progressHeight.value = cfgDraft.progressHeight;
 
@@ -1037,7 +1130,6 @@ function startEditorMode(){
     pairSync(els.answerSizeR, els.answerSize, cfgDraft.answerSize ?? 86);
     els.answerTextBgOn.checked = cfgDraft.answerTextBgOn !== false;
 
-    // NEW: текст ответа
     els.answerTextColor.value = cfgDraft.answerTextColor || "#ffffff";
     els.answerTextShadowOn.checked = cfgDraft.answerTextShadowOn !== false;
     els.answerTextNeonOn.checked = !!cfgDraft.answerTextNeonOn;
@@ -1053,10 +1145,10 @@ function startEditorMode(){
     pairSync(els.answerCardPosXR, els.answerCardPosX, cfgDraft.answerCardPosX ?? 50);
     pairSync(els.answerCardPosYR, els.answerCardPosY, cfgDraft.answerCardPosY ?? 50);
 
-    els.livesCount.value = cfgDraft.livesCount;
-    els.pointsPerCorrect.value = cfgDraft.pointsPerCorrect;
-    els.cooldownTurns.value = cfgDraft.cooldownTurns;
-    els.playerSpeed.value = cfgDraft.playerSpeed;
+    els.livesCount.value = cfgDraft.livesCount ?? 3;
+    els.pointsPerCorrect.value = cfgDraft.pointsPerCorrect ?? 10;
+    els.cooldownTurns.value = cfgDraft.cooldownTurns ?? 3;
+    els.playerSpeed.value = cfgDraft.playerSpeed ?? 7;
 
     pairSync(els.easySpeedR, els.easySpeed, cfgDraft.difficulty.easy.speed);
     pairSync(els.easySpawnR, els.easySpawn, cfgDraft.difficulty.easy.spawnEveryMs);
@@ -1069,6 +1161,12 @@ function startEditorMode(){
     els.hitBadText.value = cfgDraft.hitBadText || "";
     els.finalWinText.value = cfgDraft.finalWinText || "";
     els.finalLoseText.value = cfgDraft.finalLoseText || "";
+
+    els.builtinPlayer.value = cfgDraft.builtinPlayer || "fish";
+    els.builtinAnswer.value = cfgDraft.builtinAnswer || "cone";
+    els.spriteNeonOn.checked = cfgDraft.spriteNeonOn !== false;
+    els.spriteNeonColor.value = cfgDraft.spriteNeonColor || "#7a5aff";
+    pairSync(els.spriteNeonStrengthR, els.spriteNeonStrength, cfgDraft.spriteNeonStrength ?? 14);
   }
 
   function readUIIntoDraft(){
@@ -1118,7 +1216,6 @@ function startEditorMode(){
     cfgDraft.answerSize = clampInt(els.answerSize.value, 42, 260, 86);
     cfgDraft.answerTextBgOn = !!els.answerTextBgOn.checked;
 
-    // NEW: текст ответа
     cfgDraft.answerTextColor = els.answerTextColor.value || "#ffffff";
     cfgDraft.answerTextShadowOn = !!els.answerTextShadowOn.checked;
     cfgDraft.answerTextNeonOn = !!els.answerTextNeonOn.checked;
@@ -1153,26 +1250,42 @@ function startEditorMode(){
     cfgDraft.finalWinText = els.finalWinText.value || "";
     cfgDraft.finalLoseText = els.finalLoseText.value || "";
 
+    cfgDraft.builtinPlayer = els.builtinPlayer.value || "fish";
+    cfgDraft.builtinAnswer = els.builtinAnswer.value || "cone";
+    cfgDraft.spriteNeonOn = !!els.spriteNeonOn.checked;
+    cfgDraft.spriteNeonColor = els.spriteNeonColor.value || "#7a5aff";
+    cfgDraft.spriteNeonStrength = clampInt(els.spriteNeonStrength.value, 0, 40, 14);
+
     if(els.bgImgUrl.value.trim().startsWith("http")) cfgDraft.bgImg = els.bgImgUrl.value.trim();
     if(els.playerImgUrl.value.trim().startsWith("http")) cfgDraft.playerImg = els.playerImgUrl.value.trim();
     if(els.answerCardImgUrl.value.trim().startsWith("http")) cfgDraft.answerCardImg = els.answerCardImgUrl.value.trim();
   }
 
   function updateInlinePreviews(){
+    // если url пустые — показываем встроенные
+    const effectivePlayerImg = cfgDraft.playerImg || BUILTIN.players[cfgDraft.builtinPlayer] || BUILTIN.players.fish;
+    const effectiveAnswerImg = cfgDraft.answerCardImg || BUILTIN.answers[cfgDraft.builtinAnswer] || BUILTIN.answers.cone;
+
     const pSize = cfgDraft.playerSize ?? 86;
     els.playerPreviewImg.style.width = pSize + "px";
     els.playerPreviewImg.style.height = pSize + "px";
-    els.playerPreviewImg.style.backgroundImage = cfgDraft.playerImg ? `url('${cssUrl(cfgDraft.playerImg)}')` : "none";
+    els.playerPreviewImg.style.backgroundImage = effectivePlayerImg ? `url('${cssUrl(effectivePlayerImg)}')` : "none";
 
     const shadowOn = !!cfgDraft.playerShadowOn;
     const s = cfgDraft.playerShadowStrength ?? 18;
     const sc = cfgDraft.playerShadowColor || "#000000";
-    els.playerPreviewImg.style.filter = shadowOn ? `drop-shadow(0 0 ${Math.max(0, s)}px ${hexToRgba(sc, 0.85)})` : "none";
+    const neon = buildSpriteNeonFilter(cfgDraft);
+    const mix = [
+      shadowOn ? `drop-shadow(0 0 ${Math.max(0, s)}px ${hexToRgba(sc, 0.85)})` : "",
+      (neon && neon!=="none") ? neon : ""
+    ].filter(Boolean).join(" ");
+    els.playerPreviewImg.style.filter = mix || "none";
 
-    els.answerPreviewBg.style.backgroundImage = cfgDraft.answerCardImg ? `url('${cssUrl(cfgDraft.answerCardImg)}')` : "none";
+    els.answerPreviewBg.style.backgroundImage = effectiveAnswerImg ? `url('${cssUrl(effectiveAnswerImg)}')` : "none";
     els.answerPreviewBg.style.backgroundSize = cfgDraft.answerCardFit === "cover" ? "cover" : "contain";
     els.answerPreviewBg.style.backgroundPosition = `${cfgDraft.answerCardPosX ?? 50}% ${cfgDraft.answerCardPosY ?? 50}%`;
     els.answerPreviewBg.style.transform = `scale(${cfgDraft.answerCardScale ?? 1})`;
+    els.answerPreviewBg.style.filter = (neon && neon!=="none") ? neon : "none";
 
     els.answerPreviewText.style.left = (cfgDraft.answerTextX ?? 50) + "%";
     els.answerPreviewText.style.top  = (cfgDraft.answerTextY ?? 64) + "%";
@@ -1182,113 +1295,52 @@ function startEditorMode(){
     els.answerPreviewText.style.border = (cfgDraft.answerTextBgOn === false) ? "0" : "1px solid rgba(255,255,255,.10)";
     els.answerPreviewText.style.padding = (cfgDraft.answerTextBgOn === false) ? "0" : "6px 10px";
 
-    // NEW: стиль текста ответа в предпросмотре
     els.answerPreviewText.style.color = cfgDraft.answerTextColor || "#ffffff";
-    const shadow = buildAnswerTextShadow(cfgDraft);
-    els.answerPreviewText.style.textShadow = shadow;
-
-    // Пример показывает выбранный шрифт/жирность
+    els.answerPreviewText.style.textShadow = buildAnswerTextShadow(cfgDraft);
     els.answerPreviewText.style.fontFamily = cfgDraft.fontFamily || "system-ui";
     els.answerPreviewText.style.fontWeight = String(cfgDraft.fontWeight || 900);
   }
 
-  function renderQuestions(){
-    els.questionsList.innerHTML = "";
-    cfgDraft.questions.forEach((q, qi)=>{
-      const wrap = document.createElement("div");
-      wrap.className = "qitem";
-
-      const top = document.createElement("div");
-      top.className = "qtop";
-
-      const title = document.createElement("strong");
-      title.textContent = `Вопрос ${qi+1}`;
-
-      const delQ = document.createElement("button");
-      delQ.className = "btn miniBtn danger";
-      delQ.textContent = "Удалить";
-      delQ.onclick = ()=>{
-        cfgDraft.questions.splice(qi,1);
-        if(cfgDraft.questions.length === 0) cfgDraft.questions.push(makeEmptyQuestion());
-        renderQuestions();
-        scheduleAuto();
-      };
-      top.appendChild(title); top.appendChild(delQ);
-
-      const qInput = document.createElement("input");
-      qInput.type = "text";
-      qInput.value = q.q || "";
-      qInput.placeholder = "Текст вопроса...";
-      qInput.oninput = ()=>{ cfgDraft.questions[qi].q = qInput.value; scheduleAuto(); };
-
-      const answers = document.createElement("div");
-      answers.className = "answers";
-
-      cfgDraft.questions[qi].answers.forEach((a, ai)=>{
-        const row = document.createElement("div");
-        row.className = "ansRow";
-
-        const txt = document.createElement("input");
-        txt.type = "text";
-        txt.value = a.text || "";
-        txt.placeholder = "Текст варианта...";
-        txt.oninput = ()=>{ cfgDraft.questions[qi].answers[ai].text = txt.value; scheduleAuto(); };
-
-        const right = document.createElement("div");
-        right.className = "chk";
-        const chk = document.createElement("input");
-        chk.type = "checkbox";
-        chk.checked = !!a.correct;
-        chk.onchange = ()=>{
-          cfgDraft.questions[qi].answers.forEach(x=>x.correct=false);
-          cfgDraft.questions[qi].answers[ai].correct = chk.checked;
-          renderQuestions();
-          scheduleAuto();
-        };
-        right.appendChild(chk);
-        right.appendChild(Object.assign(document.createElement("span"), {textContent:"верный"}));
-
-        row.appendChild(txt); row.appendChild(right);
-        answers.appendChild(row);
-      });
-
-      const qButtons = document.createElement("div");
-      qButtons.className = "row";
-      qButtons.style.marginTop = "10px";
-
-      const addA = document.createElement("button");
-      addA.className = "btn miniBtn";
-      addA.textContent = "+ Вариант";
-      addA.onclick = ()=>{
-        cfgDraft.questions[qi].answers.push({label: nextLabel(cfgDraft.questions[qi].answers), text:"", correct:false});
-        renderQuestions();
-        scheduleAuto();
-      };
-
-      const delA = document.createElement("button");
-      delA.className = "btn miniBtn danger";
-      delA.textContent = "− Вариант";
-      delA.onclick = ()=>{
-        if(cfgDraft.questions[qi].answers.length <= 2) return;
-        cfgDraft.questions[qi].answers.pop();
-        if(!cfgDraft.questions[qi].answers.some(x=>x.correct)) cfgDraft.questions[qi].answers[0].correct = true;
-        renderQuestions();
-        scheduleAuto();
-      };
-
-      qButtons.appendChild(addA); qButtons.appendChild(delA);
-
-      wrap.appendChild(top);
-      wrap.appendChild(qInput);
-      wrap.appendChild(document.createElement("div")).className="hr";
-      wrap.appendChild(answers);
-      wrap.appendChild(qButtons);
-
-      els.questionsList.appendChild(wrap);
+  function fillBulkFromCfg(){
+    const qLines = cfgDraft.questions.map(q=>String(q.q||""));
+    const aLines = cfgDraft.questions.map(q=>{
+      const arr = (q.answers||[]).map(a=>String(a.text||"").trim());
+      return arr.join("|");
     });
+    els.bulkQuestions.value = qLines.join("\n");
+    els.bulkAnswers.value = aLines.join("\n");
   }
 
-  // ========== LIVE PREVIEW via postMessage ==========
+  function parseBulkToCfg(){
+    const qLines = String(els.bulkQuestions.value || "")
+      .split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+
+    const aLines = String(els.bulkAnswers.value || "")
+      .split(/\r?\n/).map(s=>String(s||""));
+
+    const out = [];
+    for(let i=0;i<qLines.length;i++){
+      const qText = qLines[i];
+      const parts = String(aLines[i] || "").split("|").map(s=>s.trim());
+
+      while(parts.length < 2) parts.push("");
+
+      const answers = parts.map((t, idx)=>({
+        label: String.fromCharCode(65 + idx),
+        text: t,
+        correct: idx === 0
+      }));
+
+      out.push({ q: qText, answers });
+    }
+
+    if(out.length){
+      cfgDraft.questions = out;
+    } else {
+      cfgDraft.questions = deepClone(DEFAULT_CFG.questions);
+    }
+  }
+
   function ensurePreviewLoaded(){
     if(els.previewFrame.dataset.loaded === "1") return;
     const base = location.origin + location.pathname;
@@ -1325,16 +1377,11 @@ function startEditorMode(){
   window.addEventListener("message", (e)=>{
     const d = e.data;
     if(!d || typeof d !== "object") return;
-    if(d.type === "CFG_APPLIED"){
-      els.previewStatus.textContent = "Применено ✅";
-    }
-    if(d.type === "CFG_ERROR"){
-      els.previewStatus.textContent = "Ошибка в игре";
-      console.warn("CFG_ERROR:", d.error);
-    }
+    if(d.type === "CFG_APPLIED") els.previewStatus.textContent = "Применено ✅";
+    if(d.type === "CFG_ERROR"){ els.previewStatus.textContent = "Ошибка в игре"; console.warn("CFG_ERROR:", d.error); }
   });
 
-  // file uploads
+  // uploads
   els.bgImgFile.addEventListener("change", async ()=>{
     const f = els.bgImgFile.files?.[0]; if(!f) return;
     cfgDraft.bgImg = await fileToDataUrl(f);
@@ -1374,12 +1421,14 @@ function startEditorMode(){
 
     els.answerCardImgUrl, els.answerTextBgOn, els.answerCardFit,
 
-    // NEW: текст ответа
     els.answerTextColor, els.answerTextShadowOn, els.answerTextNeonOn,
     els.answerTextFxColor, els.answerTextFxStrength,
 
     els.livesCount, els.pointsPerCorrect, els.cooldownTurns, els.playerSpeed,
+
     els.hitOkText, els.hitBadText, els.finalWinText, els.finalLoseText,
+
+    els.builtinPlayer, els.builtinAnswer, els.spriteNeonOn, els.spriteNeonColor,
   ].forEach(bind);
 
   pairBind(els.bgSpeedR, els.bgSpeed, scheduleAuto);
@@ -1401,16 +1450,21 @@ function startEditorMode(){
   pairBind(els.hardSpeedR, els.hardSpeed, scheduleAuto);
   pairBind(els.hardSpawnR, els.hardSpawn, scheduleAuto);
 
-  els.addQuestionBtn.onclick = ()=>{
-    cfgDraft.questions.push(makeEmptyQuestion());
-    renderQuestions();
+  pairBind(els.spriteNeonStrengthR, els.spriteNeonStrength, scheduleAuto);
+
+  els.applyBulkBtn.onclick = ()=>{
+    parseBulkToCfg();
     scheduleAuto();
   };
+  els.fillBulkFromCfgBtn.onclick = ()=>{
+    fillBulkFromCfg();
+  };
+
   els.resetQuestionsBtn.onclick = ()=>{
     cfgDraft = deepClone(DEFAULT_CFG);
     cfgToUI();
-    renderQuestions();
     els.codeBox.value = "";
+    fillBulkFromCfg();
     scheduleAuto();
   };
 
@@ -1439,9 +1493,8 @@ function startEditorMode(){
     }
   };
 
-  // init
   cfgToUI();
-  renderQuestions();
+  fillBulkFromCfg();
   ensurePreviewLoaded();
   scheduleAuto();
 }
@@ -1481,7 +1534,6 @@ function normalizeCfg(cfg){
   out.answerTextX = clampNum(out.answerTextX, 0, 100, 50);
   out.answerTextY = clampNum(out.answerTextY, 0, 100, 64);
 
-  // NEW: ответный текст
   out.answerTextFxStrength = clampInt(out.answerTextFxStrength, 1, 12, 7);
 
   out.answerCardFit = (out.answerCardFit === "cover") ? "cover" : "contain";
@@ -1493,6 +1545,11 @@ function normalizeCfg(cfg){
   out.pointsPerCorrect = clampInt(out.pointsPerCorrect, 1, 200, 10);
   out.cooldownTurns = clampInt(out.cooldownTurns, 0, 10, 3);
   out.playerSpeed = clampInt(out.playerSpeed, 2, 18, 7);
+
+  out.spriteNeonStrength = clampInt(out.spriteNeonStrength, 0, 40, 14);
+  out.bonusChance = clampNum(out.bonusChance, 0, 0.6, 0.14);
+  out.bombPenaltyPoints = clampInt(out.bombPenaltyPoints, 0, 999, 15);
+  out.maxLives = clampInt(out.maxLives, 1, 10, Math.max(out.livesCount, 5));
 
   const clampLevel = (lv, defLv)=>{
     const r = Object.assign({}, defLv, lv||{});
@@ -1512,6 +1569,7 @@ function normalizeCfg(cfg){
     const qq = { q: String(q.q||""), answers: Array.isArray(q.answers)?q.answers:[] };
     qq.answers = qq.answers.map(a=>({label:String(a.label||""), text:String(a.text||""), correct:!!a.correct}));
     if(qq.answers.length < 2) qq.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
+    // гарантируем хотя бы 1 correct
     if(!qq.answers.some(a=>a.correct)) qq.answers[0].correct = true;
     return qq;
   });
@@ -1538,19 +1596,27 @@ function startGameMode(cfgOverride){
   }
 
   const CFG = normalizeCfg(cfg);
+
+  // если не задано — берём встроенные картинки
+  if(!CFG.playerImg){
+    CFG.playerImg = BUILTIN.players[CFG.builtinPlayer] || BUILTIN.players.fish;
+  }
+  if(!CFG.answerCardImg){
+    CFG.answerCardImg = BUILTIN.answers[CFG.builtinAnswer] || BUILTIN.answers.cone;
+  }
+
   const fxCSS = buildFxCss(CFG);
   const fxQ   = CFG.fxToQuestion ? fxCSS : "";
   const fxHud = CFG.fxToHud ? fxCSS : "";
   const fxAns = CFG.fxToAnswers ? fxCSS : "";
   const fxPts = CFG.fxToPoints ? fxCSS : "";
-
   const answerShadow = buildAnswerTextShadow(CFG);
+  const spriteNeon = buildSpriteNeonFilter(CFG);
 
   root.innerHTML = `
     <style>
       html,body{margin:0;height:100%;background:transparent!important;overflow:hidden;touch-action:none;}
       *{ -webkit-tap-highlight-color: transparent; }
-
       :root{ --ansShadow: ${answerShadow}; }
 
       #wrap{position:relative;width:100%;height:100%;background:transparent;}
@@ -1634,7 +1700,16 @@ function startGameMode(cfgOverride){
       #playerImg{
         position:absolute; inset:0;
         background: ${CFG.playerImg ? `url('${cssUrl(CFG.playerImg)}') center/contain no-repeat` : "none"};
-        filter: ${CFG.playerShadowOn ? `drop-shadow(0 0 ${Math.max(0, CFG.playerShadowStrength)}px ${hexToRgba(CFG.playerShadowColor, 0.85)})` : "none"};
+        filter: ${
+          (() => {
+            const sh = CFG.playerShadowOn
+              ? `drop-shadow(0 0 ${Math.max(0, CFG.playerShadowStrength)}px ${hexToRgba(CFG.playerShadowColor, 0.85)})`
+              : "";
+            const nn = (spriteNeon && spriteNeon!=="none") ? spriteNeon : "";
+            const mix = [sh, nn].filter(Boolean).join(" ");
+            return mix || "none";
+          })()
+        };
         transform: translate3d(0,0,0);
         will-change: transform;
       }
@@ -1651,7 +1726,7 @@ function startGameMode(cfgOverride){
       }
       #playerImg.boost{ animation: playerBoost .22s ease-out; }
 
-      /* answers */
+      /* answers (no panel background) */
       .answer{
         position:absolute;
         width:${CFG.answerSize}px;
@@ -1672,6 +1747,7 @@ function startGameMode(cfgOverride){
         transform: scale(${CFG.answerCardScale});
         transform-origin:center;
         will-change: transform;
+        filter: ${spriteNeon && spriteNeon!=="none" ? spriteNeon : "none"};
       }
       .answer .txt{
         position:absolute;
@@ -1679,20 +1755,25 @@ function startGameMode(cfgOverride){
         top:${CFG.answerTextY}%;
         transform: translate(-50%,-50%) scale(${CFG.answerContentScale});
         text-align:center;
+
         color: ${CFG.answerTextColor || "#ffffff"};
+
         font-weight:${CFG.fontWeight};
         font-size: 14px;
         line-height:1.15;
         max-width: 220px;
         white-space:normal;
         word-break:break-word;
+
         padding: ${CFG.answerTextBgOn ? "6px 10px" : "0"};
         border-radius: 10px;
         border: ${CFG.answerTextBgOn ? "1px solid rgba(255,255,255,.10)" : "0"};
         background: ${CFG.answerTextBgOn ? "rgba(0,0,0,.22)" : "transparent"};
+
         text-shadow: var(--ansShadow);
         ${fxAns}
       }
+
       @keyframes flashBad{
         0%,100%{filter:none; opacity:1;}
         20%{filter: drop-shadow(0 0 10px rgba(255,80,80,.95)); opacity:.55;}
@@ -1877,7 +1958,7 @@ function startGameMode(cfgOverride){
         <div id="startOverlay" class="overlay show">
           <div class="cardModal">
             <h2><span class="iconDot">▶</span> Выбери сложность</h2>
-            <p>Управление: <b>↑/↓</b> или <b>сенсор</b> — веди пальцем по экрану.</p>
+            <p>Управление: <b>↑/↓</b> или <b>W/S</b>, или <b>сенсор</b> — веди пальцем по экрану.</p>
             <div class="row2">
               <div class="chips">
                 <div class="chipBtn active" data-level="easy">Лёгкий</div>
@@ -2090,10 +2171,27 @@ function startGameMode(cfgOverride){
     bg.className = "bg";
     el.appendChild(bg);
 
-    const txt = document.createElement("div");
-    txt.className = "txt";
-    txt.textContent = answer.text || "";
-    el.appendChild(txt);
+    const txtValue = String(answer.text || "").trim();
+    if(!(CFG.allowImageOnlyAnswers && txtValue === "")){
+      const txt = document.createElement("div");
+      txt.className = "txt";
+      txt.textContent = txtValue;
+      el.appendChild(txt);
+    }
+
+    return el;
+  }
+
+  function createBonus(kind){
+    const el = document.createElement("div");
+    el.className = "answer";
+    el.dataset.bonus = kind;
+    el.dataset.correct = "0";
+
+    const bg = document.createElement("div");
+    bg.className = "bg";
+    bg.style.backgroundImage = `url('${cssUrl(BUILTIN.bonus[kind])}')`;
+    el.appendChild(bg);
 
     return el;
   }
@@ -2116,6 +2214,23 @@ function startGameMode(cfgOverride){
 
     const q = (state.currentIdx!==null) ? CFG.questions[state.currentIdx] : null;
     if(!q) return;
+
+    // бонусы вместо ответа
+    const wantBonus = CFG.bonusesOn && Math.random() < (CFG.bonusChance || 0);
+    if(wantBonus){
+      const kind = (Math.random() < 0.55) ? "heart" : "bomb";
+      const el = createBonus(kind);
+
+      el.style.left = spawnX + "px";
+      el.style.top = pickLaneY() + "px";
+      el.style.width = CFG.answerSize + "px";
+      el.style.height = CFG.answerSize + "px";
+
+      scene.appendChild(el);
+      state.active.push({ el, data: { correct:false, bonus: kind }, hit:false });
+      state.lastSpawnAt = now;
+      return;
+    }
 
     const pick = q.answers[randInt(0, q.answers.length-1)];
     const el = createAnswerOrb(pick);
@@ -2238,6 +2353,37 @@ function startGameMode(cfgOverride){
     state.locked = true;
     clearPending();
 
+    // бонусы
+    const bonusKind = hitObj?.data?.bonus;
+    if(bonusKind){
+      state.active.forEach(o=>{ if(o !== hitObj && o.el?.isConnected) o.el.remove(); });
+      state.active = [];
+
+      if(bonusKind === "heart"){
+        soundOk();
+        state.lives = Math.min(CFG.maxLives || CFG.livesCount, state.lives + 1);
+        showFeedback("❤️ +1 жизнь", true);
+        hitObj?.el?.remove?.();
+        updateHUD();
+        pendingTimer = setTimeout(()=>{ pendingTimer=null; chooseNextQuestion(); }, 220);
+        return;
+      }
+
+      if(bonusKind === "bomb"){
+        soundBad();
+        state.lives -= 1;
+        state.score = Math.max(0, state.score - (CFG.bombPenaltyPoints || 0));
+        showFeedback("💣 Бомба!", false);
+        hitObj?.el?.remove?.();
+        updateHUD();
+        pendingTimer = setTimeout(()=>{
+          pendingTimer=null;
+          state.lives<=0 ? endGame(false) : chooseNextQuestion();
+        }, 260);
+        return;
+      }
+    }
+
     const sr = scene.getBoundingClientRect();
     const pr = player.getBoundingClientRect();
     const hitX = (pr.left + pr.right)/2 - sr.left;
@@ -2352,8 +2498,8 @@ function startGameMode(cfgOverride){
     let v = state.playerV;
 
     let dir = 0;
-    if(keys.ArrowUp) dir -= 1;
-    if(keys.ArrowDown) dir += 1;
+    if(keys["arrowup"] || keys["w"]) dir -= 1;
+    if(keys["arrowdown"] || keys["s"]) dir += 1;
 
     if(touchActive && typeof targetY === "number"){
       const diff = (targetY - y);
@@ -2419,9 +2565,20 @@ function startGameMode(cfgOverride){
   on(startBtn, "click", startGame, {passive:true});
   on(playAgainBtn, "click", playAgain, {passive:true});
 
-  on(window, "keydown", async (e)=>{ keys[e.key]=true; await unlockAudio(); }, {passive:true});
-  on(window, "keyup", (e)=>{ keys[e.key]=false; }, {passive:true});
+  // клавиатура (W/S + стрелки)
+  on(window, "keydown", async (e)=>{
+    const k = String(e.key || "").toLowerCase();
+    keys[k] = true;
+    if(k==="arrowup" || k==="arrowdown" || k==="w" || k==="s") e.preventDefault?.();
+    await unlockAudio();
+  }, {passive:false});
 
+  on(window, "keyup", (e)=>{
+    const k = String(e.key || "").toLowerCase();
+    keys[k] = false;
+  }, {passive:true});
+
+  // pointer (touch/mouse)
   function onPointerDown(e){
     unlockAudio();
     if(state.phase!=="playing") return;
@@ -2443,17 +2600,28 @@ function startGameMode(cfgOverride){
   on(window, "pointerup", onPointerUp, {passive:true});
   on(window, "pointercancel", onPointerUp, {passive:true});
 
-  // init
+  function applyDifficultyDefault(){
+    applyDifficulty("easy");
+    diffBtns.forEach(b=>b.classList.toggle("active", b.dataset.level==="easy"));
+  }
+
+  function updateHUDInitial(){
+    scoreEl.textContent = "0";
+    livesEl.textContent = hearts(CFG.livesCount);
+    questionBox.textContent = CFG.questions?.[0]?.q || "";
+    progressFill.style.width = "0%";
+    progressText.textContent = `Вопрос 1 из ${CFG.questions.length}`;
+  }
+
   initState();
-  applyDifficulty("easy");
-  updateHUD();
-  player.style.top = "50%";
+  applyDifficultyDefault();
+  updateHUDInitial();
   showOverlay(startOverlay,true);
   showOverlay(finalOverlay,false);
 
   rafId = requestAnimationFrame(loop);
 
-  // cleanup registration
+  // cleanup
   window.__GAME_CLEANUP__ = ()=>{
     try{ cancelAnimationFrame(rafId); }catch(e){}
     off.forEach(f=>{ try{ f(); }catch(e){} });
