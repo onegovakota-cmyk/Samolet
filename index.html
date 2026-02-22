@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-  <title>Игра + Редактор (Genially, one-file)</title>
+  <title>Игра + Редактор (Emoji-only, Genially, one-file)</title>
   <link rel="icon" href="data:,">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Montserrat:wght@400;600;700;900&family=Rubik:wght@400;600;700;900&family=Nunito:wght@400;600;700;900&family=Oswald:wght@400;600;700&family=Russo+One&family=Press+Start+2P&family=Roboto+Condensed:wght@400;700&family=Poppins:wght@400;600;700;900&family=Play:wght@400;700&family=Comfortaa:wght@400;700&family=PT+Sans:wght@400;700&display=swap');
@@ -144,8 +144,8 @@
   <div id="left" class="panel">
     <div class="head">
       <div>
-        <h1>Редактор игры (Genially)</h1>
-        <div class="sub">Live-предпросмотр без кэша • Сенсор • Неон/обводка • Игрок без круга • W/S</div>
+        <h1>Редактор игры (Genially) — Emoji-only</h1>
+        <div class="sub">Live-предпросмотр без кэша • Сенсор • Неон/обводка • Игрок/объекты = эмоджи • W/S</div>
       </div>
       <div class="badge" id="cfgSizeBadge">cfg: —</div>
     </div>
@@ -156,6 +156,44 @@
         <label>Base URL (полный путь к этому .html)</label>
         <input id="baseUrl" type="text" placeholder="https://username.github.io/repo/game.html" />
         <div class="hint">В предпросмотре справа настройки применяются мгновенно, без перезагрузки.</div>
+      </div>
+
+      <div class="section">
+        <h3>Эмоджи персонажа и объектов</h3>
+        <div class="grid">
+          <div>
+            <label>Игрок (эмоджи)</label>
+            <input id="playerEmoji" type="text" value="🐟" placeholder="Напр.: 🐟" />
+            <div class="hint">Можно вставить любое эмоджи (1–2 символа).</div>
+          </div>
+          <div>
+            <label>Объект ответа (эмоджи)</label>
+            <input id="answerEmoji" type="text" value="🟣" placeholder="Напр.: 🟣" />
+            <div class="hint">Это эмоджи будет у всех “ответов”.</div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:10px;">
+          <div class="checkItem">
+            <input id="emojiNeonOn" type="checkbox" checked />
+            <span>Неон у эмоджи (игрок/объекты/бонусы)</span>
+          </div>
+          <div>
+            <label>Цвет неона</label>
+            <input id="emojiNeonColor" type="color" value="#7a5aff" />
+          </div>
+          <div>
+            <label>Сила неона (0–40)</label>
+            <div class="rangeRow">
+              <input id="emojiNeonStrengthR" type="range" min="0" max="40" step="1" value="14" />
+              <input id="emojiNeonStrength" type="number" min="0" max="40" step="1" value="14" />
+            </div>
+          </div>
+          <div class="checkItem">
+            <input id="answersShowText" type="checkbox" checked />
+            <span>Показывать текст ответа под эмоджи</span>
+          </div>
+        </div>
       </div>
 
       <div class="section">
@@ -258,10 +296,8 @@
         <h3>Фон (движется бесконечно)</h3>
         <div class="grid">
           <div>
-            <label>Фон — URL</label>
+            <label>Фон — URL (если нужен)</label>
             <input id="bgImgUrl" type="text" placeholder="https://..." />
-            <div class="hint">или загрузить:</div>
-            <input id="bgImgFile" type="file" accept="image/*" />
           </div>
           <div>
             <label>Прозрачный фон (для Genially)</label>
@@ -286,24 +322,16 @@
                 <option value="contain">contain</option>
               </select>
             </div>
-
-            <div class="hint">Чтобы стык не был виден — фон должен быть бесшовный (tile/seamless).</div>
           </div>
         </div>
+        <div class="hint">Если фон прозрачный — Genially будет виден под игрой.</div>
       </div>
 
       <div class="section">
-        <h3>Игрок (только картинка, без круга)</h3>
+        <h3>Игрок (эмоджи)</h3>
         <div class="sideBySide">
           <div>
             <div class="grid">
-              <div>
-                <label>Картинка игрока — URL</label>
-                <input id="playerImgUrl" type="text" placeholder="https://..." />
-                <div class="hint">или загрузить:</div>
-                <input id="playerImgFile" type="file" accept="image/*" />
-              </div>
-
               <div>
                 <label>Размер игрока (px)</label>
                 <div class="rangeRow">
@@ -313,7 +341,7 @@
 
                 <div style="margin-top:10px" class="checkItem">
                   <input id="playerShadowOn" type="checkbox" />
-                  <span>Тень по контуру (drop-shadow)</span>
+                  <span>Тень (drop-shadow)</span>
                 </div>
 
                 <div style="margin-top:10px">
@@ -329,31 +357,9 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="hint">Парение и наклон включены всегда.</div>
-          </div>
-
-          <div class="previewCard">
-            <div class="previewCaption">Предпросмотр игрока</div>
-            <div id="playerPreviewImg" style="width:140px;height:140px;background:transparent center/contain no-repeat;"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h3>Ответ (объект) — только твоя картинка</h3>
-        <div class="sideBySide">
-          <div>
-            <div class="grid">
-              <div>
-                <label>Картинка ответа (объект) — URL</label>
-                <input id="answerCardImgUrl" type="text" placeholder="https://..." />
-                <div class="hint">или загрузить:</div>
-                <input id="answerCardImgFile" type="file" accept="image/*" />
-              </div>
 
               <div>
-                <label>Размер объекта (px)</label>
+                <label>Размер объектов-ответов (px)</label>
                 <div class="rangeRow">
                   <input id="answerSizeR" type="range" min="42" max="260" step="1" value="86" />
                   <input id="answerSize" type="number" min="42" max="260" step="1" value="86" />
@@ -367,7 +373,7 @@
             </div>
 
             <div class="hr"></div>
-            <h3 style="margin:0 0 10px;">Текст ответа</h3>
+            <h3 style="margin:0 0 10px;">Текст ответа (под эмоджи)</h3>
 
             <div class="grid">
               <div>
@@ -397,7 +403,7 @@
             </div>
 
             <div class="hr"></div>
-            <h3 style="margin:0 0 10px;">Положение/размер текста на объекте</h3>
+            <h3 style="margin:0 0 10px;">Положение/масштаб текста</h3>
             <div class="grid">
               <div>
                 <label>Масштаб текста</label>
@@ -416,105 +422,28 @@
               <div>
                 <label>Текст по Y (%)</label>
                 <div class="rangeRow">
-                  <input id="answerTextYR" type="range" min="0" max="100" step="1" value="64" />
-                  <input id="answerTextY" type="number" min="0" max="100" step="1" value="64" />
+                  <input id="answerTextYR" type="range" min="0" max="100" step="1" value="82" />
+                  <input id="answerTextY" type="number" min="0" max="100" step="1" value="82" />
                 </div>
               </div>
             </div>
 
-            <div class="hr"></div>
-            <h3 style="margin:0 0 10px;">Картинка объекта (позиция/масштаб)</h3>
-            <div class="grid">
-              <div>
-                <label>Fit</label>
-                <select id="answerCardFit">
-                  <option value="contain" selected>contain</option>
-                  <option value="cover">cover</option>
-                </select>
-              </div>
-              <div>
-                <label>Scale</label>
-                <div class="rangeRow">
-                  <input id="answerCardScaleR" type="range" min="0.6" max="2" step="0.05" value="1" />
-                  <input id="answerCardScale" type="number" min="0.6" max="2" step="0.05" value="1" />
-                </div>
-              </div>
-              <div>
-                <label>Pos X (%)</label>
-                <div class="rangeRow">
-                  <input id="answerCardPosXR" type="range" min="0" max="100" step="1" value="50" />
-                  <input id="answerCardPosX" type="number" min="0" max="100" step="1" value="50" />
-                </div>
-              </div>
-              <div>
-                <label>Pos Y (%)</label>
-                <div class="rangeRow">
-                  <input id="answerCardPosYR" type="range" min="0" max="100" step="1" value="50" />
-                  <input id="answerCardPosY" type="number" min="0" max="100" step="1" value="50" />
-                </div>
-              </div>
-            </div>
-
-            <div class="hint">Ответы — картинка + текст. Если текст пустой — будет “только картинка”.</div>
+            <div class="hint">Объект = эмоджи. Текст ответа (если включен) рисуется под ним.</div>
           </div>
 
           <div class="previewCard">
-            <div class="previewCaption">Предпросмотр ответа</div>
-            <div id="answerPreviewObj" style="width:170px;height:170px;position:relative;">
-              <div id="answerPreviewBg" style="position:absolute;inset:0;background:transparent center/contain no-repeat;transform:scale(1);"></div>
-              <div id="answerPreviewText"
-                   style="position:absolute;left:50%;top:64%;
-                          transform:translate(-50%,-50%) scale(1);
-                          text-align:center;
-                          color:#fff;
-                          font-weight:800;
-                          font-size:14px;
-                          padding:6px 10px;
-                          border-radius:10px;
-                          border:1px solid rgba(255,255,255,.10);
-                          background:rgba(0,0,0,.22);">
-                Пример ответа
+            <div class="previewCaption">Предпросмотр</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+              <div id="playerPreview" style="font-size:96px;line-height:1;filter:none;">🐟</div>
+              <div id="answerPreview" style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <div id="answerPreviewEmoji" style="font-size:86px;line-height:1;">🟣</div>
+                <div id="answerPreviewText"
+                     style="text-align:center;color:#fff;font-weight:900;font-size:14px;
+                            padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.10);
+                            background:rgba(0,0,0,.22);">
+                  Пример ответа
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- БАЗОВЫЕ АССЕТЫ + НЕОН ФИГУРОК -->
-      <div class="section">
-        <h3>Базовые ассеты + неон фигурок</h3>
-        <div class="grid">
-          <div>
-            <label>Базовый игрок</label>
-            <select id="builtinPlayer">
-              <option value="fish">Рыбка</option>
-              <option value="plane">Самолётик</option>
-              <option value="car">Машина</option>
-            </select>
-          </div>
-          <div>
-            <label>Базовый объект ответа</label>
-            <select id="builtinAnswer">
-              <option value="cone">Дорожный конус</option>
-              <option value="bubbles">Пузырьки</option>
-              <option value="cloud">Облако</option>
-            </select>
-          </div>
-
-          <div class="checkItem">
-            <input id="spriteNeonOn" type="checkbox" checked />
-            <span>Неон у фигурок (игрок/ответ/бонусы)</span>
-          </div>
-          <div>
-            <label>Цвет неона</label>
-            <input id="spriteNeonColor" type="color" value="#7a5aff" />
-          </div>
-
-          <div>
-            <label>Сила неона (0–40)</label>
-            <div class="rangeRow">
-              <input id="spriteNeonStrengthR" type="range" min="0" max="40" step="1" value="14" />
-              <input id="spriteNeonStrength" type="number" min="0" max="40" step="1" value="14" />
             </div>
           </div>
         </div>
@@ -567,13 +496,11 @@
         </div>
       </div>
 
-      <!-- БЛОЧНЫЙ ВВОД ЗАДАНИЙ -->
       <div class="section">
         <h3>Вопросы и ответы (блоком)</h3>
         <div class="hint">
           Вопросы: каждая строка — один вопрос. Ответы: каждая строка — варианты через <b>|</b>.
           <br>Важно: <b>первый вариант в строке — правильный</b>.
-          <br>Если первый вариант пустой — будет “только картинка без текста”.
         </div>
 
         <div class="grid" style="margin-top:10px;">
@@ -590,13 +517,9 @@
         </div>
 
         <div class="row" style="margin-top:10px;">
-          <button class="btn miniBtn primary" id="applyBulkBtn">Применить блок</button>
-          <button class="btn miniBtn" id="fillBulkFromCfgBtn">Заполнить из текущих</button>
-          <button class="btn miniBtn danger" id="resetQuestionsBtn">Сбросить демо</button>
-        </div>
-
-        <div class="hint">
-          Пример “только картинка”: <code>|Рим|Берлин</code> — первый вариант пустой, текст не рисуется.
+          <button class="btn primary" id="applyBulkBtn">Применить блок</button>
+          <button class="btn" id="fillBulkFromCfgBtn">Заполнить из текущих</button>
+          <button class="btn danger" id="resetQuestionsBtn">Сбросить демо</button>
         </div>
       </div>
 
@@ -641,7 +564,6 @@ function b64urlDecode(b64url){
   return decodeURIComponent(escape(atob(b64)));
 }
 function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
-function cssUrl(u){ return String(u||"").replace(/'/g,"%27"); }
 function escapeCss(s){ return String(s||"").replace(/</g,"").replace(/>/g,"").replace(/"/g,""); }
 function clampNum(v,a,b,d){ const n=Number(v); if(!Number.isFinite(n)) return d; return Math.max(a, Math.min(b, n)); }
 function clampInt(v,a,b,d){ const n=Number(v); if(!Number.isFinite(n)) return d; return Math.max(a, Math.min(b, Math.round(n))); }
@@ -658,94 +580,11 @@ function pairBind(rangeEl, numberEl, onChange){
   rangeEl.addEventListener("change", ()=>{ numberEl.value = rangeEl.value; onChange(); });
   numberEl.addEventListener("change", ()=>{ rangeEl.value = numberEl.value; onChange(); });
 }
-async function fileToDataUrl(file){
-  return new Promise((res, rej)=>{
-    const r = new FileReader();
-    r.onload = ()=>res(String(r.result||""));
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
-}
-
-/* ===== встроенные ассеты (data:image/svg+xml) ===== */
-function svgData(svg){
-  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
-}
-const BUILTIN = {
-  players: {
-    fish: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#4cff9e"/><stop offset="1" stop-color="#7a5aff"/></linearGradient></defs>
-        <path d="M40 128c30-52 96-84 162-66 6-18 24-36 42-42-6 26-6 44 0 66-6 22-6 40 0 66-18-6-36-24-42-42-66 18-132-14-162-66z" fill="url(#g)"/>
-        <circle cx="150" cy="108" r="10" fill="#0a0a14"/>
-        <path d="M64 128c10 14 24 24 44 28" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="10" stroke-linecap="round"/>
-      </svg>
-    `),
-    plane: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <path d="M18 138l222-70-56 78 56 42-222-50z" fill="#7a5aff"/>
-        <path d="M70 128l64-22 40 30-72 20z" fill="#ffffff" fill-opacity=".85"/>
-        <path d="M18 138l222-70" stroke="#000" stroke-opacity=".25" stroke-width="10" stroke-linecap="round"/>
-      </svg>
-    `),
-    car: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <path d="M54 144l20-54h108l20 54v40H54z" fill="#ff6b6b"/>
-        <path d="M88 98h80l10 26H78z" fill="#ffffff" fill-opacity=".85"/>
-        <circle cx="88" cy="184" r="18" fill="#0a0a14"/><circle cx="168" cy="184" r="18" fill="#0a0a14"/>
-        <circle cx="88" cy="184" r="8" fill="#ffffff" fill-opacity=".8"/><circle cx="168" cy="184" r="8" fill="#ffffff" fill-opacity=".8"/>
-      </svg>
-    `),
-  },
-  answers: {
-    cone: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <path d="M128 18l66 198H62L128 18z" fill="#ffb020"/>
-        <path d="M86 132h84" stroke="#ffffff" stroke-opacity=".9" stroke-width="16" stroke-linecap="round"/>
-        <path d="M74 168h108" stroke="#ffffff" stroke-opacity=".9" stroke-width="16" stroke-linecap="round"/>
-      </svg>
-    `),
-    bubbles: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <circle cx="92" cy="132" r="44" fill="#4cff9e" fill-opacity=".35" stroke="#ffffff" stroke-opacity=".6" stroke-width="6"/>
-        <circle cx="150" cy="110" r="26" fill="#7a5aff" fill-opacity=".30" stroke="#ffffff" stroke-opacity=".6" stroke-width="6"/>
-        <circle cx="160" cy="168" r="18" fill="#ffd84a" fill-opacity=".25" stroke="#ffffff" stroke-opacity=".55" stroke-width="6"/>
-      </svg>
-    `),
-    cloud: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <path d="M86 192h92c32 0 58-18 58-44 0-22-18-38-42-42-8-38-44-58-78-40-16-18-46-18-62 0-30 4-52 26-52 50 0 42 38 76 84 76z"
-          fill="#ffffff" fill-opacity=".85"/>
-      </svg>
-    `),
-  },
-  bonus: {
-    heart: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <path d="M128 226S18 164 18 92c0-28 22-50 50-50 20 0 38 10 48 26 10-16 28-26 48-26 28 0 50 22 50 50 0 72-110 134-110 134z"
-          fill="#ff3b6b"/>
-        <path d="M78 92c8-18 26-28 44-22" stroke="#fff" stroke-opacity=".7" stroke-width="10" stroke-linecap="round"/>
-      </svg>
-    `),
-    bomb: svgData(`
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-        <circle cx="120" cy="150" r="74" fill="#0a0a14"/>
-        <circle cx="98" cy="130" r="14" fill="#ffffff" fill-opacity=".18"/>
-        <path d="M164 96l28-28 18 18-28 28" stroke="#ffd84a" stroke-width="14" stroke-linecap="round"/>
-        <path d="M202 54c10 10 10 26 0 36" stroke="#ff6b6b" stroke-width="12" stroke-linecap="round"/>
-      </svg>
-    `),
-  }
-};
-
-function buildSpriteNeonFilter(cfg){
-  if(!cfg.spriteNeonOn) return "none";
-  const s = clampInt(cfg.spriteNeonStrength, 0, 40, 14);
-  if(s <= 0) return "none";
-  const c = cfg.spriteNeonColor || "#7a5aff";
-  return `drop-shadow(0 0 ${Math.max(2, s*0.6)}px ${hexToRgba(c,0.85)})
-          drop-shadow(0 0 ${Math.max(6, s*1.2)}px ${hexToRgba(c,0.55)})
-          drop-shadow(0 0 ${Math.max(10, s*1.8)}px ${hexToRgba(c,0.35)})`;
+function cleanEmoji(s, fallback){
+  const t = String(s||"").trim();
+  if(!t) return fallback;
+  // берём первые 2 “символа” (на практике хватает для большинства эмоджи)
+  return Array.from(t).slice(0,2).join("");
 }
 
 /* ===== text fx (общие) ===== */
@@ -779,7 +618,7 @@ function buildFxCss(cfg){
   return `${textShadow}${stroke}`;
 }
 
-/* ===== отдельный FX для текста ответа ===== */
+/* ===== FX для текста ответа ===== */
 function buildAnswerTextShadow(cfg){
   const s = clampInt(cfg.answerTextFxStrength ?? 7, 1, 12, 7);
   const c = cfg.answerTextFxColor || "#ffd84a";
@@ -797,10 +636,30 @@ function buildAnswerTextShadow(cfg){
   return parts.length ? parts.join(",") : "none";
 }
 
+/* ===== неон для эмоджи ===== */
+function buildEmojiNeonFilter(cfg){
+  if(!cfg.emojiNeonOn) return "none";
+  const s = clampInt(cfg.emojiNeonStrength, 0, 40, 14);
+  if(s <= 0) return "none";
+  const c = cfg.emojiNeonColor || "#7a5aff";
+  return `drop-shadow(0 0 ${Math.max(2, s*0.6)}px ${hexToRgba(c,0.85)})
+          drop-shadow(0 0 ${Math.max(6, s*1.2)}px ${hexToRgba(c,0.55)})
+          drop-shadow(0 0 ${Math.max(10, s*1.8)}px ${hexToRgba(c,0.35)})`;
+}
+
 /* ===== cfg ===== */
 const DEFAULT_CFG = {
   fontFamily: "system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif",
   fontWeight: 900,
+
+  // Emoji-only
+  playerEmoji: "🐟",
+  answerEmoji: "🟣",
+  answersShowText: true,
+
+  emojiNeonOn: true,
+  emojiNeonColor: "#7a5aff",
+  emojiNeonStrength: 14,
 
   questionSize: 24,
   questionColor: "#ffffff",
@@ -839,17 +698,15 @@ const DEFAULT_CFG = {
   bgSpeed: 90,
   bgSizeMode: "auto",
 
-  playerImg: "",
   playerSize: 86,
   playerShadowOn: false,
   playerShadowColor: "#000000",
   playerShadowStrength: 18,
 
-  answerCardImg: "",
   answerSize: 86,
   answerTextBgOn: true,
 
-  /* ВАЖНО: цвет текста ответа */
+  // ВАЖНО: цвет текста ответа
   answerTextColor: "#ffffff",
   answerTextShadowOn: true,
   answerTextNeonOn: false,
@@ -858,14 +715,9 @@ const DEFAULT_CFG = {
 
   answerContentScale: 1,
   answerTextX: 50,
-  answerTextY: 64,
+  answerTextY: 82,
 
-  answerCardFit: "contain",
-  answerCardScale: 1,
-  answerCardPosX: 50,
-  answerCardPosY: 50,
-
-  /* ВАЖНО: жизни/очки */
+  // ВАЖНО: жизни/очки
   livesCount: 3,
   pointsPerCorrect: 10,
   cooldownTurns: 3,
@@ -882,22 +734,9 @@ const DEFAULT_CFG = {
     hard:   { speed: 4.1, spawnEveryMs:  760, minXGap: 180, maxOnScreen: 6 },
   },
 
-  /* ===== базовые ассеты ===== */
-  builtinPlayer: "fish",          // fish|plane|car
-  builtinAnswer: "cone",          // cone|bubbles|cloud
-
-  /* ===== неон у фигурок (спрайты: игрок/объекты/бонусы) ===== */
-  spriteNeonOn: true,
-  spriteNeonColor: "#7a5aff",
-  spriteNeonStrength: 14,         // 0..40
-
-  /* ===== ответы: можно "только картинка" ===== */
-  allowImageOnlyAnswers: true,
-
-  /* ===== бонусы ===== */
   bonusesOn: true,
-  bonusChance: 0.14,              // шанс что прилетит бонус вместо ответа
-  bombPenaltyPoints: 15,          // сколько очков отнимает бомба
+  bonusChance: 0.14,
+  bombPenaltyPoints: 15,
   maxLives: 5,
 
   questions: [
@@ -950,6 +789,18 @@ function startEditorMode(){
     previewFrame: document.getElementById("previewFrame"),
     previewStatus: document.getElementById("previewStatus"),
 
+    playerEmoji: document.getElementById("playerEmoji"),
+    answerEmoji: document.getElementById("answerEmoji"),
+    emojiNeonOn: document.getElementById("emojiNeonOn"),
+    emojiNeonColor: document.getElementById("emojiNeonColor"),
+    emojiNeonStrengthR: document.getElementById("emojiNeonStrengthR"),
+    emojiNeonStrength: document.getElementById("emojiNeonStrength"),
+    answersShowText: document.getElementById("answersShowText"),
+
+    playerPreview: document.getElementById("playerPreview"),
+    answerPreviewEmoji: document.getElementById("answerPreviewEmoji"),
+    answerPreviewText: document.getElementById("answerPreviewText"),
+
     fontFamily: document.getElementById("fontFamily"),
     fontWeight: document.getElementById("fontWeight"),
 
@@ -983,24 +834,18 @@ function startEditorMode(){
     progressHeight: document.getElementById("progressHeight"),
 
     bgImgUrl: document.getElementById("bgImgUrl"),
-    bgImgFile: document.getElementById("bgImgFile"),
     transparentBg: document.getElementById("transparentBg"),
     bgSpeedR: document.getElementById("bgSpeedR"),
     bgSpeed: document.getElementById("bgSpeed"),
     bgSizeMode: document.getElementById("bgSizeMode"),
 
-    playerImgUrl: document.getElementById("playerImgUrl"),
-    playerImgFile: document.getElementById("playerImgFile"),
     playerSizeR: document.getElementById("playerSizeR"),
     playerSize: document.getElementById("playerSize"),
     playerShadowOn: document.getElementById("playerShadowOn"),
     playerShadowColor: document.getElementById("playerShadowColor"),
     playerShadowStrengthR: document.getElementById("playerShadowStrengthR"),
     playerShadowStrength: document.getElementById("playerShadowStrength"),
-    playerPreviewImg: document.getElementById("playerPreviewImg"),
 
-    answerCardImgUrl: document.getElementById("answerCardImgUrl"),
-    answerCardImgFile: document.getElementById("answerCardImgFile"),
     answerSizeR: document.getElementById("answerSizeR"),
     answerSize: document.getElementById("answerSize"),
     answerTextBgOn: document.getElementById("answerTextBgOn"),
@@ -1017,17 +862,6 @@ function startEditorMode(){
     answerTextX: document.getElementById("answerTextX"),
     answerTextYR: document.getElementById("answerTextYR"),
     answerTextY: document.getElementById("answerTextY"),
-
-    answerCardFit: document.getElementById("answerCardFit"),
-    answerCardScaleR: document.getElementById("answerCardScaleR"),
-    answerCardScale: document.getElementById("answerCardScale"),
-    answerCardPosXR: document.getElementById("answerCardPosXR"),
-    answerCardPosX: document.getElementById("answerCardPosX"),
-    answerCardPosYR: document.getElementById("answerCardPosYR"),
-    answerCardPosY: document.getElementById("answerCardPosY"),
-
-    answerPreviewBg: document.getElementById("answerPreviewBg"),
-    answerPreviewText: document.getElementById("answerPreviewText"),
 
     livesCount: document.getElementById("livesCount"),
     pointsPerCorrect: document.getElementById("pointsPerCorrect"),
@@ -1054,20 +888,11 @@ function startEditorMode(){
     finalWinText: document.getElementById("finalWinText"),
     finalLoseText: document.getElementById("finalLoseText"),
 
-    // bulk editor
     bulkQuestions: document.getElementById("bulkQuestions"),
     bulkAnswers: document.getElementById("bulkAnswers"),
     applyBulkBtn: document.getElementById("applyBulkBtn"),
     fillBulkFromCfgBtn: document.getElementById("fillBulkFromCfgBtn"),
     resetQuestionsBtn: document.getElementById("resetQuestionsBtn"),
-
-    // builtins + sprite neon
-    builtinPlayer: document.getElementById("builtinPlayer"),
-    builtinAnswer: document.getElementById("builtinAnswer"),
-    spriteNeonOn: document.getElementById("spriteNeonOn"),
-    spriteNeonColor: document.getElementById("spriteNeonColor"),
-    spriteNeonStrengthR: document.getElementById("spriteNeonStrengthR"),
-    spriteNeonStrength: document.getElementById("spriteNeonStrength"),
 
     genIframeBtn: document.getElementById("genIframeBtn"),
     copyIframeBtn: document.getElementById("copyIframeBtn"),
@@ -1080,6 +905,13 @@ function startEditorMode(){
   let autoTimer = null;
 
   function cfgToUI(){
+    els.playerEmoji.value = cfgDraft.playerEmoji || "🐟";
+    els.answerEmoji.value = cfgDraft.answerEmoji || "🟣";
+    els.emojiNeonOn.checked = cfgDraft.emojiNeonOn !== false;
+    els.emojiNeonColor.value = cfgDraft.emojiNeonColor || "#7a5aff";
+    pairSync(els.emojiNeonStrengthR, els.emojiNeonStrength, cfgDraft.emojiNeonStrength ?? 14);
+    els.answersShowText.checked = cfgDraft.answersShowText !== false;
+
     els.fontFamily.value = cfgDraft.fontFamily;
     els.fontWeight.value = String(cfgDraft.fontWeight);
 
@@ -1120,13 +952,11 @@ function startEditorMode(){
     els.bgSizeMode.value = ["auto","cover","contain"].includes(cfgDraft.bgSizeMode) ? cfgDraft.bgSizeMode : "auto";
     pairSync(els.bgSpeedR, els.bgSpeed, cfgDraft.bgSpeed ?? 90);
 
-    els.playerImgUrl.value = (cfgDraft.playerImg && cfgDraft.playerImg.startsWith("http")) ? cfgDraft.playerImg : "";
     pairSync(els.playerSizeR, els.playerSize, cfgDraft.playerSize ?? 86);
     els.playerShadowOn.checked = !!cfgDraft.playerShadowOn;
     els.playerShadowColor.value = cfgDraft.playerShadowColor || "#000000";
     pairSync(els.playerShadowStrengthR, els.playerShadowStrength, cfgDraft.playerShadowStrength ?? 18);
 
-    els.answerCardImgUrl.value = (cfgDraft.answerCardImg && cfgDraft.answerCardImg.startsWith("http")) ? cfgDraft.answerCardImg : "";
     pairSync(els.answerSizeR, els.answerSize, cfgDraft.answerSize ?? 86);
     els.answerTextBgOn.checked = cfgDraft.answerTextBgOn !== false;
 
@@ -1138,12 +968,7 @@ function startEditorMode(){
 
     pairSync(els.answerContentScaleR, els.answerContentScale, cfgDraft.answerContentScale ?? 1);
     pairSync(els.answerTextXR, els.answerTextX, cfgDraft.answerTextX ?? 50);
-    pairSync(els.answerTextYR, els.answerTextY, cfgDraft.answerTextY ?? 64);
-
-    els.answerCardFit.value = (cfgDraft.answerCardFit === "cover") ? "cover" : "contain";
-    pairSync(els.answerCardScaleR, els.answerCardScale, cfgDraft.answerCardScale ?? 1);
-    pairSync(els.answerCardPosXR, els.answerCardPosX, cfgDraft.answerCardPosX ?? 50);
-    pairSync(els.answerCardPosYR, els.answerCardPosY, cfgDraft.answerCardPosY ?? 50);
+    pairSync(els.answerTextYR, els.answerTextY, cfgDraft.answerTextY ?? 82);
 
     els.livesCount.value = cfgDraft.livesCount ?? 3;
     els.pointsPerCorrect.value = cfgDraft.pointsPerCorrect ?? 10;
@@ -1161,15 +986,16 @@ function startEditorMode(){
     els.hitBadText.value = cfgDraft.hitBadText || "";
     els.finalWinText.value = cfgDraft.finalWinText || "";
     els.finalLoseText.value = cfgDraft.finalLoseText || "";
-
-    els.builtinPlayer.value = cfgDraft.builtinPlayer || "fish";
-    els.builtinAnswer.value = cfgDraft.builtinAnswer || "cone";
-    els.spriteNeonOn.checked = cfgDraft.spriteNeonOn !== false;
-    els.spriteNeonColor.value = cfgDraft.spriteNeonColor || "#7a5aff";
-    pairSync(els.spriteNeonStrengthR, els.spriteNeonStrength, cfgDraft.spriteNeonStrength ?? 14);
   }
 
   function readUIIntoDraft(){
+    cfgDraft.playerEmoji = cleanEmoji(els.playerEmoji.value, "🐟");
+    cfgDraft.answerEmoji = cleanEmoji(els.answerEmoji.value, "🟣");
+    cfgDraft.emojiNeonOn = !!els.emojiNeonOn.checked;
+    cfgDraft.emojiNeonColor = els.emojiNeonColor.value || "#7a5aff";
+    cfgDraft.emojiNeonStrength = clampInt(els.emojiNeonStrength.value, 0, 40, 14);
+    cfgDraft.answersShowText = !!els.answersShowText.checked;
+
     cfgDraft.fontFamily = els.fontFamily.value;
     cfgDraft.fontWeight = Number(els.fontWeight.value || 900);
 
@@ -1224,12 +1050,7 @@ function startEditorMode(){
 
     cfgDraft.answerContentScale = clampNum(els.answerContentScale.value, 0.6, 2, 1);
     cfgDraft.answerTextX = clampNum(els.answerTextX.value, 0, 100, 50);
-    cfgDraft.answerTextY = clampNum(els.answerTextY.value, 0, 100, 64);
-
-    cfgDraft.answerCardFit = (els.answerCardFit.value === "cover") ? "cover" : "contain";
-    cfgDraft.answerCardScale = clampNum(els.answerCardScale.value, 0.6, 2, 1);
-    cfgDraft.answerCardPosX = clampNum(els.answerCardPosX.value, 0, 100, 50);
-    cfgDraft.answerCardPosY = clampNum(els.answerCardPosY.value, 0, 100, 50);
+    cfgDraft.answerTextY = clampNum(els.answerTextY.value, 0, 100, 82);
 
     cfgDraft.livesCount = clampInt(els.livesCount.value, 1, 10, 3);
     cfgDraft.pointsPerCorrect = clampInt(els.pointsPerCorrect.value, 1, 200, 10);
@@ -1250,45 +1071,30 @@ function startEditorMode(){
     cfgDraft.finalWinText = els.finalWinText.value || "";
     cfgDraft.finalLoseText = els.finalLoseText.value || "";
 
-    cfgDraft.builtinPlayer = els.builtinPlayer.value || "fish";
-    cfgDraft.builtinAnswer = els.builtinAnswer.value || "cone";
-    cfgDraft.spriteNeonOn = !!els.spriteNeonOn.checked;
-    cfgDraft.spriteNeonColor = els.spriteNeonColor.value || "#7a5aff";
-    cfgDraft.spriteNeonStrength = clampInt(els.spriteNeonStrength.value, 0, 40, 14);
-
     if(els.bgImgUrl.value.trim().startsWith("http")) cfgDraft.bgImg = els.bgImgUrl.value.trim();
-    if(els.playerImgUrl.value.trim().startsWith("http")) cfgDraft.playerImg = els.playerImgUrl.value.trim();
-    if(els.answerCardImgUrl.value.trim().startsWith("http")) cfgDraft.answerCardImg = els.answerCardImgUrl.value.trim();
+    if(!els.bgImgUrl.value.trim()) cfgDraft.bgImg = cfgDraft.bgImg || "";
   }
 
   function updateInlinePreviews(){
-    // если url пустые — показываем встроенные
-    const effectivePlayerImg = cfgDraft.playerImg || BUILTIN.players[cfgDraft.builtinPlayer] || BUILTIN.players.fish;
-    const effectiveAnswerImg = cfgDraft.answerCardImg || BUILTIN.answers[cfgDraft.builtinAnswer] || BUILTIN.answers.cone;
-
-    const pSize = cfgDraft.playerSize ?? 86;
-    els.playerPreviewImg.style.width = pSize + "px";
-    els.playerPreviewImg.style.height = pSize + "px";
-    els.playerPreviewImg.style.backgroundImage = effectivePlayerImg ? `url('${cssUrl(effectivePlayerImg)}')` : "none";
-
-    const shadowOn = !!cfgDraft.playerShadowOn;
+    const neon = buildEmojiNeonFilter(cfgDraft);
+    const shOn = !!cfgDraft.playerShadowOn;
     const s = cfgDraft.playerShadowStrength ?? 18;
     const sc = cfgDraft.playerShadowColor || "#000000";
-    const neon = buildSpriteNeonFilter(cfgDraft);
     const mix = [
-      shadowOn ? `drop-shadow(0 0 ${Math.max(0, s)}px ${hexToRgba(sc, 0.85)})` : "",
+      shOn ? `drop-shadow(0 0 ${Math.max(0, s)}px ${hexToRgba(sc, 0.85)})` : "",
       (neon && neon!=="none") ? neon : ""
     ].filter(Boolean).join(" ");
-    els.playerPreviewImg.style.filter = mix || "none";
 
-    els.answerPreviewBg.style.backgroundImage = effectiveAnswerImg ? `url('${cssUrl(effectiveAnswerImg)}')` : "none";
-    els.answerPreviewBg.style.backgroundSize = cfgDraft.answerCardFit === "cover" ? "cover" : "contain";
-    els.answerPreviewBg.style.backgroundPosition = `${cfgDraft.answerCardPosX ?? 50}% ${cfgDraft.answerCardPosY ?? 50}%`;
-    els.answerPreviewBg.style.transform = `scale(${cfgDraft.answerCardScale ?? 1})`;
-    els.answerPreviewBg.style.filter = (neon && neon!=="none") ? neon : "none";
+    els.playerPreview.textContent = cleanEmoji(cfgDraft.playerEmoji, "🐟");
+    els.playerPreview.style.fontSize = (cfgDraft.playerSize ?? 86) + "px";
+    els.playerPreview.style.filter = mix || "none";
+
+    els.answerPreviewEmoji.textContent = cleanEmoji(cfgDraft.answerEmoji, "🟣");
+    els.answerPreviewEmoji.style.fontSize = (cfgDraft.answerSize ?? 86) + "px";
+    els.answerPreviewEmoji.style.filter = (neon && neon!=="none") ? neon : "none";
 
     els.answerPreviewText.style.left = (cfgDraft.answerTextX ?? 50) + "%";
-    els.answerPreviewText.style.top  = (cfgDraft.answerTextY ?? 64) + "%";
+    els.answerPreviewText.style.top  = (cfgDraft.answerTextY ?? 82) + "%";
     els.answerPreviewText.style.transform = `translate(-50%,-50%) scale(${cfgDraft.answerContentScale ?? 1})`;
 
     els.answerPreviewText.style.background = (cfgDraft.answerTextBgOn === false) ? "transparent" : "rgba(0,0,0,.22)";
@@ -1299,6 +1105,8 @@ function startEditorMode(){
     els.answerPreviewText.style.textShadow = buildAnswerTextShadow(cfgDraft);
     els.answerPreviewText.style.fontFamily = cfgDraft.fontFamily || "system-ui";
     els.answerPreviewText.style.fontWeight = String(cfgDraft.fontWeight || 900);
+
+    els.answerPreviewText.style.display = cfgDraft.answersShowText ? "block" : "none";
   }
 
   function fillBulkFromCfg(){
@@ -1322,7 +1130,6 @@ function startEditorMode(){
     for(let i=0;i<qLines.length;i++){
       const qText = qLines[i];
       const parts = String(aLines[i] || "").split("|").map(s=>s.trim());
-
       while(parts.length < 2) parts.push("");
 
       const answers = parts.map((t, idx)=>({
@@ -1334,11 +1141,7 @@ function startEditorMode(){
       out.push({ q: qText, answers });
     }
 
-    if(out.length){
-      cfgDraft.questions = out;
-    } else {
-      cfgDraft.questions = deepClone(DEFAULT_CFG.questions);
-    }
+    cfgDraft.questions = out.length ? out : deepClone(DEFAULT_CFG.questions);
   }
 
   function ensurePreviewLoaded(){
@@ -1381,29 +1184,13 @@ function startEditorMode(){
     if(d.type === "CFG_ERROR"){ els.previewStatus.textContent = "Ошибка в игре"; console.warn("CFG_ERROR:", d.error); }
   });
 
-  // uploads
-  els.bgImgFile.addEventListener("change", async ()=>{
-    const f = els.bgImgFile.files?.[0]; if(!f) return;
-    cfgDraft.bgImg = await fileToDataUrl(f);
-    els.bgImgUrl.value = "";
-    scheduleAuto();
-  });
-  els.playerImgFile.addEventListener("change", async ()=>{
-    const f = els.playerImgFile.files?.[0]; if(!f) return;
-    cfgDraft.playerImg = await fileToDataUrl(f);
-    els.playerImgUrl.value = "";
-    scheduleAuto();
-  });
-  els.answerCardImgFile.addEventListener("change", async ()=>{
-    const f = els.answerCardImgFile.files?.[0]; if(!f) return;
-    cfgDraft.answerCardImg = await fileToDataUrl(f);
-    els.answerCardImgUrl.value = "";
-    scheduleAuto();
-  });
-
   const bind = (el)=>{ el.addEventListener("input", scheduleAuto); el.addEventListener("change", scheduleAuto); };
   [
     els.baseUrl,
+
+    els.playerEmoji, els.answerEmoji,
+    els.emojiNeonOn, els.emojiNeonColor, els.answersShowText,
+
     els.fontFamily, els.fontWeight,
     els.questionSize, els.questionColor, els.questionBgColor, els.questionBorderColor,
     els.scoreSize, els.livesSize, els.hudTextColor, els.hudPanelColor,
@@ -1417,9 +1204,9 @@ function startEditorMode(){
 
     els.bgImgUrl, els.transparentBg, els.bgSizeMode,
 
-    els.playerImgUrl, els.playerShadowOn, els.playerShadowColor,
+    els.playerShadowOn, els.playerShadowColor,
 
-    els.answerCardImgUrl, els.answerTextBgOn, els.answerCardFit,
+    els.answerTextBgOn,
 
     els.answerTextColor, els.answerTextShadowOn, els.answerTextNeonOn,
     els.answerTextFxColor, els.answerTextFxStrength,
@@ -1427,8 +1214,6 @@ function startEditorMode(){
     els.livesCount, els.pointsPerCorrect, els.cooldownTurns, els.playerSpeed,
 
     els.hitOkText, els.hitBadText, els.finalWinText, els.finalLoseText,
-
-    els.builtinPlayer, els.builtinAnswer, els.spriteNeonOn, els.spriteNeonColor,
   ].forEach(bind);
 
   pairBind(els.bgSpeedR, els.bgSpeed, scheduleAuto);
@@ -1439,9 +1224,6 @@ function startEditorMode(){
   pairBind(els.answerContentScaleR, els.answerContentScale, scheduleAuto);
   pairBind(els.answerTextXR, els.answerTextX, scheduleAuto);
   pairBind(els.answerTextYR, els.answerTextY, scheduleAuto);
-  pairBind(els.answerCardScaleR, els.answerCardScale, scheduleAuto);
-  pairBind(els.answerCardPosXR, els.answerCardPosX, scheduleAuto);
-  pairBind(els.answerCardPosYR, els.answerCardPosY, scheduleAuto);
 
   pairBind(els.easySpeedR, els.easySpeed, scheduleAuto);
   pairBind(els.easySpawnR, els.easySpawn, scheduleAuto);
@@ -1450,7 +1232,7 @@ function startEditorMode(){
   pairBind(els.hardSpeedR, els.hardSpeed, scheduleAuto);
   pairBind(els.hardSpawnR, els.hardSpawn, scheduleAuto);
 
-  pairBind(els.spriteNeonStrengthR, els.spriteNeonStrength, scheduleAuto);
+  pairBind(els.emojiNeonStrengthR, els.emojiNeonStrength, scheduleAuto);
 
   els.applyBulkBtn.onclick = ()=>{
     parseBulkToCfg();
@@ -1496,6 +1278,7 @@ function startEditorMode(){
   cfgToUI();
   fillBulkFromCfg();
   ensurePreviewLoaded();
+  updateInlinePreviews();
   scheduleAuto();
 }
 
@@ -1515,13 +1298,18 @@ function normalizeCfg(cfg){
   }
 
   // clamps
+  out.playerEmoji = cleanEmoji(out.playerEmoji, "🐟");
+  out.answerEmoji = cleanEmoji(out.answerEmoji, "🟣");
+  out.answersShowText = out.answersShowText !== false;
+
+  out.emojiNeonStrength = clampInt(out.emojiNeonStrength, 0, 40, 14);
+  out.fxStrength = clampInt(out.fxStrength, 1, 12, 7);
+  out.strokeWidth = clampNum(out.strokeWidth, 0, 3, 0.6);
+
   out.questionSize = clampInt(out.questionSize, 12, 70, 24);
   out.scoreSize = clampInt(out.scoreSize, 12, 70, 24);
   out.livesSize = clampInt(out.livesSize, 12, 70, 24);
   out.progressHeight = clampInt(out.progressHeight, 14, 70, 30);
-
-  out.fxStrength = clampInt(out.fxStrength, 1, 12, 7);
-  out.strokeWidth = clampNum(out.strokeWidth, 0, 3, 0.6);
 
   out.bgSpeed = clampInt(out.bgSpeed, 0, 240, 90);
   out.bgSizeMode = ["auto","cover","contain"].includes(out.bgSizeMode) ? out.bgSizeMode : "auto";
@@ -1532,21 +1320,15 @@ function normalizeCfg(cfg){
   out.answerSize = clampInt(out.answerSize, 42, 260, 86);
   out.answerContentScale = clampNum(out.answerContentScale, 0.6, 2, 1);
   out.answerTextX = clampNum(out.answerTextX, 0, 100, 50);
-  out.answerTextY = clampNum(out.answerTextY, 0, 100, 64);
+  out.answerTextY = clampNum(out.answerTextY, 0, 100, 82);
 
   out.answerTextFxStrength = clampInt(out.answerTextFxStrength, 1, 12, 7);
-
-  out.answerCardFit = (out.answerCardFit === "cover") ? "cover" : "contain";
-  out.answerCardScale = clampNum(out.answerCardScale, 0.6, 2, 1);
-  out.answerCardPosX = clampNum(out.answerCardPosX, 0, 100, 50);
-  out.answerCardPosY = clampNum(out.answerCardPosY, 0, 100, 50);
 
   out.livesCount = clampInt(out.livesCount, 1, 10, 3);
   out.pointsPerCorrect = clampInt(out.pointsPerCorrect, 1, 200, 10);
   out.cooldownTurns = clampInt(out.cooldownTurns, 0, 10, 3);
   out.playerSpeed = clampInt(out.playerSpeed, 2, 18, 7);
 
-  out.spriteNeonStrength = clampInt(out.spriteNeonStrength, 0, 40, 14);
   out.bonusChance = clampNum(out.bonusChance, 0, 0.6, 0.14);
   out.bombPenaltyPoints = clampInt(out.bombPenaltyPoints, 0, 999, 15);
   out.maxLives = clampInt(out.maxLives, 1, 10, Math.max(out.livesCount, 5));
@@ -1569,7 +1351,6 @@ function normalizeCfg(cfg){
     const qq = { q: String(q.q||""), answers: Array.isArray(q.answers)?q.answers:[] };
     qq.answers = qq.answers.map(a=>({label:String(a.label||""), text:String(a.text||""), correct:!!a.correct}));
     if(qq.answers.length < 2) qq.answers = [{label:"A", text:"", correct:true},{label:"B", text:"", correct:false}];
-    // гарантируем хотя бы 1 correct
     if(!qq.answers.some(a=>a.correct)) qq.answers[0].correct = true;
     return qq;
   });
@@ -1597,21 +1378,13 @@ function startGameMode(cfgOverride){
 
   const CFG = normalizeCfg(cfg);
 
-  // если не задано — берём встроенные картинки
-  if(!CFG.playerImg){
-    CFG.playerImg = BUILTIN.players[CFG.builtinPlayer] || BUILTIN.players.fish;
-  }
-  if(!CFG.answerCardImg){
-    CFG.answerCardImg = BUILTIN.answers[CFG.builtinAnswer] || BUILTIN.answers.cone;
-  }
-
   const fxCSS = buildFxCss(CFG);
   const fxQ   = CFG.fxToQuestion ? fxCSS : "";
   const fxHud = CFG.fxToHud ? fxCSS : "";
   const fxAns = CFG.fxToAnswers ? fxCSS : "";
   const fxPts = CFG.fxToPoints ? fxCSS : "";
   const answerShadow = buildAnswerTextShadow(CFG);
-  const spriteNeon = buildSpriteNeonFilter(CFG);
+  const emojiNeon = buildEmojiNeonFilter(CFG);
 
   root.innerHTML = `
     <style>
@@ -1625,7 +1398,7 @@ function startGameMode(cfgOverride){
       #bg{position:absolute; inset:0; z-index:0; overflow:hidden; background: ${CFG.transparentBg ? "transparent" : "rgba(0,0,0,.18)"};}
       .bgLayer{
         position:absolute; inset:0;
-        background-image: ${(!CFG.transparentBg && CFG.bgImg) ? `url('${cssUrl(CFG.bgImg)}')` : "none"};
+        background-image: ${(!CFG.transparentBg && CFG.bgImg) ? `url('${CFG.bgImg.replace(/'/g,"%27")}')` : "none"};
         background-repeat: repeat-x;
         background-position: 0 50%;
         background-size: ${
@@ -1685,7 +1458,7 @@ function startGameMode(cfgOverride){
         ${fxQ}
       }
 
-      /* player */
+      /* player (emoji) */
       #player{
         position:absolute;
         left:92px;
@@ -1693,19 +1466,19 @@ function startGameMode(cfgOverride){
         width:${CFG.playerSize}px;
         height:${CFG.playerSize}px;
         transform: translate(-50%,-50%);
-        background: transparent;
         pointer-events:none;
         will-change: transform, top;
+        display:flex; align-items:center; justify-content:center;
       }
-      #playerImg{
-        position:absolute; inset:0;
-        background: ${CFG.playerImg ? `url('${cssUrl(CFG.playerImg)}') center/contain no-repeat` : "none"};
+      #playerEmoji{
+        font-size:${CFG.playerSize}px;
+        line-height:1;
         filter: ${
           (() => {
             const sh = CFG.playerShadowOn
               ? `drop-shadow(0 0 ${Math.max(0, CFG.playerShadowStrength)}px ${hexToRgba(CFG.playerShadowColor, 0.85)})`
               : "";
-            const nn = (spriteNeon && spriteNeon!=="none") ? spriteNeon : "";
+            const nn = (emojiNeon && emojiNeon!=="none") ? emojiNeon : "";
             const mix = [sh, nn].filter(Boolean).join(" ");
             return mix || "none";
           })()
@@ -1718,15 +1491,15 @@ function startGameMode(cfgOverride){
         50%{transform: translateY(-6px);}
         100%{transform: translateY(0);}
       }
-      #playerImg.bob{ animation: hoverBob 1.2s ease-in-out infinite; }
+      #playerEmoji.bob{ animation: hoverBob 1.2s ease-in-out infinite; }
       @keyframes playerBoost{
         0%{transform: scale(1);}
         35%{transform: scale(1.08);}
         100%{transform: scale(1);}
       }
-      #playerImg.boost{ animation: playerBoost .22s ease-out; }
+      #playerEmoji.boost{ animation: playerBoost .22s ease-out; }
 
-      /* answers (no panel background) */
+      /* answer (emoji + optional text) */
       .answer{
         position:absolute;
         width:${CFG.answerSize}px;
@@ -1737,17 +1510,13 @@ function startGameMode(cfgOverride){
         background: transparent;
         overflow: visible;
         will-change: transform, left;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:6px;
       }
-      .answer .bg{
-        position:absolute; inset:0;
-        background-image: ${CFG.answerCardImg ? `url('${cssUrl(CFG.answerCardImg)}')` : "none"};
-        background-repeat:no-repeat;
-        background-size:${CFG.answerCardFit};
-        background-position:${CFG.answerCardPosX}% ${CFG.answerCardPosY}%;
-        transform: scale(${CFG.answerCardScale});
-        transform-origin:center;
-        will-change: transform;
-        filter: ${spriteNeon && spriteNeon!=="none" ? spriteNeon : "none"};
+      .answer .emo{
+        font-size:${CFG.answerSize}px;
+        line-height:1;
+        filter: ${emojiNeon && emojiNeon!=="none" ? emojiNeon : "none"};
       }
       .answer .txt{
         position:absolute;
@@ -1761,7 +1530,7 @@ function startGameMode(cfgOverride){
         font-weight:${CFG.fontWeight};
         font-size: 14px;
         line-height:1.15;
-        max-width: 220px;
+        max-width: 260px;
         white-space:normal;
         word-break:break-word;
 
@@ -1943,7 +1712,7 @@ function startGameMode(cfgOverride){
         <div id="questionWrap"><div id="questionBox">—</div></div>
 
         <div id="scene">
-          <div id="player"><div id="playerImg" class="bob"></div></div>
+          <div id="player"><div id="playerEmoji" class="bob">${CFG.playerEmoji}</div></div>
         </div>
 
         <div id="feedback"></div>
@@ -1989,7 +1758,7 @@ function startGameMode(cfgOverride){
   const bgLayer = root.querySelector("#bgLayer");
   const scene = root.querySelector("#scene");
   const player = root.querySelector("#player");
-  const playerImg = root.querySelector("#playerImg");
+  const playerEmojiEl = root.querySelector("#playerEmoji");
 
   const questionBox = root.querySelector("#questionBox");
   const scoreEl = root.querySelector("#score");
@@ -2010,10 +1779,6 @@ function startGameMode(cfgOverride){
 
   const loseTint = root.querySelector("#loseTint");
   const fxLayer = root.querySelector("#fxLayer");
-
-  if(CFG.playerImg){
-    playerImg.style.backgroundImage = `url('${cssUrl(CFG.playerImg)}')`;
-  }
 
   // AUDIO
   let audioCtx = window.__AUDIO_CTX__ || null;
@@ -2167,18 +1932,17 @@ function startGameMode(cfgOverride){
     el.className = "answer";
     el.dataset.correct = answer.correct ? "1" : "0";
 
-    const bg = document.createElement("div");
-    bg.className = "bg";
-    el.appendChild(bg);
+    const emo = document.createElement("div");
+    emo.className = "emo";
+    emo.textContent = CFG.answerEmoji;
+    el.appendChild(emo);
 
-    const txtValue = String(answer.text || "").trim();
-    if(!(CFG.allowImageOnlyAnswers && txtValue === "")){
+    if(CFG.answersShowText){
       const txt = document.createElement("div");
       txt.className = "txt";
-      txt.textContent = txtValue;
+      txt.textContent = String(answer.text || "").trim();
       el.appendChild(txt);
     }
-
     return el;
   }
 
@@ -2188,10 +1952,10 @@ function startGameMode(cfgOverride){
     el.dataset.bonus = kind;
     el.dataset.correct = "0";
 
-    const bg = document.createElement("div");
-    bg.className = "bg";
-    bg.style.backgroundImage = `url('${cssUrl(BUILTIN.bonus[kind])}')`;
-    el.appendChild(bg);
+    const emo = document.createElement("div");
+    emo.className = "emo";
+    emo.textContent = (kind === "heart") ? "❤️" : "💣";
+    el.appendChild(emo);
 
     return el;
   }
@@ -2215,7 +1979,6 @@ function startGameMode(cfgOverride){
     const q = (state.currentIdx!==null) ? CFG.questions[state.currentIdx] : null;
     if(!q) return;
 
-    // бонусы вместо ответа
     const wantBonus = CFG.bonusesOn && Math.random() < (CFG.bonusChance || 0);
     if(wantBonus){
       const kind = (Math.random() < 0.55) ? "heart" : "bomb";
@@ -2353,7 +2116,6 @@ function startGameMode(cfgOverride){
     state.locked = true;
     clearPending();
 
-    // бонусы
     const bonusKind = hitObj?.data?.bonus;
     if(bonusKind){
       state.active.forEach(o=>{ if(o !== hitObj && o.el?.isConnected) o.el.remove(); });
@@ -2390,9 +2152,9 @@ function startGameMode(cfgOverride){
     const hitY = (pr.top + pr.bottom)/2 - sr.top;
 
     if(correct){
-      playerImg.classList.remove("boost");
-      void playerImg.offsetWidth;
-      playerImg.classList.add("boost");
+      playerEmojiEl.classList.remove("boost");
+      void playerEmojiEl.offsetWidth;
+      playerEmojiEl.classList.add("boost");
 
       soundOk();
       state.score += CFG.pointsPerCorrect;
@@ -2565,7 +2327,7 @@ function startGameMode(cfgOverride){
   on(startBtn, "click", startGame, {passive:true});
   on(playAgainBtn, "click", playAgain, {passive:true});
 
-  // клавиатура (W/S + стрелки)
+  // keyboard (W/S + arrows)
   on(window, "keydown", async (e)=>{
     const k = String(e.key || "").toLowerCase();
     keys[k] = true;
